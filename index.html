@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -11,22 +10,22 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 :root{
---green:#1a7a4a;
---green-light:#e8f5ee;
---green-dark:#145e38;
---green-mid:#2a9d5c;
---accent:#f4a623;
---accent-light:#fff8ec;
---red:#e53e3e;
---bg:#f7f8f6;
---white:#ffffff;
---text:#1a1a1a;
---text-2:#555;
---text-3:#999;
---border:#e8e8e8;
---card-shadow:0 2px 8px rgba(0,0,0,.07);
---radius:14px;
---radius-sm:10px;
+  --green:#1a7a4a;
+  --green-light:#e8f5ee;
+  --green-dark:#145e38;
+  --green-mid:#2a9d5c;
+  --accent:#f4a623;
+  --accent-light:#fff8ec;
+  --red:#e53e3e;
+  --bg:#f7f8f6;
+  --white:#ffffff;
+  --text:#1a1a1a;
+  --text-2:#555;
+  --text-3:#999;
+  --border:#e8e8e8;
+  --card-shadow:0 2px 8px rgba(0,0,0,.07);
+  --radius:14px;
+  --radius-sm:10px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:420px;margin:0 auto;min-height:100vh;overflow-x:hidden;box-shadow:0 0 40px rgba(0,0,0,.15)}
@@ -34,24 +33,24 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 .screen.active{display:flex}
 
 /* HEADER */
-.header{background:var(–white);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(–border);position:sticky;top:0;z-index:100}
+.header{background:var(--white);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
 .header h2{font-size:16px;font-weight:700;flex:1}
-.back{width:36px;height:36px;border-radius:50%;background:var(–bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(–green);border:none;flex-shrink:0}
+.back{width:36px;height:36px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--green);border:none;flex-shrink:0}
 
 /* BUTTONS */
-.btn{padding:14px 20px;border-radius:var(–radius-sm);border:none;font-size:15px;font-weight:700;cursor:pointer;width:100%;transition:all .15s;font-family:‘DM Sans’,sans-serif;letter-spacing:.2px}
-.btn-p{background:var(–green);color:white}
-.btn-p:active{background:var(–green-dark);transform:scale(.98)}
-.btn-o{background:transparent;color:var(–green);border:2px solid var(–green)}
-.btn-w{background:white;color:var(–green);border:1px solid var(–border)}
+.btn{padding:14px 20px;border-radius:var(--radius-sm);border:none;font-size:15px;font-weight:700;cursor:pointer;width:100%;transition:all .15s;font-family:'DM Sans',sans-serif;letter-spacing:.2px}
+.btn-p{background:var(--green);color:white}
+.btn-p:active{background:var(--green-dark);transform:scale(.98)}
+.btn-o{background:transparent;color:var(--green);border:2px solid var(--green)}
+.btn-w{background:white;color:var(--green);border:1px solid var(--border)}
 .btn-sm{padding:9px 16px;font-size:13px;width:auto;border-radius:8px}
 .btn:disabled{opacity:.6;cursor:not-allowed}
 
 /* FORMS */
 .fg{margin-bottom:14px}
-.fg label{font-size:12px;font-weight:700;color:var(–text-2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.4px}
-.fg input,.fg select,.fg textarea{width:100%;padding:13px 14px;border:1.5px solid var(–border);border-radius:var(–radius-sm);font-size:15px;outline:none;background:white;font-family:‘DM Sans’,sans-serif;color:var(–text);transition:border .15s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(–green)}
+.fg label{font-size:12px;font-weight:700;color:var(--text-2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg select,.fg textarea{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;outline:none;background:white;font-family:'DM Sans',sans-serif;color:var(--text);transition:border .15s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--green)}
 .fg textarea{height:90px;resize:none}
 
 /* BOTTOM NAV */
@@ -62,566 +61,543 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 .ni.active svg{stroke:#1a7a4a}
 
 /* ALERTS */
-.al{padding:12px 14px;border-radius:var(–radius-sm);font-size:13px;margin-bottom:12px;font-weight:500;line-height:1.4}
-.al-e{background:#fef2f2;color:var(–red);border:1px solid #fecaca}
-.al-s{background:var(–green-light);color:var(–green-dark);border:1px solid #a8d5b5}
+.al{padding:12px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:12px;font-weight:500;line-height:1.4}
+.al-e{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+.al-s{background:var(--green-light);color:var(--green-dark);border:1px solid #a8d5b5}
 .al-w{background:#fffbeb;color:#b45309;border:1px solid #fde68a}
-.al-i{background:var(–green-light);color:var(–green-dark);border:1px solid #a8d5b5}
+.al-i{background:var(--green-light);color:var(--green-dark);border:1px solid #a8d5b5}
 
 /* PROVIDER CARD */
 .pcard{background:#ffffff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);cursor:pointer;transition:transform .15s,box-shadow .15s;border:1px solid #ddd}
 .pcard:active{transform:scale(.98);box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.p-avatar{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(–green),var(–green-mid));display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:800;flex-shrink:0;font-family:‘DM Mono’,monospace}
+.p-avatar{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--green-mid));display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:800;flex-shrink:0;font-family:'DM Mono',monospace}
 .p-name{font-size:15px;font-weight:700;color:#111;line-height:1.2}
 .p-job{font-size:13px;color:#444;margin-top:2px;font-weight:500}
 .p-meta{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .chip{background:#f0f0f0;color:#333;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:3px}
 .chip-g{background:#e8f5ee;color:#145e38}
 .chip-y{background:#fff8e1;color:#b45309}
-.p-price{font-size:14px;font-weight:800;color:var(–green);margin-top:8px}
+.p-price{font-size:14px;font-weight:800;color:var(--green);margin-top:8px}
 .p-location{font-size:12px;color:#666;margin-top:3px;display:flex;align-items:center;gap:3px;font-weight:500}
 
 /* CATEGORY */
 .cat-section{margin-bottom:20px}
 .cat-section-label{font-size:11px;font-weight:800;color:#1a7a4a;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;padding:0 2px}
 .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.cat-card{background:var(–white);border-radius:var(–radius-sm);padding:12px 6px 10px;text-align:center;cursor:pointer;border:1px solid var(–border);transition:all .15s}
-.cat-card:active{background:var(–green-light);border-color:var(–green);transform:scale(.96)}
+.cat-card{background:var(--white);border-radius:var(--radius-sm);padding:12px 6px 10px;text-align:center;cursor:pointer;border:1px solid var(--border);transition:all .15s}
+.cat-card:active{background:var(--green-light);border-color:var(--green);transform:scale(.96)}
 .cat-icon{font-size:24px;margin-bottom:5px;line-height:1}
 .cat-nm{font-size:10px;font-weight:700;color:#333;line-height:1.2}
 
 /* CHAT */
 .chat-msgs{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;padding-bottom:76px}
 .msg{max-width:78%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.45;word-break:break-word}
-.msg.sent{background:var(–green);color:white;align-self:flex-end;border-bottom-right-radius:4px}
-.msg.recv{background:var(–white);color:var(–text);align-self:flex-start;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.msg.sent{background:var(--green);color:white;align-self:flex-end;border-bottom-right-radius:4px}
+.msg.recv{background:var(--white);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .msg-time{font-size:10px;opacity:.6;margin-top:3px;text-align:right}
-.cinput{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(–white);padding:10px 12px;border-top:1px solid var(–border);display:flex;gap:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
-.cinput input{flex:1;padding:10px 14px;border:1.5px solid var(–border);border-radius:24px;font-size:14px;outline:none;font-family:‘DM Sans’,sans-serif;background:var(–bg)}
-.cinput input:focus{border-color:var(–green)}
-.cinput button{background:var(–green);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:17px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.cinput{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--white);padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+.cinput input{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:24px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;background:var(--bg)}
+.cinput input:focus{border-color:var(--green)}
+.cinput button{background:var(--green);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:17px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 
 /* OTP */
 .otp-row{display:flex;gap:8px;justify-content:center;margin:20px 0}
-.otp-row input{width:44px;height:52px;border:2px solid var(–border);border-radius:var(–radius-sm);text-align:center;font-size:22px;font-weight:700;outline:none;font-family:‘DM Mono’,monospace;background:white}
-.otp-row input:focus{border-color:var(–green)}
+.otp-row input{width:44px;height:52px;border:2px solid var(--border);border-radius:var(--radius-sm);text-align:center;font-size:22px;font-weight:700;outline:none;font-family:'DM Mono',monospace;background:white}
+.otp-row input:focus{border-color:var(--green)}
 
 /* MISC */
 .spin{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.ld{text-align:center;padding:40px;color:var(–text-3);font-size:14px}
-.empty{text-align:center;padding:48px 24px;color:var(–text-3)}
+.ld{text-align:center;padding:40px;color:var(--text-3);font-size:14px}
+.empty{text-align:center;padding:48px 24px;color:var(--text-3)}
 .empty-icon{font-size:44px;margin-bottom:12px}
-.empty-title{font-size:16px;font-weight:700;color:var(–text-2);margin-bottom:6px}
-.empty-sub{font-size:13px;color:var(–text-3);margin-bottom:20px;line-height:1.5}
-.divider{text-align:center;color:var(–text-3);font-size:12px;margin:16px 0;position:relative}
-.divider::before,.divider::after{content:’’;position:absolute;top:50%;width:42%;height:1px;background:var(–border)}
+.empty-title{font-size:16px;font-weight:700;color:var(--text-2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--text-3);margin-bottom:20px;line-height:1.5}
+.divider{text-align:center;color:var(--text-3);font-size:12px;margin:16px 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
 .divider::before{left:0}.divider::after{right:0}
-.guarantee-bar{background:var(–green-light);border:1px solid #a8d5b5;border-radius:var(–radius-sm);padding:11px 14px;font-size:13px;color:var(–green-dark);font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.launch-bar{background:var(–accent-light);border:1px solid #fde68a;border-radius:var(–radius-sm);padding:11px 14px;font-size:13px;color:#b45309;font-weight:500;margin-bottom:16px}
-.contact-hidden-bar{background:#fff8ec;border:1px solid #fde68a;border-radius:var(–radius-sm);padding:10px 14px;font-size:12px;color:#b45309;font-weight:500;margin-bottom:12px}
+.guarantee-bar{background:var(--green-light);border:1px solid #a8d5b5;border-radius:var(--radius-sm);padding:11px 14px;font-size:13px;color:var(--green-dark);font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.launch-bar{background:var(--accent-light);border:1px solid #fde68a;border-radius:var(--radius-sm);padding:11px 14px;font-size:13px;color:#b45309;font-weight:500;margin-bottom:16px}
+.contact-hidden-bar{background:#fff8ec;border:1px solid #fde68a;border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:#b45309;font-weight:500;margin-bottom:12px}
 .section-title{font-size:16px;font-weight:800;margin-bottom:12px;color:#111}
-.menu-row{background:var(–white);padding:15px 16px;border-radius:var(–radius-sm);display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:8px;border:1px solid var(–border)}
+.menu-row{background:var(--white);padding:15px 16px;border-radius:var(--radius-sm);display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:8px;border:1px solid var(--border)}
 .menu-row-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .menu-row-text{flex:1}
 .menu-row-label{font-size:14px;font-weight:700}
-.menu-row-sub{font-size:12px;color:var(–text-3);margin-top:1px}
-.chevron{color:var(–text-3);font-size:18px;font-weight:400}
-.stat-box{background:var(–white);border-radius:var(–radius-sm);padding:14px;text-align:center;border:1px solid var(–border)}
-.stat-val{font-size:22px;font-weight:800;color:var(–green)}
-.stat-lbl{font-size:11px;color:var(–text-3);margin-top:2px;font-weight:600}
-.tag{background:var(–bg);color:var(–text-2);padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;display:inline-block;margin:3px 2px}
-.urgency-card{background:white;border:2px solid var(–border);border-radius:var(–radius-sm);padding:12px 6px;text-align:center;cursor:pointer;transition:all .15s}
-.urgency-card.active{border-color:var(–green);background:var(–green-light)}
+.menu-row-sub{font-size:12px;color:var(--text-3);margin-top:1px}
+.chevron{color:var(--text-3);font-size:18px;font-weight:400}
+.stat-box{background:var(--white);border-radius:var(--radius-sm);padding:14px;text-align:center;border:1px solid var(--border)}
+.stat-val{font-size:22px;font-weight:800;color:var(--green)}
+.stat-lbl{font-size:11px;color:var(--text-3);margin-top:2px;font-weight:600}
+.tag{background:var(--bg);color:var(--text-2);padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;display:inline-block;margin:3px 2px}
+.urgency-card{background:white;border:2px solid var(--border);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;cursor:pointer;transition:all .15s}
+.urgency-card.active{border-color:var(--green);background:var(--green-light)}
 .urgency-card:active{transform:scale(.96)}
 </style>
-
 </head>
 <body>
 
 <!-- SPLASH -->
-
 <div class="screen active" id="s-splash">
-<div style="flex:1;display:flex;flex-direction:column;background:var(--white);">
-<div style="background:var(--green);padding:56px 32px 40px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;">
-<div style="margin-bottom:24px;">
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-<div style="width:48px;height:48px;background:white;border-radius:12px;display:flex;align-items:center;justify-content:center;">
-<span style="font-size:24px;">✓</span>
-</div>
-<div>
-<div style="font-size:28px;font-weight:900;color:white;letter-spacing:-.5px;">VeraPro</div>
-<div style="font-size:12px;color:rgba(255,255,255,.7);font-style:italic;">Verified Pros. Trusted Results.</div>
-</div>
-</div>
-<div style="font-size:22px;font-weight:800;color:white;line-height:1.3;margin-bottom:8px;">Find trusted professionals<br>in Gwagwalada & Abuja</div>
-<div style="font-size:14px;color:rgba(255,255,255,.75);line-height:1.6;">Plumbers · Lawyers · Tailors · Couriers<br>Electricians · Mechanics · and more</div>
-</div>
-</div>
-<div style="padding:24px;">
-<button class="btn btn-p" style="margin-bottom:10px;" onclick="go('s-login')">Get Started — It's Free</button>
-<button class="btn btn-o" onclick="go('s-login')">I Already Have an Account</button>
-<div style="text-align:center;margin-top:16px;">
-<div class="guarantee-bar" style="justify-content:center;font-size:12px;">🛡️ VeraPro Guarantee — Pay safely, always protected</div>
-</div>
-</div>
-</div>
+  <div style="flex:1;display:flex;flex-direction:column;background:var(--white);">
+    <div style="background:var(--green);padding:56px 32px 40px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;">
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:48px;height:48px;background:white;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:24px;">✓</span>
+          </div>
+          <div>
+            <div style="font-size:28px;font-weight:900;color:white;letter-spacing:-.5px;">VeraPro</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.7);font-style:italic;">Verified Pros. Trusted Results.</div>
+          </div>
+        </div>
+        <div style="font-size:22px;font-weight:800;color:white;line-height:1.3;margin-bottom:8px;">Find trusted professionals<br>in Gwagwalada & Abuja</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.75);line-height:1.6;">Plumbers · Lawyers · Tailors · Couriers<br>Electricians · Mechanics · and more</div>
+      </div>
+    </div>
+    <div style="padding:24px;">
+      <button class="btn btn-p" style="margin-bottom:10px;" onclick="go('s-login')">Get Started — It's Free</button>
+      <button class="btn btn-o" onclick="go('s-login')">I Already Have an Account</button>
+      <div style="text-align:center;margin-top:16px;">
+        <div class="guarantee-bar" style="justify-content:center;font-size:12px;">🛡️ VeraPro Guarantee — Pay safely, always protected</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- LOGIN -->
-
 <div class="screen" id="s-login">
-<div style="flex:1;padding:32px 20px;display:flex;flex-direction:column;justify-content:center;">
-<div style="margin-bottom:28px;">
-<div style="font-size:24px;font-weight:800;margin-bottom:6px;">Sign in to VeraPro</div>
-<p style="color:var(--text-2);font-size:14px;line-height:1.5;">Enter your Nigerian phone number. We will send you a one-time code.</p>
-</div>
-<div id="al-login"></div>
-<div class="fg">
-<label>Phone Number</label>
-<div style="display:flex;gap:8px;">
-<div style="padding:13px 12px;background:var(--bg);border-radius:var(--radius-sm);font-size:14px;font-weight:700;white-space:nowrap;border:1.5px solid var(--border);color:var(--text);">🇳🇬 +234</div>
-<input type="tel" id="inp-phone" placeholder="0812 345 6789" style="flex:1;" maxlength="11" inputmode="numeric">
-</div>
-</div>
-<button class="btn btn-p" onclick="sendOTP()" id="btn-otp">Send OTP</button>
-<div class="divider">or</div>
-<button class="btn btn-w" onclick="demoLogin()">Continue in Demo Mode</button>
-<p style="text-align:center;font-size:12px;color:var(--text-3);margin-top:20px;line-height:1.5;">By continuing you agree to our<br>Terms of Service and Privacy Policy</p>
-</div>
+  <div style="flex:1;padding:32px 20px;display:flex;flex-direction:column;justify-content:center;">
+    <div style="margin-bottom:28px;">
+      <div style="font-size:24px;font-weight:800;margin-bottom:6px;">Sign in to VeraPro</div>
+      <p style="color:var(--text-2);font-size:14px;line-height:1.5;">Enter your Nigerian phone number. We will send you a one-time code.</p>
+    </div>
+    <div id="al-login"></div>
+    <div class="fg">
+      <label>Phone Number</label>
+      <div style="display:flex;gap:8px;">
+        <div style="padding:13px 12px;background:var(--bg);border-radius:var(--radius-sm);font-size:14px;font-weight:700;white-space:nowrap;border:1.5px solid var(--border);color:var(--text);">🇳🇬 +234</div>
+        <input type="tel" id="inp-phone" placeholder="0812 345 6789" style="flex:1;" maxlength="11" inputmode="numeric">
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="sendOTP()" id="btn-otp">Send OTP</button>
+    <div class="divider">or</div>
+    <button class="btn btn-w" onclick="demoLogin()">Continue in Demo Mode</button>
+    <p style="text-align:center;font-size:12px;color:var(--text-3);margin-top:20px;line-height:1.5;">By continuing you agree to our<br>Terms of Service and Privacy Policy</p>
+  </div>
 </div>
 
 <!-- OTP -->
-
 <div class="screen" id="s-otp">
-<div style="flex:1;padding:32px 20px;display:flex;flex-direction:column;justify-content:center;">
-<div style="margin-bottom:28px;">
-<div style="font-size:24px;font-weight:800;margin-bottom:6px;">Enter OTP</div>
-<p style="color:var(--text-2);font-size:14px;">We sent a 6-digit code to <strong id="otp-ph" style="color:var(--green);"></strong></p>
-</div>
-<div id="al-otp"></div>
-<div class="otp-row">
-<input type="tel" maxlength="1" id="o1" oninput="onext(this,'o2')" inputmode="numeric">
-<input type="tel" maxlength="1" id="o2" oninput="onext(this,'o3')" inputmode="numeric">
-<input type="tel" maxlength="1" id="o3" oninput="onext(this,'o4')" inputmode="numeric">
-<input type="tel" maxlength="1" id="o4" oninput="onext(this,'o5')" inputmode="numeric">
-<input type="tel" maxlength="1" id="o5" oninput="onext(this,'o6')" inputmode="numeric">
-<input type="tel" maxlength="1" id="o6" oninput="onext(this,null)" inputmode="numeric">
-</div>
-<button class="btn btn-p" onclick="verifyOTP()" id="btn-verify">Verify & Continue</button>
-<p style="text-align:center;font-size:13px;color:var(--text-3);margin-top:16px;">Did not receive it? <span style="color:var(--green);cursor:pointer;font-weight:700;" onclick="go('s-login')">Resend code</span></p>
-</div>
+  <div style="flex:1;padding:32px 20px;display:flex;flex-direction:column;justify-content:center;">
+    <div style="margin-bottom:28px;">
+      <div style="font-size:24px;font-weight:800;margin-bottom:6px;">Enter OTP</div>
+      <p style="color:var(--text-2);font-size:14px;">We sent a 6-digit code to <strong id="otp-ph" style="color:var(--green);"></strong></p>
+    </div>
+    <div id="al-otp"></div>
+    <div class="otp-row">
+      <input type="tel" maxlength="1" id="o1" oninput="onext(this,'o2')" inputmode="numeric">
+      <input type="tel" maxlength="1" id="o2" oninput="onext(this,'o3')" inputmode="numeric">
+      <input type="tel" maxlength="1" id="o3" oninput="onext(this,'o4')" inputmode="numeric">
+      <input type="tel" maxlength="1" id="o4" oninput="onext(this,'o5')" inputmode="numeric">
+      <input type="tel" maxlength="1" id="o5" oninput="onext(this,'o6')" inputmode="numeric">
+      <input type="tel" maxlength="1" id="o6" oninput="onext(this,null)" inputmode="numeric">
+    </div>
+    <button class="btn btn-p" onclick="verifyOTP()" id="btn-verify">Verify & Continue</button>
+    <p style="text-align:center;font-size:13px;color:var(--text-3);margin-top:16px;">Did not receive it? <span style="color:var(--green);cursor:pointer;font-weight:700;" onclick="go('s-login')">Resend code</span></p>
+  </div>
 </div>
 
 <!-- REGISTER -->
-
 <div class="screen" id="s-register">
-<div class="header"><button class="back" onclick="go('s-otp')">←</button><h2>Complete Profile</h2></div>
-<div style="padding:20px;flex:1;overflow-y:auto;padding-bottom:40px;">
-<div id="al-reg"></div>
-<div class="fg"><label>Full Name</label><input type="text" id="r-name" placeholder="e.g. Emeka Okonkwo"></div>
-<div class="fg"><label>Email Address (optional)</label><input type="email" id="r-email" placeholder="you@gmail.com"></div>
-<div class="fg">
-<label>I want to</label>
-<select id="r-role">
-<option value="customer">Hire professionals</option>
-<option value="provider">Offer my services</option>
-</select>
-</div>
-<div class="fg">
-<label>Your Area</label>
-<select id="r-city">
-<option value="Gwagwalada">Gwagwalada, Abuja</option>
-<option value="Abuja">Abuja (Central)</option>
-<option value="Kubwa">Kubwa, Abuja</option>
-<option value="Lugbe">Lugbe, Abuja</option>
-<option value="Kuje">Kuje, Abuja</option>
-<option value="Lagos">Lagos</option>
-</select>
-</div>
-<button class="btn btn-p" onclick="register()" id="btn-reg">Create My Account</button>
-</div>
+  <div class="header"><button class="back" onclick="go('s-otp')">←</button><h2>Complete Profile</h2></div>
+  <div style="padding:20px;flex:1;overflow-y:auto;padding-bottom:40px;">
+    <div id="al-reg"></div>
+    <div class="fg"><label>Full Name</label><input type="text" id="r-name" placeholder="e.g. Emeka Okonkwo"></div>
+    <div class="fg"><label>Email Address (optional)</label><input type="email" id="r-email" placeholder="you@gmail.com"></div>
+    <div class="fg">
+      <label>I want to</label>
+      <select id="r-role">
+        <option value="customer">Hire professionals</option>
+        <option value="provider">Offer my services</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Your Area</label>
+      <select id="r-city">
+        <option value="Gwagwalada">Gwagwalada, Abuja</option>
+        <option value="Abuja">Abuja (Central)</option>
+        <option value="Kubwa">Kubwa, Abuja</option>
+        <option value="Lugbe">Lugbe, Abuja</option>
+        <option value="Kuje">Kuje, Abuja</option>
+        <option value="Lagos">Lagos</option>
+      </select>
+    </div>
+    <button class="btn btn-p" onclick="register()" id="btn-reg">Create My Account</button>
+  </div>
 </div>
 
 <!-- PROVIDER SIGNUP -->
-
 <div class="screen" id="s-provider-signup">
-<div class="header"><button class="back" onclick="go('s-register')">←</button><h2>Provider Verification</h2></div>
-<div style="padding:20px;flex:1;overflow-y:auto;padding-bottom:40px;">
-<div class="al al-i" style="margin-bottom:20px;">🔒 Your identity is verified to build trust with customers. All information is kept private and secure.</div>
-<div id="al-psignup"></div>
-<div class="fg"><label>Category / Trade</label>
-<select id="ps-cat">
-<option value="">Select your service...</option>
-<optgroup label="Home Services">
-<option>Electrician</option><option>Plumber</option><option>Cleaner</option><option>Painter</option><option>AC Technician</option>
-</optgroup>
-<optgroup label="Skilled Trades">
-<option>Welder</option><option>Tailor</option><option>Mechanic</option><option>Carpenter</option><option>Tiler</option>
-</optgroup>
-<optgroup label="Professional Services">
-<option>Tutor</option><option>Accountant</option><option>Lawyer</option><option>Graphic Designer</option>
-</optgroup>
-<optgroup label="Delivery & Logistics">
-<option>Same-Day Courier</option><option>Errand Runner</option><option>Mover</option>
-</optgroup>
-</select>
-</div>
-<div class="fg"><label>Years of Experience</label>
-<select id="ps-exp">
-<option value="1">Less than 1 year</option>
-<option value="1">1–2 years</option>
-<option value="3">3–5 years</option>
-<option value="6">6–10 years</option>
-<option value="10">10+ years</option>
-</select>
-</div>
-<div class="fg"><label>About You (Bio)</label><textarea id="ps-bio" placeholder="Describe your skills and experience..."></textarea></div>
-<div class="fg"><label>Starting Price (₦)</label><input type="number" id="ps-price" placeholder="e.g. 5000"></div>
+  <div class="header"><button class="back" onclick="go('s-register')">←</button><h2>Provider Verification</h2></div>
+  <div style="padding:20px;flex:1;overflow-y:auto;padding-bottom:40px;">
+    <div class="al al-i" style="margin-bottom:20px;">🔒 Your identity is verified to build trust with customers. All information is kept private and secure.</div>
+    <div id="al-psignup"></div>
+    <div class="fg"><label>Category / Trade</label>
+      <select id="ps-cat">
+        <option value="">Select your service...</option>
+        <optgroup label="Home Services">
+          <option>Electrician</option><option>Plumber</option><option>Cleaner</option><option>Painter</option><option>AC Technician</option>
+        </optgroup>
+        <optgroup label="Skilled Trades">
+          <option>Welder</option><option>Tailor</option><option>Mechanic</option><option>Carpenter</option><option>Tiler</option>
+        </optgroup>
+        <optgroup label="Professional Services">
+          <option>Tutor</option><option>Accountant</option><option>Lawyer</option><option>Graphic Designer</option>
+        </optgroup>
+        <optgroup label="Delivery & Logistics">
+          <option>Same-Day Courier</option><option>Errand Runner</option><option>Mover</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="fg"><label>Years of Experience</label>
+      <select id="ps-exp">
+        <option value="1">Less than 1 year</option>
+        <option value="1">1–2 years</option>
+        <option value="3">3–5 years</option>
+        <option value="6">6–10 years</option>
+        <option value="10">10+ years</option>
+      </select>
+    </div>
+    <div class="fg"><label>About You (Bio)</label><textarea id="ps-bio" placeholder="Describe your skills and experience..."></textarea></div>
+    <div class="fg"><label>Starting Price (₦)</label><input type="number" id="ps-price" placeholder="e.g. 5000"></div>
 
-```
-<div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
-<div class="section-title" style="font-size:14px;margin-bottom:4px;">Identity Verification</div>
-<p style="font-size:13px;color:var(--text-2);margin-bottom:14px;line-height:1.5;">Submit your BVN or NIN for verification. This is required to receive payments. Your details are never shared with customers.</p>
-<div class="fg">
-<label>Verification Type</label>
-<select id="ps-id-type">
-<option value="BVN">BVN (Bank Verification Number)</option>
-<option value="NIN">NIN (National Identification Number)</option>
-</select>
-</div>
-<div class="fg"><label>BVN / NIN Number</label><input type="text" id="ps-id-num" placeholder="Enter your 11-digit number" maxlength="11" inputmode="numeric"></div>
-</div>
-<div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
-<div class="section-title" style="font-size:14px;margin-bottom:4px;">Bank Details (for payments)</div>
-<div class="fg">
-<label>Bank Name</label>
-<select id="ps-bank">
-<option value="">Select bank...</option>
-<option>Access Bank</option><option>First Bank</option><option>GTBank</option><option>Zenith Bank</option>
-<option>UBA</option><option>Kuda Bank</option><option>OPay</option><option>PalmPay</option>
-<option>Moniepoint</option><option>Fidelity Bank</option><option>Union Bank</option><option>Sterling Bank</option>
-</select>
-</div>
-<div class="fg"><label>Account Number</label><input type="text" id="ps-acc" placeholder="10-digit account number" maxlength="10" inputmode="numeric"></div>
-<div class="fg"><label>Account Name</label><input type="text" id="ps-acc-name" placeholder="Name on account"></div>
-</div>
-<button class="btn btn-p" onclick="submitProviderSignup()" id="btn-psignup">Submit for Verification</button>
-```
-
-</div>
+    <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
+      <div class="section-title" style="font-size:14px;margin-bottom:4px;">Identity Verification</div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;line-height:1.5;">Submit your BVN or NIN for verification. This is required to receive payments. Your details are never shared with customers.</p>
+      <div class="fg">
+        <label>Verification Type</label>
+        <select id="ps-id-type">
+          <option value="BVN">BVN (Bank Verification Number)</option>
+          <option value="NIN">NIN (National Identification Number)</option>
+        </select>
+      </div>
+      <div class="fg"><label>BVN / NIN Number</label><input type="text" id="ps-id-num" placeholder="Enter your 11-digit number" maxlength="11" inputmode="numeric"></div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
+      <div class="section-title" style="font-size:14px;margin-bottom:4px;">Bank Details (for payments)</div>
+      <div class="fg">
+        <label>Bank Name</label>
+        <select id="ps-bank">
+          <option value="">Select bank...</option>
+          <option>Access Bank</option><option>First Bank</option><option>GTBank</option><option>Zenith Bank</option>
+          <option>UBA</option><option>Kuda Bank</option><option>OPay</option><option>PalmPay</option>
+          <option>Moniepoint</option><option>Fidelity Bank</option><option>Union Bank</option><option>Sterling Bank</option>
+        </select>
+      </div>
+      <div class="fg"><label>Account Number</label><input type="text" id="ps-acc" placeholder="10-digit account number" maxlength="10" inputmode="numeric"></div>
+      <div class="fg"><label>Account Name</label><input type="text" id="ps-acc-name" placeholder="Name on account"></div>
+    </div>
+    <button class="btn btn-p" onclick="submitProviderSignup()" id="btn-psignup">Submit for Verification</button>
+  </div>
 </div>
 
 <!-- HOME -->
-
 <div class="screen" id="s-home">
-<div style="background:var(--green);padding:16px 16px 14px;">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-<div>
-<div style="font-size:12px;color:rgba(255,255,255,.75);font-weight:500;">Good day 👋</div>
-<div style="font-size:18px;font-weight:800;color:white;margin-top:1px;" id="h-uname">Loading...</div>
-<div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:1px;" id="h-city">Gwagwalada, Abuja</div>
-</div>
-<div onclick="go('s-profile')" style="width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,.25);">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-</div>
-</div>
-<div style="background:white;border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;" onclick="go('s-search')">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-<span style="color:#aaa;font-size:14px;font-weight:500;">Search plumber, lawyer, courier...</span>
-</div>
-</div>
-<div style="flex:1;overflow-y:auto;padding-bottom:80px;">
-<div style="padding:14px 16px;">
-<div class="guarantee-bar">🛡️ <strong>VeraPro Guarantee</strong> — Full refund if provider is a no-show</div>
-<div class="launch-bar">🎉 <strong>Launch Offer:</strong> First 3 jobs completed = 0% commission for providers!</div>
-<div class="section-title">What do you need?</div>
-<div id="h-cats"></div>
-</div>
-<div style="padding:0 16px 16px;">
-<div class="section-title">Top Providers Near You</div>
-<div id="h-providers"><div class="ld">Loading providers...</div></div>
-</div>
-</div>
-<div class="bnav">
-<div class="ni active" onclick="go('s-home')">
-<svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
-</div>
-<div class="ni" onclick="go('s-search')">
-<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search
-</div>
-<div class="ni" onclick="go('s-jobs')">
-<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs
-</div>
-<div class="ni" onclick="go('s-profile')">
-<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile
-</div>
-</div>
+  <div style="background:var(--green);padding:16px 16px 14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div>
+        <div style="font-size:12px;color:rgba(255,255,255,.75);font-weight:500;">Good day 👋</div>
+        <div style="font-size:18px;font-weight:800;color:white;margin-top:1px;" id="h-uname">Loading...</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:1px;" id="h-city">Gwagwalada, Abuja</div>
+      </div>
+      <div onclick="go('s-profile')" style="width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,.25);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+    </div>
+    <div style="background:white;border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;" onclick="go('s-search')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span style="color:#aaa;font-size:14px;font-weight:500;">Search plumber, lawyer, courier...</span>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:80px;">
+    <div style="padding:14px 16px;">
+      <div class="guarantee-bar">🛡️ <strong>VeraPro Guarantee</strong> — Full refund if provider is a no-show</div>
+      <div class="launch-bar">🎉 <strong>Launch Offer:</strong> First 3 jobs completed = 0% commission for providers!</div>
+      <div class="section-title">What do you need?</div>
+      <div id="h-cats"></div>
+    </div>
+    <div style="padding:0 16px 16px;">
+      <div class="section-title">Top Providers Near You</div>
+      <div id="h-providers"><div class="ld">Loading providers...</div></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="ni active" onclick="go('s-home')">
+      <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+    </div>
+    <div class="ni" onclick="go('s-search')">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search
+    </div>
+    <div class="ni" onclick="go('s-jobs')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs
+    </div>
+    <div class="ni" onclick="go('s-profile')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile
+    </div>
+  </div>
 </div>
 
 <!-- SEARCH -->
-
 <div class="screen" id="s-search">
-<div style="background:var(--white);padding:12px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px;">
-<button class="back" onclick="go('s-home')">←</button>
-<div style="flex:1;background:var(--bg);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-<input type="text" id="s-inp" placeholder="Search services or providers..." style="border:none;outline:none;font-size:14px;background:transparent;width:100%;font-family:'DM Sans',sans-serif;" oninput="doSearch(this.value)">
-</div>
-</div>
-<div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;" id="s-results">
-<div id="s-cats"></div>
-</div>
-<div class="bnav">
-<div class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
-<div class="ni active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</div>
-<div class="ni" onclick="go('s-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs</div>
-<div class="ni" onclick="go('s-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
-</div>
+  <div style="background:var(--white);padding:12px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px;">
+    <button class="back" onclick="go('s-home')">←</button>
+    <div style="flex:1;background:var(--bg);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="s-inp" placeholder="Search services or providers..." style="border:none;outline:none;font-size:14px;background:transparent;width:100%;font-family:'DM Sans',sans-serif;" oninput="doSearch(this.value)">
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;" id="s-results">
+    <div id="s-cats"></div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="ni active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</div>
+    <div class="ni" onclick="go('s-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs</div>
+    <div class="ni" onclick="go('s-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
+  </div>
 </div>
 
 <!-- CATEGORY -->
-
 <div class="screen" id="s-cat">
-<div class="header"><button class="back" onclick="go('s-home')">←</button><h2 id="cat-title">Providers</h2></div>
-<div style="flex:1;overflow-y:auto;padding:14px 16px;" id="cat-list"><div class="ld">Loading...</div></div>
+  <div class="header"><button class="back" onclick="go('s-home')">←</button><h2 id="cat-title">Providers</h2></div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;" id="cat-list"><div class="ld">Loading...</div></div>
 </div>
 
 <!-- PROVIDER PROFILE -->
-
 <div class="screen" id="s-provider">
-<div class="header"><button class="back" onclick="goBack()">←</button><h2>Provider Profile</h2></div>
-<div style="flex:1;overflow-y:auto;padding-bottom:90px;" id="p-detail"><div class="ld">Loading...</div></div>
-<div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:white;padding:12px 16px;border-top:2px solid #e0e0e0;box-shadow:0 -2px 12px rgba(0,0,0,.08);">
-<button class="btn btn-p" style="width:100%;" onclick="openChat()">💬 Message Provider</button>
-</div>
+  <div class="header"><button class="back" onclick="goBack()">←</button><h2>Provider Profile</h2></div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:90px;" id="p-detail"><div class="ld">Loading...</div></div>
+  <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:white;padding:12px 16px;border-top:2px solid #e0e0e0;box-shadow:0 -2px 12px rgba(0,0,0,.08);">
+    <button class="btn btn-p" style="width:100%;" onclick="openChat()">💬 Message Provider</button>
+  </div>
 </div>
 
 <!-- JOBS -->
-
 <div class="screen" id="s-jobs">
-<div class="header"><h2>My Jobs</h2><button class="btn btn-p btn-sm" onclick="go('s-postjob')">+ Post Job</button></div>
-<div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;" id="j-list"><div class="ld">Loading...</div></div>
-<div class="bnav">
-<div class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
-<div class="ni" onclick="go('s-search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</div>
-<div class="ni active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs</div>
-<div class="ni" onclick="go('s-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
-</div>
+  <div class="header"><h2>My Jobs</h2><button class="btn btn-p btn-sm" onclick="go('s-postjob')">+ Post Job</button></div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;" id="j-list"><div class="ld">Loading...</div></div>
+  <div class="bnav">
+    <div class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="ni" onclick="go('s-search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</div>
+    <div class="ni active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs</div>
+    <div class="ni" onclick="go('s-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
+  </div>
 </div>
 
 <!-- POST JOB -->
-
 <!-- POST JOB -->
-
 <div class="screen" id="s-postjob">
-<div class="header"><button class="back" onclick="goBack()">←</button><h2>Request a Service</h2></div>
-<div style="flex:1;overflow-y:auto;padding:20px 16px;padding-bottom:40px;">
-<div id="al-job"></div>
+  <div class="header"><button class="back" onclick="goBack()">←</button><h2>Request a Service</h2></div>
+  <div style="flex:1;overflow-y:auto;padding:20px 16px;padding-bottom:40px;">
+    <div id="al-job"></div>
 
-```
-<!-- URGENCY SELECTOR -->
-<div class="fg">
-<label>How urgent is this?</label>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;">
-<div class="urgency-card active" id="urg-emergency" onclick="setUrgency('emergency')">
-<div style="font-size:22px;">🚨</div>
-<div style="font-size:12px;font-weight:700;margin-top:4px;">Emergency</div>
-<div style="font-size:10px;color:var(--text-3);">+20% fee</div>
-</div>
-<div class="urgency-card" id="urg-same_day" onclick="setUrgency('same_day')">
-<div style="font-size:22px;">📅</div>
-<div style="font-size:12px;font-weight:700;margin-top:4px;">Same Day</div>
-<div style="font-size:10px;color:var(--text-3);">Today</div>
-</div>
-<div class="urgency-card" id="urg-scheduled" onclick="setUrgency('scheduled')">
-<div style="font-size:22px;">🗓️</div>
-<div style="font-size:12px;font-weight:700;margin-top:4px;">Scheduled</div>
-<div style="font-size:10px;color:var(--text-3);">Pick a date</div>
-</div>
-</div>
-</div>
+    <!-- URGENCY SELECTOR -->
+    <div class="fg">
+      <label>How urgent is this?</label>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;">
+        <div class="urgency-card active" id="urg-emergency" onclick="setUrgency('emergency')">
+          <div style="font-size:22px;">🚨</div>
+          <div style="font-size:12px;font-weight:700;margin-top:4px;">Emergency</div>
+          <div style="font-size:10px;color:var(--text-3);">+20% fee</div>
+        </div>
+        <div class="urgency-card" id="urg-same_day" onclick="setUrgency('same_day')">
+          <div style="font-size:22px;">📅</div>
+          <div style="font-size:12px;font-weight:700;margin-top:4px;">Same Day</div>
+          <div style="font-size:10px;color:var(--text-3);">Today</div>
+        </div>
+        <div class="urgency-card" id="urg-scheduled" onclick="setUrgency('scheduled')">
+          <div style="font-size:22px;">🗓️</div>
+          <div style="font-size:12px;font-weight:700;margin-top:4px;">Scheduled</div>
+          <div style="font-size:10px;color:var(--text-3);">Pick a date</div>
+        </div>
+      </div>
+    </div>
 
-<div class="fg">
-<label>Service Category</label>
-<select id="j-cat" onchange="updatePriceEstimate()">
-<option value="">Select category...</option>
-<optgroup label="Home Services">
-<option value="1">Electrician</option><option value="2">Plumber</option>
-<option value="3">Cleaner</option><option value="4">Painter</option><option value="5">AC Technician</option>
-</optgroup>
-<optgroup label="Skilled Trades">
-<option value="6">Welder</option><option value="7">Tailor</option>
-<option value="8">Mechanic</option><option value="9">Carpenter</option><option value="10">Tiler</option>
-</optgroup>
-<optgroup label="Professional Services">
-<option value="11">Tutor</option><option value="12">Accountant</option>
-<option value="13">Lawyer</option><option value="14">Graphic Designer</option>
-</optgroup>
-<optgroup label="Delivery & Logistics">
-<option value="15">Same-Day Courier</option><option value="16">Errand Runner</option><option value="17">Mover</option>
-</optgroup>
-</select>
-</div>
+    <div class="fg">
+      <label>Service Category</label>
+      <select id="j-cat" onchange="updatePriceEstimate()">
+        <option value="">Select category...</option>
+        <optgroup label="Home Services">
+          <option value="1">Electrician</option><option value="2">Plumber</option>
+          <option value="3">Cleaner</option><option value="4">Painter</option><option value="5">AC Technician</option>
+        </optgroup>
+        <optgroup label="Skilled Trades">
+          <option value="6">Welder</option><option value="7">Tailor</option>
+          <option value="8">Mechanic</option><option value="9">Carpenter</option><option value="10">Tiler</option>
+        </optgroup>
+        <optgroup label="Professional Services">
+          <option value="11">Tutor</option><option value="12">Accountant</option>
+          <option value="13">Lawyer</option><option value="14">Graphic Designer</option>
+        </optgroup>
+        <optgroup label="Delivery & Logistics">
+          <option value="15">Same-Day Courier</option><option value="16">Errand Runner</option><option value="17">Mover</option>
+        </optgroup>
+      </select>
+    </div>
 
-<!-- PRICE ESTIMATE -->
-<div id="price-estimate" style="display:none;background:var(--green-light);border:1px solid #a8d5b5;border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;">
-<div style="font-size:12px;font-weight:700;color:var(--green-dark);margin-bottom:4px;">ESTIMATED PRICE RANGE</div>
-<div style="font-size:20px;font-weight:800;color:var(--green);" id="price-range">—</div>
-<div style="font-size:11px;color:var(--text-3);margin-top:2px;" id="price-note"></div>
-</div>
+    <!-- PRICE ESTIMATE -->
+    <div id="price-estimate" style="display:none;background:var(--green-light);border:1px solid #a8d5b5;border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--green-dark);margin-bottom:4px;">ESTIMATED PRICE RANGE</div>
+      <div style="font-size:20px;font-weight:800;color:var(--green);" id="price-range">—</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:2px;" id="price-note"></div>
+    </div>
 
-<div class="fg"><label>Describe the Problem</label><textarea id="j-desc" placeholder="Be as detailed as possible — what exactly needs to be done? The more detail you give, the better quotes you will receive."></textarea></div>
-<div class="fg"><label>Your Location / Address</label><input type="text" id="j-addr" placeholder="e.g. Phase 2, Gwagwalada, Abuja"></div>
+    <div class="fg"><label>Describe the Problem</label><textarea id="j-desc" placeholder="Be as detailed as possible — what exactly needs to be done? The more detail you give, the better quotes you will receive."></textarea></div>
+    <div class="fg"><label>Your Location / Address</label><input type="text" id="j-addr" placeholder="e.g. Phase 2, Gwagwalada, Abuja"></div>
 
-<div class="fg" id="date-field" style="display:none;"><label>Preferred Date</label><input type="date" id="j-date"></div>
+    <div class="fg" id="date-field" style="display:none;"><label>Preferred Date</label><input type="date" id="j-date"></div>
 
-<!-- IMAGE UPLOAD -->
-<div class="fg">
-<label>Add a Photo (optional but recommended)</label>
-<div style="border:2px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;background:white;" onclick="document.getElementById('j-img').click()">
-<div id="img-preview" style="display:none;"><img id="img-thumb" style="max-height:120px;border-radius:8px;" src=""></div>
-<div id="img-placeholder">
-<div style="font-size:28px;margin-bottom:6px;">📷</div>
-<div style="font-size:13px;color:var(--text-3);">Tap to add a photo of the problem</div>
-</div>
-</div>
-<input type="file" id="j-img" accept="image/*" style="display:none;" onchange="previewImg(this)">
-</div>
+    <!-- IMAGE UPLOAD -->
+    <div class="fg">
+      <label>Add a Photo (optional but recommended)</label>
+      <div style="border:2px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;background:white;" onclick="document.getElementById('j-img').click()">
+        <div id="img-preview" style="display:none;"><img id="img-thumb" style="max-height:120px;border-radius:8px;" src=""></div>
+        <div id="img-placeholder">
+          <div style="font-size:28px;margin-bottom:6px;">📷</div>
+          <div style="font-size:13px;color:var(--text-3);">Tap to add a photo of the problem</div>
+        </div>
+      </div>
+      <input type="file" id="j-img" accept="image/*" style="display:none;" onchange="previewImg(this)">
+    </div>
 
-<button class="btn btn-p" onclick="requestService()" id="btn-job">Find Providers Now</button>
-```
-
-</div>
+    <button class="btn btn-p" onclick="requestService()" id="btn-job">Find Providers Now</button>
+  </div>
 </div>
 
 <!-- WAITING FOR PROVIDERS -->
-
 <div class="screen" id="s-waiting">
-<div class="header"><button class="back" onclick="go('s-jobs')">←</button><h2>Finding Providers</h2></div>
-<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;">
-<div style="width:80px;height:80px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-<div style="width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:sp .8s linear infinite;"></div>
-</div>
-<div style="font-size:20px;font-weight:800;margin-bottom:8px;">Notifying Providers</div>
-<div style="font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:24px;" id="w-msg">Searching for verified providers near you in Gwagwalada...</div>
-<div style="background:var(--bg);border-radius:var(--radius);padding:16px;width:100%;margin-bottom:16px;">
-<div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-<span style="font-size:13px;color:var(--text-2);">Providers notified</span>
-<span style="font-size:13px;font-weight:700;color:var(--green);" id="w-count">0</span>
-</div>
-<div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-<span style="font-size:13px;color:var(--text-2);">Response window</span>
-<span style="font-size:13px;font-weight:700;" id="w-timer">5:00</span>
-</div>
-<div style="display:flex;justify-content:space-between;">
-<span style="font-size:13px;color:var(--text-2);">Estimated price</span>
-<span style="font-size:13px;font-weight:700;color:var(--green);" id="w-price">Calculating...</span>
-</div>
-</div>
-<div class="guarantee-bar" style="width:100%;">🛡️ Your payment is protected by VeraPro Guarantee</div>
-<button class="btn btn-w" style="margin-top:12px;" onclick="go('s-jobs')">View My Jobs</button>
-</div>
+  <div class="header"><button class="back" onclick="go('s-jobs')">←</button><h2>Finding Providers</h2></div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;">
+    <div style="width:80px;height:80px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+      <div style="width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:sp .8s linear infinite;"></div>
+    </div>
+    <div style="font-size:20px;font-weight:800;margin-bottom:8px;">Notifying Providers</div>
+    <div style="font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:24px;" id="w-msg">Searching for verified providers near you in Gwagwalada...</div>
+    <div style="background:var(--bg);border-radius:var(--radius);padding:16px;width:100%;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;color:var(--text-2);">Providers notified</span>
+        <span style="font-size:13px;font-weight:700;color:var(--green);" id="w-count">0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;color:var(--text-2);">Response window</span>
+        <span style="font-size:13px;font-weight:700;" id="w-timer">5:00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span style="font-size:13px;color:var(--text-2);">Estimated price</span>
+        <span style="font-size:13px;font-weight:700;color:var(--green);" id="w-price">Calculating...</span>
+      </div>
+    </div>
+    <div class="guarantee-bar" style="width:100%;">🛡️ Your payment is protected by VeraPro Guarantee</div>
+    <button class="btn btn-w" style="margin-top:12px;" onclick="go('s-jobs')">View My Jobs</button>
+  </div>
 </div>
 
 <!-- QUOTES SCREEN -->
-
 <div class="screen" id="s-quotes">
-<div class="header"><button class="back" onclick="go('s-jobs')">←</button><h2>Quotes Received</h2></div>
-<div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:40px;">
-<div id="al-quotes"></div>
-<div id="q-list"><div class="ld">Loading quotes...</div></div>
-</div>
+  <div class="header"><button class="back" onclick="go('s-jobs')">←</button><h2>Quotes Received</h2></div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:40px;">
+    <div id="al-quotes"></div>
+    <div id="q-list"><div class="ld">Loading quotes...</div></div>
+  </div>
 </div>
 
 <!-- CHAT -->
-
 <div class="screen" id="s-chat">
-<div class="header">
-<button class="back" onclick="goBack()">←</button>
-<div style="flex:1;">
-<div style="font-size:15px;font-weight:700;" id="chat-nm">Chat</div>
-<div style="font-size:11px;color:var(--green);font-weight:600;">● Online</div>
-</div>
-<div style="width:36px;height:36px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;" title="VeraPro Guarantee Active">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-</div>
-</div>
-<div style="background:#fffbeb;padding:9px 14px;font-size:12px;color:#b45309;border-bottom:1px solid #fde68a;font-weight:500;">
-🔒 Contact details are hidden until payment is confirmed through VeraPro
-</div>
-<div class="chat-msgs" id="chat-msgs"></div>
-<div class="cinput">
-<input type="text" id="c-inp" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendMsg()">
-<button onclick="sendMsg()">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-</button>
-</div>
+  <div class="header">
+    <button class="back" onclick="goBack()">←</button>
+    <div style="flex:1;">
+      <div style="font-size:15px;font-weight:700;" id="chat-nm">Chat</div>
+      <div style="font-size:11px;color:var(--green);font-weight:600;">● Online</div>
+    </div>
+    <div style="width:36px;height:36px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;" title="VeraPro Guarantee Active">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+  </div>
+  <div style="background:#fffbeb;padding:9px 14px;font-size:12px;color:#b45309;border-bottom:1px solid #fde68a;font-weight:500;">
+    🔒 Contact details are hidden until payment is confirmed through VeraPro
+  </div>
+  <div class="chat-msgs" id="chat-msgs"></div>
+  <div class="cinput">
+    <input type="text" id="c-inp" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendMsg()">
+    <button onclick="sendMsg()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
 </div>
 
 <!-- PROFILE -->
-
 <div class="screen" id="s-profile">
-<div class="header">
-<h2>My Profile</h2>
-<button onclick="logout()" style="background:none;border:none;cursor:pointer;padding:6px 10px;font-size:13px;font-weight:700;color:var(--red);font-family:'DM Sans',sans-serif;">Sign Out</button>
-</div>
-<div style="flex:1;overflow-y:auto;padding-bottom:80px;">
-<div style="background:var(--green);padding:24px 16px 20px;">
-<div style="display:flex;align-items:center;gap:14px;">
-<div style="width:60px;height:60px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.3);">
-<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-</div>
-<div>
-<div style="font-size:18px;font-weight:800;color:white;" id="pr-name">—</div>
-<div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px;" id="pr-phone"></div>
-<div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:1px;" id="pr-city">Gwagwalada, Abuja</div>
-</div>
-</div>
-</div>
-<div style="padding:14px 16px;">
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
-<div class="stat-box"><div class="stat-val" id="st-jobs">0</div><div class="stat-lbl">Jobs</div></div>
-<div class="stat-box"><div class="stat-val" id="st-rating">—</div><div class="stat-lbl">Rating</div></div>
-<div class="stat-box"><div class="stat-val" id="st-free">3</div><div class="stat-lbl">Free Jobs</div></div>
-</div>
-<div class="launch-bar" style="margin-bottom:16px;">🎉 You have <strong id="free-jobs-count">3</strong> free jobs remaining at 0% commission</div>
-<div class="menu-row" onclick="go('s-jobs')">
-<div class="menu-row-icon" style="background:var(--green-light);">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-</div>
-<div class="menu-row-text"><div class="menu-row-label">My Jobs</div><div class="menu-row-sub">View all posted jobs</div></div>
-<span class="chevron">›</span>
-</div>
-<div class="menu-row" onclick="go('s-postjob')">
-<div class="menu-row-icon" style="background:var(--green-light);">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-</div>
-<div class="menu-row-text"><div class="menu-row-label">Post a New Job</div><div class="menu-row-sub">Get quotes from verified providers</div></div>
-<span class="chevron">›</span>
-</div>
-<div class="menu-row">
-<div class="menu-row-icon" style="background:var(--green-light);">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-</div>
-<div class="menu-row-text"><div class="menu-row-label">VeraPro Guarantee</div><div class="menu-row-sub">Full refund if provider is a no-show</div></div>
-<span class="chevron">›</span>
-</div>
-<div class="menu-row">
-<div class="menu-row-icon" style="background:#fff8ec;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-</div>
-<div class="menu-row-text"><div class="menu-row-label">My Reviews</div><div class="menu-row-sub">Only from completed in-app jobs</div></div>
-<span class="chevron">›</span>
-</div>
-</div>
-</div>
-<div class="bnav">
-<div class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
-<div class="ni" onclick="go('s-search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</div>
-<div class="ni" onclick="go('s-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs</div>
-<div class="ni active"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
-</div>
+  <div class="header">
+    <h2>My Profile</h2>
+    <button onclick="logout()" style="background:none;border:none;cursor:pointer;padding:6px 10px;font-size:13px;font-weight:700;color:var(--red);font-family:'DM Sans',sans-serif;">Sign Out</button>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:80px;">
+    <div style="background:var(--green);padding:24px 16px 20px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:60px;height:60px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.3);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:white;" id="pr-name">—</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px;" id="pr-phone"></div>
+          <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:1px;" id="pr-city">Gwagwalada, Abuja</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 16px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+        <div class="stat-box"><div class="stat-val" id="st-jobs">0</div><div class="stat-lbl">Jobs</div></div>
+        <div class="stat-box"><div class="stat-val" id="st-rating">—</div><div class="stat-lbl">Rating</div></div>
+        <div class="stat-box"><div class="stat-val" id="st-free">3</div><div class="stat-lbl">Free Jobs</div></div>
+      </div>
+      <div class="launch-bar" style="margin-bottom:16px;">🎉 You have <strong id="free-jobs-count">3</strong> free jobs remaining at 0% commission</div>
+      <div class="menu-row" onclick="go('s-jobs')">
+        <div class="menu-row-icon" style="background:var(--green-light);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="menu-row-text"><div class="menu-row-label">My Jobs</div><div class="menu-row-sub">View all posted jobs</div></div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="menu-row" onclick="go('s-postjob')">
+        <div class="menu-row-icon" style="background:var(--green-light);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div class="menu-row-text"><div class="menu-row-label">Post a New Job</div><div class="menu-row-sub">Get quotes from verified providers</div></div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="menu-row">
+        <div class="menu-row-icon" style="background:var(--green-light);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="menu-row-text"><div class="menu-row-label">VeraPro Guarantee</div><div class="menu-row-sub">Full refund if provider is a no-show</div></div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="menu-row">
+        <div class="menu-row-icon" style="background:#fff8ec;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="menu-row-text"><div class="menu-row-label">My Reviews</div><div class="menu-row-sub">Only from completed in-app jobs</div></div>
+        <span class="chevron">›</span>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="ni" onclick="go('s-search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</div>
+    <div class="ni" onclick="go('s-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs</div>
+    <div class="ni active"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
+  </div>
 </div>
 
 <script>
@@ -629,293 +605,344 @@ const API='https://verapro-backend-production.up.railway.app/api';
 let user=null,token=null,prev='s-home',chatMsgs=[],curProvider=null;
 
 const CAT_GROUPS=[
-{label:'Home Services',cats:[{id:1,name:'Electricians',e:'⚡'},{id:2,name:'Plumbers',e:'🔧'},{id:3,name:'Cleaners',e:'🧹'},{id:4,name:'Painters',e:'🎨'},{id:5,name:'AC Technicians',e:'❄️'}]},
-{label:'Skilled Trades',cats:[{id:6,name:'Welders',e:'🔩'},{id:7,name:'Tailors',e:'🧵'},{id:8,name:'Mechanics',e:'🚗'},{id:9,name:'Carpenters',e:'🪚'},{id:10,name:'Tilers',e:'🏗️'}]},
-{label:'Professional Services',cats:[{id:11,name:'Tutors',e:'📚'},{id:12,name:'Accountants',e:'📊'},{id:13,name:'Lawyers',e:'⚖️'},{id:14,name:'Designers',e:'🖥️'}]},
-{label:'Delivery & Logistics',cats:[{id:15,name:'Couriers',e:'📦'},{id:16,name:'Errands',e:'🏃'},{id:17,name:'Movers',e:'🚛'}]}
+  {label:'Home Services',cats:[{id:1,name:'Electricians',e:'⚡'},{id:2,name:'Plumbers',e:'🔧'},{id:3,name:'Cleaners',e:'🧹'},{id:4,name:'Painters',e:'🎨'},{id:5,name:'AC Technicians',e:'❄️'}]},
+  {label:'Skilled Trades',cats:[{id:6,name:'Welders',e:'🔩'},{id:7,name:'Tailors',e:'🧵'},{id:8,name:'Mechanics',e:'🚗'},{id:9,name:'Carpenters',e:'🪚'},{id:10,name:'Tilers',e:'🏗️'}]},
+  {label:'Professional Services',cats:[{id:11,name:'Tutors',e:'📚'},{id:12,name:'Accountants',e:'📊'},{id:13,name:'Lawyers',e:'⚖️'},{id:14,name:'Designers',e:'🖥️'}]},
+  {label:'Delivery & Logistics',cats:[{id:15,name:'Couriers',e:'📦'},{id:16,name:'Errands',e:'🏃'},{id:17,name:'Movers',e:'🚛'}]}
 ];
 
 const DEMO_P=[
-{id:'d0',name:'Emeka Okonkwo',job:'Electrician',cat:1,r:4.9,n:127,init:'EO',bio:'Licensed electrician, 8 years experience. Wiring, generators, fault diagnosis.',price:'From ₦5,000',loc:'Gwagwalada'},
-{id:'d1',name:'Taiwo Adeyemi',job:'Plumber',cat:2,r:4.8,n:89,init:'TA',bio:'Pipes, water heaters, drainage. Available 7 days.',price:'From ₦6,500',loc:'Gwagwalada'},
-{id:'d2',name:'Blessing Eze',job:'House Cleaner',cat:3,r:4.9,n:211,init:'BE',bio:'Professional deep cleaning. Trusted by 200+ households.',price:'From ₦15,000',loc:'Gwagwalada'},
-{id:'d3',name:'Chukwudi Nwosu',job:'AC Technician',cat:5,r:4.8,n:74,init:'CN',bio:'AC installation, repairs and gas refilling. All brands.',price:'From ₦8,000',loc:'Kubwa, Abuja'},
-{id:'d4',name:'Amaka Osei',job:'Tailor',cat:7,r:4.9,n:102,init:'AO',bio:'Ankara, suits, corporate wear. Fast turnaround.',price:'From ₦8,000',loc:'Gwagwalada'},
-{id:'d5',name:'Seun Falola',job:'Mechanic',cat:8,r:4.8,n:67,init:'SF',bio:'Auto repairs, servicing, diagnostics. All car brands.',price:'From ₦10,000',loc:'Lugbe, Abuja'},
-{id:'d6',name:'Barrister Ada Nwosu',job:'Lawyer',cat:13,r:4.9,n:18,init:'AN',bio:'Property law, contracts, business registration. Fast turnaround.',price:'From ₦50,000',loc:'Abuja Central'},
-{id:'d7',name:'Mr. Yusuf Bello',job:'Accountant',cat:12,r:4.8,n:29,init:'YB',bio:'Tax filing, bookkeeping, financial statements. SME specialist.',price:'From ₦25,000',loc:'Gwagwalada'},
-{id:'d8',name:'Dr. Ngozi Ibe',job:'Private Tutor',cat:11,r:4.9,n:134,init:'NI',bio:'Maths, English, Sciences. WAEC/JAMB specialist. 95%+ pass rate.',price:'₦3,500/hr',loc:'Gwagwalada'},
-{id:'d9',name:'QuickRun Abuja',job:'Same-Day Courier',cat:15,r:4.9,n:312,init:'QR',bio:'Fast same-day delivery across Abuja. Fragile items handled carefully.',price:'From ₦1,500',loc:'Gwagwalada'},
-{id:'d10',name:'Ade Errands',job:'Errand Runner',cat:16,r:4.8,n:156,init:'AE',bio:'Shopping, bill payments, bank runs, pickups. Reliable and fast.',price:'From ₦2,000',loc:'Gwagwalada'},
-{id:'d11',name:'Abuja Movers Co.',job:'Movers',cat:17,r:4.7,n:44,init:'AM',bio:'Full house moves, office relocation. Careful handling.',price:'From ₦45,000',loc:'Abuja'},
+  {id:'d0',name:'Emeka Okonkwo',job:'Electrician',cat:1,r:4.9,n:127,init:'EO',bio:'Licensed electrician, 8 years experience. Wiring, generators, fault diagnosis.',price:'From ₦5,000',loc:'Gwagwalada'},
+  {id:'d1',name:'Taiwo Adeyemi',job:'Plumber',cat:2,r:4.8,n:89,init:'TA',bio:'Pipes, water heaters, drainage. Available 7 days.',price:'From ₦6,500',loc:'Gwagwalada'},
+  {id:'d2',name:'Blessing Eze',job:'House Cleaner',cat:3,r:4.9,n:211,init:'BE',bio:'Professional deep cleaning. Trusted by 200+ households.',price:'From ₦15,000',loc:'Gwagwalada'},
+  {id:'d3',name:'Chukwudi Nwosu',job:'AC Technician',cat:5,r:4.8,n:74,init:'CN',bio:'AC installation, repairs and gas refilling. All brands.',price:'From ₦8,000',loc:'Kubwa, Abuja'},
+  {id:'d4',name:'Amaka Osei',job:'Tailor',cat:7,r:4.9,n:102,init:'AO',bio:'Ankara, suits, corporate wear. Fast turnaround.',price:'From ₦8,000',loc:'Gwagwalada'},
+  {id:'d5',name:'Seun Falola',job:'Mechanic',cat:8,r:4.8,n:67,init:'SF',bio:'Auto repairs, servicing, diagnostics. All car brands.',price:'From ₦10,000',loc:'Lugbe, Abuja'},
+  {id:'d6',name:'Barrister Ada Nwosu',job:'Lawyer',cat:13,r:4.9,n:18,init:'AN',bio:'Property law, contracts, business registration. Fast turnaround.',price:'From ₦50,000',loc:'Abuja Central'},
+  {id:'d7',name:'Mr. Yusuf Bello',job:'Accountant',cat:12,r:4.8,n:29,init:'YB',bio:'Tax filing, bookkeeping, financial statements. SME specialist.',price:'From ₦25,000',loc:'Gwagwalada'},
+  {id:'d8',name:'Dr. Ngozi Ibe',job:'Private Tutor',cat:11,r:4.9,n:134,init:'NI',bio:'Maths, English, Sciences. WAEC/JAMB specialist. 95%+ pass rate.',price:'₦3,500/hr',loc:'Gwagwalada'},
+  {id:'d9',name:'QuickRun Abuja',job:'Same-Day Courier',cat:15,r:4.9,n:312,init:'QR',bio:'Fast same-day delivery across Abuja. Fragile items handled carefully.',price:'From ₦1,500',loc:'Gwagwalada'},
+  {id:'d10',name:'Ade Errands',job:'Errand Runner',cat:16,r:4.8,n:156,init:'AE',bio:'Shopping, bill payments, bank runs, pickups. Reliable and fast.',price:'From ₦2,000',loc:'Gwagwalada'},
+  {id:'d11',name:'Abuja Movers Co.',job:'Movers',cat:17,r:4.7,n:44,init:'AM',bio:'Full house moves, office relocation. Careful handling.',price:'From ₦45,000',loc:'Abuja'},
 ];
 
 function go(id){
-prev=document.querySelector('.screen.active')?.id||'s-home';
-document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-window.scrollTo(0,0);
-if(id==='s-home')loadHome();
-if(id==='s-jobs')loadJobs();
-if(id==='s-profile')loadProfile();
-if(id==='s-search')renderAllCats('s-cats');
+  prev=document.querySelector('.screen.active')?.id||'s-home';
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='s-home')loadHome();
+  if(id==='s-jobs')loadJobs();
+  if(id==='s-profile')loadProfile();
+  if(id==='s-search')renderAllCats('s-cats');
 }
 function goBack(){go(prev||'s-home');}
 
 async function api(method,path,data){
-const h={'Content-Type':'application/json'};
-if(token&&token!=='demo')h['Authorization']=`Bearer ${token}`;
-try{const r=await fetch(API+path,{method,headers:h,body:data?JSON.stringify(data):undefined});return r.json();}
-catch(e){return{error:'Network error — check your connection'};}
+  const h={'Content-Type':'application/json'};
+  if(token&&token!=='demo')h['Authorization']=`Bearer ${token}`;
+  try{const r=await fetch(API+path,{method,headers:h,body:data?JSON.stringify(data):undefined});return r.json();}
+  catch(e){return{error:'Network error — check your connection'};}
 }
 
 async function sendOTP(){
-const ph=document.getElementById('inp-phone').value.trim();
-if(!ph)return al('al-login','Enter your phone number','e');
-const b=document.getElementById('btn-otp');
-b.innerHTML='<span class="spin"></span>Sending...';b.disabled=true;
-const r=await api('POST','/auth/send-otp',{phone:ph});
-b.innerHTML='Send OTP';b.disabled=false;
-if(r.success||r.message){document.getElementById('otp-ph').textContent='+234'+ph.replace(/^0/,'');go('s-otp');}
-else al('al-login',r.error||'Could not send OTP. Try Demo mode.','e');
+  const ph=document.getElementById('inp-phone').value.trim();
+  if(!ph)return al('al-login','Enter your phone number','e');
+  const b=document.getElementById('btn-otp');
+  b.innerHTML='<span class="spin"></span>Sending...';b.disabled=true;
+  const r=await api('POST','/auth/send-otp',{phone:ph});
+  b.innerHTML='Send OTP';b.disabled=false;
+  if(r.success||r.message){document.getElementById('otp-ph').textContent='+234'+ph.replace(/^0/,'');go('s-otp');}
+  else al('al-login',r.error||'Could not send OTP. Try Demo mode.','e');
 }
 
 async function verifyOTP(){
-const ph=document.getElementById('inp-phone').value.trim();
-const otp=['o1','o2','o3','o4','o5','o6'].map(i=>document.getElementById(i).value).join('');
-if(otp.length<6)return al('al-otp','Enter all 6 digits','e');
-const b=document.getElementById('btn-verify');
-b.innerHTML='<span class="spin"></span>Verifying...';b.disabled=true;
-const r=await api('POST','/auth/verify-otp',{phone:ph,token:otp});
-b.innerHTML='Verify & Continue';b.disabled=false;
-if(r.token){
-token=r.token;
-if(r.user?.full_name){user=r.user;save();go('s-home');}
-else go('s-register');
-}else al('al-otp',r.error||'Invalid OTP. Please try again.','e');
+  const ph=document.getElementById('inp-phone').value.trim();
+  const otp=['o1','o2','o3','o4','o5','o6'].map(i=>document.getElementById(i).value).join('');
+  if(otp.length<6)return al('al-otp','Enter all 6 digits','e');
+  const b=document.getElementById('btn-verify');
+  b.innerHTML='<span class="spin"></span>Verifying...';b.disabled=true;
+  const r=await api('POST','/auth/verify-otp',{phone:ph,token:otp});
+  b.innerHTML='Verify & Continue';b.disabled=false;
+  if(r.token){
+    token=r.token;
+    if(r.user?.full_name){user=r.user;save();go('s-home');}
+    else go('s-register');
+  }else al('al-otp',r.error||'Invalid OTP. Please try again.','e');
 }
 
 async function register(){
-const nm=document.getElementById('r-name').value.trim();
-if(!nm)return al('al-reg','Enter your full name','e');
-const b=document.getElementById('btn-reg');
-b.innerHTML='<span class="spin"></span>Creating...';b.disabled=true;
-const role=document.getElementById('r-role').value;
-const r=await api('POST','/auth/register',{
-full_name:nm,email:document.getElementById('r-email').value.trim(),
-role,city:document.getElementById('r-city').value
-});
-b.innerHTML='Create My Account';b.disabled=false;
-if(r.user){
-user=r.user;if(r.token)token=r.token;save();
-if(role==='provider')go('s-provider-signup');
-else go('s-home');
-}else al('al-reg',r.error||'Registration failed. Please try again.','e');
+  const nm=document.getElementById('r-name').value.trim();
+  if(!nm)return al('al-reg','Enter your full name','e');
+  const b=document.getElementById('btn-reg');
+  b.innerHTML='<span class="spin"></span>Creating...';b.disabled=true;
+  const role=document.getElementById('r-role').value;
+  const r=await api('POST','/auth/register',{
+    full_name:nm,email:document.getElementById('r-email').value.trim(),
+    role,city:document.getElementById('r-city').value
+  });
+  b.innerHTML='Create My Account';b.disabled=false;
+  if(r.user){
+    user=r.user;if(r.token)token=r.token;save();
+    if(role==='provider')go('s-provider-signup');
+    else go('s-home');
+  }else al('al-reg',r.error||'Registration failed. Please try again.','e');
 }
 
 async function submitProviderSignup(){
-const idNum=document.getElementById('ps-id-num').value.trim();
-const accNum=document.getElementById('ps-acc').value.trim();
-if(!idNum||idNum.length<11)return al('al-psignup','Enter a valid 11-digit BVN or NIN','e');
-if(!accNum||accNum.length<10)return al('al-psignup','Enter a valid 10-digit account number','e');
-const b=document.getElementById('btn-psignup');
-b.innerHTML='<span class="spin"></span>Submitting...';b.disabled=true;
-// Store verification data
-const r=await api('PUT','/providers/profile',{
-bio:document.getElementById('ps-bio').value,
-verification_type:document.getElementById('ps-id-type').value,
-id_number:idNum,
-bank_name:document.getElementById('ps-bank').value,
-account_number:accNum,
-account_name:document.getElementById('ps-acc-name').value,
-hourly_rate:document.getElementById('ps-price').value
-});
-b.innerHTML='Submit for Verification';b.disabled=false;
-al('al-psignup','✅ Submitted! Your profile is under review. You can start bidding once verified.','s');
-setTimeout(()=>go('s-home'),2000);
+  const idNum=document.getElementById('ps-id-num').value.trim();
+  const accNum=document.getElementById('ps-acc').value.trim();
+  if(!idNum||idNum.length<11)return al('al-psignup','Enter a valid 11-digit BVN or NIN','e');
+  if(!accNum||accNum.length<10)return al('al-psignup','Enter a valid 10-digit account number','e');
+  const b=document.getElementById('btn-psignup');
+  b.innerHTML='<span class="spin"></span>Submitting...';b.disabled=true;
+  // Store verification data
+  const r=await api('PUT','/providers/profile',{
+    bio:document.getElementById('ps-bio').value,
+    verification_type:document.getElementById('ps-id-type').value,
+    id_number:idNum,
+    bank_name:document.getElementById('ps-bank').value,
+    account_number:accNum,
+    account_name:document.getElementById('ps-acc-name').value,
+    hourly_rate:document.getElementById('ps-price').value
+  });
+  b.innerHTML='Submit for Verification';b.disabled=false;
+  al('al-psignup','✅ Submitted! Your profile is under review. You can start bidding once verified.','s');
+  setTimeout(()=>go('s-home'),2000);
 }
 
 function demoLogin(){
-user={id:'demo',full_name:'Demo User',phone:'+2348000000000',role:'customer',city:'Gwagwalada'};
-token='demo';save();go('s-home');
+  user={id:'demo',full_name:'Demo User',phone:'+2348000000000',role:'customer',city:'Gwagwalada'};
+  token='demo';save();go('s-home');
 }
 
 function logout(){
-if(!confirm('Sign out of VeraPro?'))return;
-user=null;token=null;
-try{localStorage.removeItem('vp_u');localStorage.removeItem('vp_t');}catch(e){}
-go('s-splash');
+  if(!confirm('Sign out of VeraPro?'))return;
+  user=null;token=null;
+  try{localStorage.removeItem('vp_u');localStorage.removeItem('vp_t');}catch(e){}
+  go('s-splash');
 }
 
 function save(){try{localStorage.setItem('vp_u',JSON.stringify(user));localStorage.setItem('vp_t',token);}catch(e){}}
 function loadSess(){
-try{const u=localStorage.getItem('vp_u'),t=localStorage.getItem('vp_t');if(u&&t){user=JSON.parse(u);token=t;return true;}}catch(e){}return false;
+  try{const u=localStorage.getItem('vp_u'),t=localStorage.getItem('vp_t');if(u&&t){user=JSON.parse(u);token=t;return true;}}catch(e){}return false;
 }
 function onext(el,nid){if(el.value&&nid)document.getElementById(nid).focus();}
 
 async function loadHome(){
-if(!user)return;
-document.getElementById('h-uname').textContent=user.full_name||'User';
-document.getElementById('h-city').textContent=(user.city||'Gwagwalada')+', Abuja';
-renderAllCats('h-cats');
-const el=document.getElementById('h-providers');
-const r=await api('GET','/providers?limit=6');
-el.innerHTML=r.providers?.length?r.providers.map(p=>pCard(p)).join(''):DEMO_P.slice(0,5).map((p,i)=>dCard(p,i)).join('');
+  if(!user)return;
+  document.getElementById('h-uname').textContent=user.full_name||'User';
+  document.getElementById('h-city').textContent=(user.city||'Gwagwalada')+', Abuja';
+  renderAllCats('h-cats');
+  const el=document.getElementById('h-providers');
+  const r=await api('GET','/providers?limit=6');
+  el.innerHTML=r.providers?.length?r.providers.map(p=>pCard(p)).join(''):DEMO_P.slice(0,5).map((p,i)=>dCard(p,i)).join('');
 }
 
 function renderAllCats(cid){
-const el=document.getElementById(cid);if(!el)return;
-el.innerHTML=CAT_GROUPS.map(g=>`
-<div class="cat-section">
-<div class="cat-section-label">${g.label}</div>
-<div class="cat-grid">${g.cats.map(c=>`
-<div class="cat-card" onclick="loadCat(${c.id},'${c.name}','${c.e}')">
-<div class="cat-icon">${c.e}</div>
-<div class="cat-nm">${c.name}</div>
-</div>`).join('')}
-</div>
-</div>`).join('');
+  const el=document.getElementById(cid);if(!el)return;
+  el.innerHTML=CAT_GROUPS.map(g=>`
+    <div class="cat-section">
+      <div class="cat-section-label">${g.label}</div>
+      <div class="cat-grid">${g.cats.map(c=>`
+        <div class="cat-card" onclick="loadCat(${c.id},'${c.name}','${c.e}')">
+          <div class="cat-icon">${c.e}</div>
+          <div class="cat-nm">${c.name}</div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
 }
 
 function pCard(p){
-const nm=p.users?.full_name||'Provider';
-const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-return`<div class="pcard" onclick="loadProvider('${p.id}')">
-<div style="display:flex;gap:12px;">
-<div class="p-avatar">${init}</div>
-<div style="flex:1;min-width:0;">
-<div class="p-name">${nm}</div>
-<div class="p-job">${p.bio||'Professional'}</div>
-<div class="p-meta">
-<span class="chip chip-y">★ ${p.average_rating?.toFixed(1)||'New'}</span>
-<span class="chip">${p.total_jobs_completed||0} jobs</span>
-<span class="chip chip-g">✓ Verified</span>
-</div>
-<div class="p-location">📍 ${p.city||'Gwagwalada'}</div>
-</div>
-</div>
-</div>`;
+  const nm=p.users?.full_name||'Provider';
+  const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  return`<div class="pcard" onclick="loadProvider('${p.id}')">
+    <div style="display:flex;gap:12px;">
+      <div class="p-avatar">${init}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="p-name">${nm}</div>
+        <div class="p-job">${p.bio||'Professional'}</div>
+        <div class="p-meta">
+          <span class="chip chip-y">★ ${p.average_rating?.toFixed(1)||'New'}</span>
+          <span class="chip">${p.total_jobs_completed||0} jobs</span>
+          <span class="chip chip-g">✓ Verified</span>
+        </div>
+        <div class="p-location">📍 ${p.city||'Gwagwalada'}</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function dCard(p,i){
-return`<div class="pcard" onclick="showDemoP(${i})">
-<div style="display:flex;gap:12px;">
-<div class="p-avatar">${p.init}</div>
-<div style="flex:1;min-width:0;">
-<div class="p-name">${p.name}</div>
-<div class="p-job">${p.job}</div>
-<div class="p-meta">
-<span class="chip chip-y">★ ${p.r}</span>
-<span class="chip">${p.n} jobs</span>
-<span class="chip chip-g">✓ Verified</span>
-</div>
-<div class="p-price">${p.price}</div>
-<div class="p-location">📍 ${p.loc}</div>
-</div>
-</div>
-</div>`;
+  return`<div class="pcard" onclick="showDemoP(${i})">
+    <div style="display:flex;gap:12px;">
+      <div class="p-avatar">${p.init}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="p-name">${p.name}</div>
+        <div class="p-job">${p.job}</div>
+        <div class="p-meta">
+          <span class="chip chip-y">★ ${p.r}</span>
+          <span class="chip">${p.n} jobs</span>
+          <span class="chip chip-g">✓ Verified</span>
+        </div>
+        <div class="p-price">${p.price}</div>
+        <div class="p-location">📍 ${p.loc}</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 async function loadCat(catId,nm,em){
-document.getElementById('cat-title').textContent=nm;go('s-cat');
-const el=document.getElementById('cat-list');el.innerHTML='<div class="ld">Loading...</div>';
-const r=await api('GET',`/providers?category=${catId}`);
-if(r.providers?.length){el.innerHTML=r.providers.map(p=>pCard(p)).join('');}
-else{
-const f=DEMO_P.filter(p=>p.cat===catId);
-el.innerHTML=f.length?f.map(p=>dCard(p,DEMO_P.indexOf(p))).join(''):`
-<div class="empty">
-<div class="empty-icon">${em}</div>
-<div class="empty-title">No ${nm} listed yet</div>
-<div class="empty-sub">Post a job and verified ${nm.toLowerCase()} in your area will send you quotes.</div>
-<button class="btn btn-p" style="max-width:220px;margin:0 auto;" onclick="go('s-postjob')">Post a Job</button>
-</div>`;
-}
+  document.getElementById('cat-title').textContent=nm;go('s-cat');
+  const el=document.getElementById('cat-list');el.innerHTML='<div class="ld">Loading...</div>';
+  const r=await api('GET',`/providers?category=${catId}`);
+  if(r.providers?.length){el.innerHTML=r.providers.map(p=>pCard(p)).join('');}
+  else{
+    const f=DEMO_P.filter(p=>p.cat===catId);
+    el.innerHTML=f.length?f.map(p=>dCard(p,DEMO_P.indexOf(p))).join(''):`
+      <div class="empty">
+        <div class="empty-icon">${em}</div>
+        <div class="empty-title">No ${nm} listed yet</div>
+        <div class="empty-sub">Post a job and verified ${nm.toLowerCase()} in your area will send you quotes.</div>
+        <button class="btn btn-p" style="max-width:220px;margin:0 auto;" onclick="go('s-postjob')">Post a Job</button>
+      </div>`;
+  }
 }
 
 async function loadProvider(id){
-curProvider={id};go('s-provider');
-const el=document.getElementById('p-detail');el.innerHTML='<div class="ld">Loading...</div>';
-const r=await api('GET',`/providers/${id}`);
-if(r.provider){
-const p=r.provider,nm=p.users?.full_name||'Provider';
-const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-el.innerHTML=providerHTML(init,nm,p.bio||'Professional',p.average_rating?.toFixed(1)||'New',p.total_jobs_completed||0,p.years_experience||'—',p.city||'Gwagwalada',p.provider_services||[],null);
-}else el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load provider</div></div>';
+  curProvider={id};go('s-provider');
+  const el=document.getElementById('p-detail');el.innerHTML='<div class="ld">Loading...</div>';
+  const r=await api('GET',`/providers/${id}`);
+  if(r.provider){
+    const p=r.provider,nm=p.users?.full_name||'Provider';
+    const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    el.innerHTML=providerHTML(init,nm,p.bio||'Professional',p.average_rating?.toFixed(1)||'New',p.total_jobs_completed||0,p.years_experience||'—',p.city||'Gwagwalada',p.provider_services||[],null);
+  }else el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load provider</div></div>';
 }
 
 function showDemoP(i){
-const p=DEMO_P[i];curProvider=p;go('s-provider');
-document.getElementById('p-detail').innerHTML=providerHTML(p.init,p.name,p.bio,p.r,p.n,'—',p.loc,[],p.price,p.job);
+  const p=DEMO_P[i];curProvider=p;go('s-provider');
+  document.getElementById('p-detail').innerHTML=providerHTML(p.init,p.name,p.bio,p.r,p.n,'—',p.loc,[],p.price,p.job);
 }
 
 function providerHTML(init,name,bio,rating,jobs,exp,loc,services,price,jobTitle){
-return`
-<div style="background:var(--green);padding:24px 16px 20px;">
-<div style="display:flex;gap:14px;align-items:flex-start;">
-<div style="width:64px;height:64px;background:rgba(255,255,255,.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;font-family:'DM Mono',monospace;flex-shrink:0;">${init}</div>
-<div style="flex:1;">
-<div style="font-size:18px;font-weight:800;color:white;">${name}</div>
-<div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:2px;">${jobTitle||bio.split('.')[0]}</div>
-<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
-<span style="background:rgba(255,255,255,.2);color:white;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;">✓ Verified ID</span>
-<span style="background:rgba(255,255,255,.2);color:white;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;">📍 ${loc}</span>
-</div>
-</div>
-</div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;">
-<div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
-<div style="font-size:18px;font-weight:800;color:white;">★ ${rating}</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;">Rating</div>
-</div>
-<div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
-<div style="font-size:18px;font-weight:800;color:white;">${jobs}</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;">Jobs Done</div>
-</div>
-<div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
-<div style="font-size:18px;font-weight:800;color:white;">${exp}</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;">Yrs Exp</div>
-</div>
-</div>
-</div>
-<div style="padding:14px 16px;">
-<div class="guarantee-bar">🛡️ Pay safely — funds held in escrow until job is confirmed complete</div>
-<div class="contact-hidden-bar">🔒 <strong>Contact details hidden</strong> — phone and address shared only after payment is confirmed</div>
-<div class="section-title">About</div>
-<p style="font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:16px;">${bio}</p>
-${price?`<div style="background:var(--white);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);">
-<div><div style="font-weight:700;font-size:14px;">Starting Price</div><div style="font-size:12px;color:var(--text-3);">Final price agreed in chat</div></div>
-<div style="font-weight:800;color:var(--green);font-size:16px;">${price}</div>
-</div>`:''}
-${services.map(s=>`<div style="background:var(--white);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);">
-<div><div style="font-weight:700;font-size:14px;">${s.service_name}</div><div style="font-size:12px;color:var(--text-3);">${s.description||''}</div></div>
-<div style="font-weight:800;color:var(--green);">₦${(s.price/100).toLocaleString()}</div>
-</div>`).join('')}
-<div class="section-title" style="margin-top:16px;">Reviews</div>
-<div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--text-3);text-align:center;border:1px solid var(--border);">
-Reviews are only shown for completed in-app jobs — this keeps reviews genuine and trustworthy.
-</div>
-</div>`;
+  return`
+    <div style="background:var(--green);padding:24px 16px 20px;">
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:64px;height:64px;background:rgba(255,255,255,.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;font-family:'DM Mono',monospace;flex-shrink:0;">${init}</div>
+        <div style="flex:1;">
+          <div style="font-size:18px;font-weight:800;color:white;">${name}</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:2px;">${jobTitle||bio.split('.')[0]}</div>
+          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span style="background:rgba(255,255,255,.2);color:white;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;">✓ Verified ID</span>
+            <span style="background:rgba(255,255,255,.2);color:white;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;">📍 ${loc}</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;">
+        <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:18px;font-weight:800;color:white;">★ ${rating}</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;">Rating</div>
+        </div>
+        <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:18px;font-weight:800;color:white;">${jobs}</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;">Jobs Done</div>
+        </div>
+        <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:18px;font-weight:800;color:white;">${exp}</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;">Yrs Exp</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 16px;">
+      <div class="guarantee-bar">🛡️ Pay safely — funds held in escrow until job is confirmed complete</div>
+      <div class="contact-hidden-bar">🔒 <strong>Contact details hidden</strong> — phone and address shared only after payment is confirmed</div>
+      <div class="section-title">About</div>
+      <p style="font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:16px;">${bio}</p>
+      ${price?`<div style="background:var(--white);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);">
+        <div><div style="font-weight:700;font-size:14px;">Starting Price</div><div style="font-size:12px;color:var(--text-3);">Final price agreed in chat</div></div>
+        <div style="font-weight:800;color:var(--green);font-size:16px;">${price}</div>
+      </div>`:''}
+      ${services.map(s=>`<div style="background:var(--white);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);">
+        <div><div style="font-weight:700;font-size:14px;">${s.service_name}</div><div style="font-size:12px;color:var(--text-3);">${s.description||''}</div></div>
+        <div style="font-weight:800;color:var(--green);">₦${(s.price/100).toLocaleString()}</div>
+      </div>`).join('')}
+      <div class="section-title" style="margin-top:16px;">Reviews</div>
+      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--text-3);text-align:center;border:1px solid var(--border);">
+        Reviews are only shown for completed in-app jobs — this keeps reviews genuine and trustworthy.
+      </div>
+    </div>`;
 }
 
 async function loadJobs(){
-const el=document.getElementById('j-list');
-if(!user||user.id==='demo'){
-el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><div class="empty-sub">Post your first job and get quotes from verified professionals in Gwagwalada.</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;" onclick="go('s-postjob')">Post a Job</button></div>`;
-return;
+  const el=document.getElementById('j-list');
+  if(!user||user.id==='demo'){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><div class="empty-sub">Request a service and get matched with verified professionals in Gwagwalada.</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;" onclick="go('s-postjob')">Request a Service</button></div>`;
+    return;
+  }
+  el.innerHTML='<div class="ld">Loading...</div>';
+  const r=await api('GET','/jobs');
+  if(r.jobs?.length){
+    el.innerHTML=r.jobs.map(j=>{
+      const statusColor={open:'#2a9d5c',assigned:'#f4a623',payment_pending:'#e67e22',in_progress:'#3498db',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#9b59b6'}[j.status]||'#999';
+      const statusLabel={open:'Waiting for providers',assigned:'Provider assigned — Pay now',payment_pending:'Payment pending',in_progress:'Work in progress',completed:'Completed',disputed:'Disputed',revision_pending:'Revised quote pending'}[j.status]||j.status;
+      const price=j.agreed_price?(j.agreed_price/100).toLocaleString():null;
+      return`<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+          <div style="font-weight:700;font-size:15px;flex:1;color:#111;">${j.title||'Service Request'}</div>
+          <span style="background:${statusColor};color:white;font-size:10px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:700;">${j.urgency==='emergency'?'🚨 ':''} ${j.status?.toUpperCase()}</span>
+        </div>
+        <div style="font-size:12px;color:#666;margin-bottom:6px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
+        <div style="font-size:13px;color:#444;margin-bottom:10px;">${statusLabel}</div>
+        ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
+        <div style="display:flex;gap:8px;">
+          ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
+          ${j.status==='in_progress'?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Job Completed — Release Payment</button>`:''}
+          ${j.status==='in_progress'?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
+          ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
+          ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">View Quotes</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }else{
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;margin-top:12px;" onclick="go('s-postjob')">Request a Service</button></div>`;
+  }
 }
-el.innerHTML='<div class="ld">Loading...</div>';
-const r=await api('GET','/jobs');
-if(r.jobs?.length){
-el.innerHTML=r.jobs.map(j=>`
-<div style="background:var(--white);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;border:1px solid var(--border);">
-<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-<div style="font-weight:700;font-size:15px;flex:1;">${j.title}</div>
-<span style="background:${sc(j.status)};color:white;font-size:11px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:700;">${j.status}</span>
-</div>
-<div style="font-size:12px;color:var(--text-3);margin-top:6px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
-<div style="font-size:13px;color:var(--green);margin-top:4px;font-weight:700;">${j.bids?.[0]?.count||0} bids received</div>
-</div>`).join('');
-}else{
-el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs posted yet</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;margin-top:12px;" onclick="go('s-postjob')">Post a Job</button></div>`;
+
+async function initPayment(jobId, amount){
+  const r=await api('POST','/payments/initialize',{job_id:jobId});
+  if(r.payment_url){
+    window.open(r.payment_url,'_blank');
+    setTimeout(()=>verifyPayment(r.reference,jobId),15000);
+  } else {
+    alert(r.error||'Could not initialize payment');
+  }
 }
+
+async function verifyPayment(reference, jobId){
+  const r=await api('GET','/payments/verify/'+reference);
+  if(r.success){
+    alert('Payment confirmed! Your money is in escrow. Provider will start work shortly.');
+    loadJobs();
+  }
+}
+
+async function confirmComplete(jobId){
+  if(!confirm('Confirm that the job has been completed? This will release payment to the provider.')) return;
+  const r=await api('POST','/payments/release',{job_id:jobId});
+  if(r.success){
+    alert('Payment released! Please leave a review.');
+    loadJobs();
+  } else {
+    alert(r.error||'Could not release payment');
+  }
+}
+
+async function raiseDispute(jobId){
+  const reason=prompt('Please describe the issue:');
+  if(!reason) return;
+  const r=await api('POST','/payments/dispute',{job_id:jobId,reason});
+  if(r.success){
+    alert('Dispute raised. VeraPro will review within 24 hours. Your money is safe.');
+    loadJobs();
+  }
 }
 
 let currentUrgency='emergency';
@@ -923,232 +950,231 @@ let waitingTimer=null;
 let currentJobId=null;
 
 function setUrgency(u){
-currentUrgency=u;
-['emergency','same_day','scheduled'].forEach(x=>{
-document.getElementById('urg-'+x).classList.toggle('active',x===u);
-});
-document.getElementById('date-field').style.display=u==='scheduled'?'block':'none';
-updatePriceEstimate();
+  currentUrgency=u;
+  ['emergency','same_day','scheduled'].forEach(x=>{
+    document.getElementById('urg-'+x).classList.toggle('active',x===u);
+  });
+  document.getElementById('date-field').style.display=u==='scheduled'?'block':'none';
+  updatePriceEstimate();
 }
 
 const PRICES={1:{min:5000,max:25000},2:{min:5000,max:20000},3:{min:10000,max:30000},4:{min:15000,max:50000},5:{min:8000,max:25000},6:{min:10000,max:40000},7:{min:5000,max:30000},8:{min:8000,max:30000},9:{min:10000,max:50000},10:{min:15000,max:60000},11:{min:3000,max:10000},12:{min:20000,max:80000},13:{min:30000,max:150000},14:{min:10000,max:50000},15:{min:1500,max:8000},16:{min:2000,max:10000},17:{min:30000,max:100000}};
 
 function updatePriceEstimate(){
-const cat=document.getElementById('j-cat').value;
-const el=document.getElementById('price-estimate');
-if(!cat){el.style.display='none';return;}
-const p=PRICES[parseInt(cat)];
-if(!p){el.style.display='none';return;}
-const mult=currentUrgency==='emergency'?1.2:1;
-const min=Math.round(p.min*mult).toLocaleString();
-const max=Math.round(p.max*mult).toLocaleString();
-document.getElementById('price-range').textContent='₦'+min+' — ₦'+max;
-document.getElementById('price-note').textContent=currentUrgency==='emergency'?'Emergency fee (20%) included':'Estimate only — final price agreed with provider';
-el.style.display='block';
+  const cat=document.getElementById('j-cat').value;
+  const el=document.getElementById('price-estimate');
+  if(!cat){el.style.display='none';return;}
+  const p=PRICES[parseInt(cat)];
+  if(!p){el.style.display='none';return;}
+  const mult=currentUrgency==='emergency'?1.2:1;
+  const min=Math.round(p.min*mult).toLocaleString();
+  const max=Math.round(p.max*mult).toLocaleString();
+  document.getElementById('price-range').textContent='₦'+min+' — ₦'+max;
+  document.getElementById('price-note').textContent=currentUrgency==='emergency'?'Emergency fee (20%) included':'Estimate only — final price agreed with provider';
+  el.style.display='block';
 }
 
 function previewImg(input){
-if(input.files&&input.files[0]){
-const reader=new FileReader();
-reader.onload=e=>{
-document.getElementById('img-thumb').src=e.target.result;
-document.getElementById('img-preview').style.display='block';
-document.getElementById('img-placeholder').style.display='none';
-};
-reader.readAsDataURL(input.files[0]);
-}
+  if(input.files&&input.files[0]){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      document.getElementById('img-thumb').src=e.target.result;
+      document.getElementById('img-preview').style.display='block';
+      document.getElementById('img-placeholder').style.display='none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
 }
 
 async function requestService(){
-const desc=document.getElementById('j-desc').value.trim();
-const addr=document.getElementById('j-addr').value.trim();
-const cat=document.getElementById('j-cat').value;
-if(!desc)return al('al-job','Please describe the problem','e');
-if(!addr)return al('al-job','Please enter your location','e');
-if(!cat)return al('al-job','Please select a service category','e');
+  const desc=document.getElementById('j-desc').value.trim();
+  const addr=document.getElementById('j-addr').value.trim();
+  const cat=document.getElementById('j-cat').value;
+  if(!desc)return al('al-job','Please describe the problem','e');
+  if(!addr)return al('al-job','Please enter your location','e');
+  if(!cat)return al('al-job','Please select a service category','e');
 
-const b=document.getElementById('btn-job');
-b.innerHTML='<span class="spin"></span>Finding Providers...';b.disabled=true;
+  const b=document.getElementById('btn-job');
+  b.innerHTML='<span class="spin"></span>Finding Providers...';b.disabled=true;
 
-const payload={
-category_id:parseInt(cat),
-title:document.getElementById('j-cat').options[document.getElementById('j-cat').selectedIndex].text+' Request',
-description:desc,
-urgency:currentUrgency,
-address:addr,
-city:user?.city||'Gwagwalada',
-scheduled_date:document.getElementById('j-date')?.value||null
-};
+  const payload={
+    category_id:parseInt(cat),
+    title:document.getElementById('j-cat').options[document.getElementById('j-cat').selectedIndex].text+' Request',
+    description:desc,
+    urgency:currentUrgency,
+    address:addr,
+    city:user?.city||'Gwagwalada',
+    scheduled_date:document.getElementById('j-date')?.value||null
+  };
 
-const r=await api('POST','/matching/request',payload);
-b.innerHTML='Find Providers Now';b.disabled=false;
+  const r=await api('POST','/matching/request',payload);
+  b.innerHTML='Find Providers Now';b.disabled=false;
 
-if(r.success||r.job){
-currentJobId=r.job?.id;
-const count=r.matched_providers||0;
-const price=r.estimated_price;
-document.getElementById('w-count').textContent=count;
-document.getElementById('w-msg').textContent=count>0
-?'We notified '+count+' verified providers near you. Waiting for responses...'
-:'No providers available right now. We will notify you when one comes online.';
-if(price) document.getElementById('w-price').textContent='₦'+price.min.toLocaleString()+' — ₦'+price.max.toLocaleString();
-go('s-waiting');
-startWaitingTimer(count);
-} else {
-al('al-job',r.error||'Could not send request. Try again.','e');
-}
+  if(r.success||r.job){
+    currentJobId=r.job?.id;
+    const count=r.matched_providers||0;
+    const price=r.estimated_price;
+    document.getElementById('w-count').textContent=count;
+    document.getElementById('w-msg').textContent=count>0
+      ?'We notified '+count+' verified providers near you. Waiting for responses...'
+      :'No providers available right now. We will notify you when one comes online.';
+    if(price) document.getElementById('w-price').textContent='₦'+price.min.toLocaleString()+' — ₦'+price.max.toLocaleString();
+    go('s-waiting');
+    startWaitingTimer(count);
+  } else {
+    al('al-job',r.error||'Could not send request. Try again.','e');
+  }
 }
 
 function startWaitingTimer(providerCount){
-let secs=300;
-if(waitingTimer)clearInterval(waitingTimer);
-waitingTimer=setInterval(()=>{
-secs--;
-const m=Math.floor(secs/60);
-const s=secs%60;
-const el=document.getElementById('w-timer');
-if(el)el.textContent=m+':'+(s<10?'0':'')+s;
-if(secs<=0){
-clearInterval(waitingTimer);
-if(currentJobId)loadQuotes(currentJobId);
-}
-// Poll for quotes every 30 seconds
-if(providerCount>0&&secs%30===0&&currentJobId)checkForQuotes(currentJobId);
-},1000);
+  let secs=300;
+  if(waitingTimer)clearInterval(waitingTimer);
+  waitingTimer=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60);
+    const s=secs%60;
+    const el=document.getElementById('w-timer');
+    if(el)el.textContent=m+':'+(s<10?'0':'')+s;
+    if(secs<=0){
+      clearInterval(waitingTimer);
+      if(currentJobId)loadQuotes(currentJobId);
+    }
+    // Poll for quotes every 30 seconds
+    if(providerCount>0&&secs%30===0&&currentJobId)checkForQuotes(currentJobId);
+  },1000);
 }
 
 async function checkForQuotes(jobId){
-const r=await api('GET','/matching/quotes/'+jobId);
-if(r.quotes&&r.quotes.length>0){
-clearInterval(waitingTimer);
-document.getElementById('w-msg').textContent='You have '+r.quotes.length+' quote(s)! Tap below to view them.';
-document.getElementById('w-count').textContent=r.quotes.length+' quotes received';
-const btn=document.createElement('button');
-btn.className='btn btn-p';
-btn.style.marginTop='16px';
-btn.textContent='View Quotes';
-btn.onclick=()=>loadQuotes(jobId);
-const container=document.querySelector('#s-waiting .guarantee-bar');
-if(container&&!document.getElementById('view-quotes-btn')){
-btn.id='view-quotes-btn';
-container.parentNode.insertBefore(btn,container);
-}
-}
+  const r=await api('GET','/matching/quotes/'+jobId);
+  if(r.quotes&&r.quotes.length>0){
+    clearInterval(waitingTimer);
+    document.getElementById('w-msg').textContent='You have '+r.quotes.length+' quote(s)! Tap below to view them.';
+    document.getElementById('w-count').textContent=r.quotes.length+' quotes received';
+    const btn=document.createElement('button');
+    btn.className='btn btn-p';
+    btn.style.marginTop='16px';
+    btn.textContent='View Quotes';
+    btn.onclick=()=>loadQuotes(jobId);
+    const container=document.querySelector('#s-waiting .guarantee-bar');
+    if(container&&!document.getElementById('view-quotes-btn')){
+      btn.id='view-quotes-btn';
+      container.parentNode.insertBefore(btn,container);
+    }
+  }
 }
 
 async function loadQuotes(jobId){
-go('s-quotes');
-const el=document.getElementById('q-list');
-el.innerHTML='<div class="ld">Loading quotes...</div>';
-const r=await api('GET','/matching/quotes/'+(jobId||currentJobId));
-if(r.quotes&&r.quotes.length>0){
-el.innerHTML=r.quotes.map(q=>{
-const nm=q.provider_profiles?.users?.full_name||'Provider';
-const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-const amt=q.quote_amount?(q.quote_amount/100).toLocaleString():null;
-return`<div style="background:white;border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--border);">
-<div style="display:flex;gap:12px;align-items:flex-start;">
-<div class="p-avatar">${init}</div>
-<div style="flex:1;">
-<div style="font-weight:700;font-size:15px;">${nm}</div>
-<div style="font-size:12px;color:var(--text-3);">★ ${q.provider_profiles?.average_rating||'New'} · ${q.provider_profiles?.total_jobs_completed||0} jobs</div>
-${q.quote_note?`<div style="font-size:13px;color:var(--text-2);margin-top:6px;line-height:1.5;">${q.quote_note}</div>`:''}
-${amt?`<div style="font-size:18px;font-weight:800;color:var(--green);margin-top:8px;">₦${amt}</div>`:'<div style="font-size:14px;color:var(--green);font-weight:700;margin-top:8px;">Ready to start — price on inspection</div>'}
-</div>
-</div>
-<div style="display:flex;gap:8px;margin-top:12px;">
-<button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${nm}')">Message</button>
-<button class="btn btn-p btn-sm" style="flex:2;" onclick="acceptQuote('${q.id}')">Accept Quote</button>
-</div>
-</div>`;
-}).join('');
-} else {
-el.innerHTML=`<div class="empty">
-<div class="empty-icon">⏳</div>
-<div class="empty-title">No quotes yet</div>
-<div class="empty-sub">Providers have 5 minutes to respond. Check back shortly.</div>
-<button class="btn btn-w" style="max-width:200px;margin:0 auto;" onclick="loadQuotes('${jobId||currentJobId}')">Refresh</button>
-</div>`;
-}
+  go('s-quotes');
+  const el=document.getElementById('q-list');
+  el.innerHTML='<div class="ld">Loading quotes...</div>';
+  const r=await api('GET','/matching/quotes/'+(jobId||currentJobId));
+  if(r.quotes&&r.quotes.length>0){
+    el.innerHTML=r.quotes.map(q=>{
+      const nm=q.provider_profiles?.users?.full_name||'Provider';
+      const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+      const amt=q.quote_amount?(q.quote_amount/100).toLocaleString():null;
+      return`<div style="background:white;border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--border);">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div class="p-avatar">${init}</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:15px;">${nm}</div>
+            <div style="font-size:12px;color:var(--text-3);">★ ${q.provider_profiles?.average_rating||'New'} · ${q.provider_profiles?.total_jobs_completed||0} jobs</div>
+            ${q.quote_note?`<div style="font-size:13px;color:var(--text-2);margin-top:6px;line-height:1.5;">${q.quote_note}</div>`:''}
+            ${amt?`<div style="font-size:18px;font-weight:800;color:var(--green);margin-top:8px;">₦${amt}</div>`:'<div style="font-size:14px;color:var(--green);font-weight:700;margin-top:8px;">Ready to start — price on inspection</div>'}
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${nm}')">Message</button>
+          <button class="btn btn-p btn-sm" style="flex:2;" onclick="acceptQuote('${q.id}')">Accept Quote</button>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    el.innerHTML=`<div class="empty">
+      <div class="empty-icon">⏳</div>
+      <div class="empty-title">No quotes yet</div>
+      <div class="empty-sub">Providers have 5 minutes to respond. Check back shortly.</div>
+      <button class="btn btn-w" style="max-width:200px;margin:0 auto;" onclick="loadQuotes('${jobId||currentJobId}')">Refresh</button>
+    </div>`;
+  }
 }
 
 async function acceptQuote(matchId){
-const r=await api('POST','/matching/accept-quote',{match_id:matchId});
-if(r.success){
-al('al-quotes','Quote accepted! Proceed to payment to confirm the job.','s');
-setTimeout(()=>go('s-jobs'),2000);
-} else {
-al('al-quotes',r.error||'Could not accept quote','e');
-}
+  const r=await api('POST','/matching/accept-quote',{match_id:matchId});
+  if(r.success){
+    al('al-quotes','Quote accepted! Proceed to payment to confirm the job.','s');
+    setTimeout(()=>go('s-jobs'),2000);
+  } else {
+    al('al-quotes',r.error||'Could not accept quote','e');
+  }
 }
 
 function openChat(nm){
-const name=nm||(curProvider?.name)||'Provider';
-document.getElementById('chat-nm').textContent=name;
-chatMsgs=[
-{s:0,t:'Hello! I am interested in your job post. I can help with that.'},
-{s:1,t:'Great! When can you come?'},
-{s:0,t:'I am available from tomorrow. What time works best for you?'},
-];
-renderMsgs();go('s-chat');
+  const name=nm||(curProvider?.name)||'Provider';
+  document.getElementById('chat-nm').textContent=name;
+  chatMsgs=[
+    {s:0,t:'Hello! I am interested in your job post. I can help with that.'},
+    {s:1,t:'Great! When can you come?'},
+    {s:0,t:'I am available from tomorrow. What time works best for you?'},
+  ];
+  renderMsgs();go('s-chat');
 }
 
 function renderMsgs(){
-const el=document.getElementById('chat-msgs');
-el.innerHTML=chatMsgs.map(m=>`<div class="msg ${m.s?'sent':'recv'}">${m.t}</div>`).join('');
-el.scrollTop=el.scrollHeight;
+  const el=document.getElementById('chat-msgs');
+  el.innerHTML=chatMsgs.map(m=>`<div class="msg ${m.s?'sent':'recv'}">${m.t}</div>`).join('');
+  el.scrollTop=el.scrollHeight;
 }
 
 function sendMsg(){
-const inp=document.getElementById('c-inp');
-const t=inp.value.trim();if(!t)return;inp.value='';
-if(/(\+?234|0)[789][01]\d{8}/.test(t)){
-chatMsgs.push({s:1,t:t.replace(/(\+?234|0)([789][01])(\d{3})(\d{4})/g,'$1$2***$4')});renderMsgs();
-setTimeout(()=>{chatMsgs.push({s:0,t:'⚠️ Phone numbers are hidden for your protection. Contact details are shared only after payment is confirmed through VeraPro.'});renderMsgs();},600);
-return;
-}
-if(/wa\.me|whatsapp\.com|t\.me/i.test(t)){chatMsgs.push({s:0,t:'External links are not allowed in VeraPro chat.'});renderMsgs();return;}
-if(/pay.*outside|pay.*cash.*direct|bypass/i.test(t)){chatMsgs.push({s:0,t:'Arranging payment outside VeraPro removes your VeraPro Guarantee protection.'});renderMsgs();return;}
-chatMsgs.push({s:1,t});renderMsgs();
-if(token==='demo'){
-const replies=['Understood! I can come by tomorrow morning.','That works. What time is convenient for you?','I have done this many times. No problem at all.','Let me check my schedule and confirm shortly.'];
-setTimeout(()=>{chatMsgs.push({s:0,t:replies[Math.floor(Math.random()*replies.length)]});renderMsgs();},900);
-}
+  const inp=document.getElementById('c-inp');
+  const t=inp.value.trim();if(!t)return;inp.value='';
+  if(/(\+?234|0)[789][01]\d{8}/.test(t)){
+    chatMsgs.push({s:1,t:t.replace(/(\+?234|0)([789][01])(\d{3})(\d{4})/g,'$1$2***$4')});renderMsgs();
+    setTimeout(()=>{chatMsgs.push({s:0,t:'⚠️ Phone numbers are hidden for your protection. Contact details are shared only after payment is confirmed through VeraPro.'});renderMsgs();},600);
+    return;
+  }
+  if(/wa\.me|whatsapp\.com|t\.me/i.test(t)){chatMsgs.push({s:0,t:'External links are not allowed in VeraPro chat.'});renderMsgs();return;}
+  if(/pay.*outside|pay.*cash.*direct|bypass/i.test(t)){chatMsgs.push({s:0,t:'Arranging payment outside VeraPro removes your VeraPro Guarantee protection.'});renderMsgs();return;}
+  chatMsgs.push({s:1,t});renderMsgs();
+  if(token==='demo'){
+    const replies=['Understood! I can come by tomorrow morning.','That works. What time is convenient for you?','I have done this many times. No problem at all.','Let me check my schedule and confirm shortly.'];
+    setTimeout(()=>{chatMsgs.push({s:0,t:replies[Math.floor(Math.random()*replies.length)]});renderMsgs();},900);
+  }
 }
 
 async function loadProfile(){
-if(!user)return;
-document.getElementById('pr-name').textContent=user.full_name||'User';
-document.getElementById('pr-phone').textContent=user.phone||'Demo mode';
-document.getElementById('pr-city').textContent=(user.city||'Gwagwalada')+', Abuja';
-if(token&&token!=='demo'){
-const r=await api('GET','/auth/me');
-if(r.user){user={...user,...r.user};document.getElementById('pr-name').textContent=r.user.full_name;document.getElementById('pr-phone').textContent=r.user.phone;}
-}
+  if(!user)return;
+  document.getElementById('pr-name').textContent=user.full_name||'User';
+  document.getElementById('pr-phone').textContent=user.phone||'Demo mode';
+  document.getElementById('pr-city').textContent=(user.city||'Gwagwalada')+', Abuja';
+  if(token&&token!=='demo'){
+    const r=await api('GET','/auth/me');
+    if(r.user){user={...user,...r.user};document.getElementById('pr-name').textContent=r.user.full_name;document.getElementById('pr-phone').textContent=r.user.phone;}
+  }
 }
 
 async function doSearch(q){
-const el=document.getElementById('s-results');
-if(!q||q.length<2){el.innerHTML='<div id="s-cats"></div>';renderAllCats('s-cats');return;}
-el.innerHTML='<div class="ld">Searching...</div>';
-const r=await api('GET',`/providers?search=${encodeURIComponent(q)}`);
-if(r.providers?.length){el.innerHTML=r.providers.map(p=>pCard(p)).join('');}
-else{
-const m=DEMO_P.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.job.toLowerCase().includes(q.toLowerCase())||p.bio.toLowerCase().includes(q.toLowerCase()));
-el.innerHTML=m.length?m.map(p=>dCard(p,DEMO_P.indexOf(p))).join(''):`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">No results for "${q}"</div><div class="empty-sub">Try a different search or <a href="#" onclick="go('s-postjob')" style="color:var(--green);font-weight:700;">post a job instead</a></div></div>`;
-}
+  const el=document.getElementById('s-results');
+  if(!q||q.length<2){el.innerHTML='<div id="s-cats"></div>';renderAllCats('s-cats');return;}
+  el.innerHTML='<div class="ld">Searching...</div>';
+  const r=await api('GET',`/providers?search=${encodeURIComponent(q)}`);
+  if(r.providers?.length){el.innerHTML=r.providers.map(p=>pCard(p)).join('');}
+  else{
+    const m=DEMO_P.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.job.toLowerCase().includes(q.toLowerCase())||p.bio.toLowerCase().includes(q.toLowerCase()));
+    el.innerHTML=m.length?m.map(p=>dCard(p,DEMO_P.indexOf(p))).join(''):`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">No results for "${q}"</div><div class="empty-sub">Try a different search or <a href="#" onclick="go('s-postjob')" style="color:var(--green);font-weight:700;">post a job instead</a></div></div>`;
+  }
 }
 
 function al(id,msg,type){
-const el=document.getElementById(id);if(!el)return;
-el.innerHTML=`<div class="al al-${type==='e'?'e':type==='s'?'s':type==='w'?'w':'i'}">${msg}</div>`;
-setTimeout(()=>{if(el)el.innerHTML='';},5000);
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=`<div class="al al-${type==='e'?'e':type==='s'?'s':type==='w'?'w':'i'}">${msg}</div>`;
+  setTimeout(()=>{if(el)el.innerHTML='';},5000);
 }
 function sc(s){return{open:'var(--green)',assigned:'#d97706',in_progress:'#2563eb',completed:'#16a34a',cancelled:'var(--red)'}[s]||'#999';}
 function ta(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<60)return m+'m ago';if(m<1440)return Math.floor(m/60)+'h ago';return Math.floor(m/1440)+'d ago';}
 
 if(!loadSess())go('s-splash');else go('s-home');
 </script>
-
 </body>
 </html>
