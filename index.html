@@ -303,6 +303,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 </div>
 
 <!-- HOME -->
+<!-- CUSTOMER HOME -->
 <div class="screen" id="s-home">
   <div style="background:var(--green);padding:16px 16px 14px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -323,7 +324,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
   <div style="flex:1;overflow-y:auto;padding-bottom:80px;">
     <div style="padding:14px 16px;">
       <div class="guarantee-bar">🛡️ <strong>VeraPro Guarantee</strong> — Full refund if provider is a no-show</div>
-      <div class="launch-bar">🎉 <strong>Launch Offer:</strong> First 3 jobs completed = 0% commission for providers!</div>
+      <div class="launch-bar">🎉 <strong>Launch Offer:</strong> First 3 jobs = 0% commission for providers!</div>
       <div class="section-title">What do you need?</div>
       <div id="h-cats"></div>
     </div>
@@ -345,6 +346,159 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
     <div class="ni" onclick="go('s-profile')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile
     </div>
+  </div>
+</div>
+
+<!-- PROVIDER HOME -->
+<div class="screen" id="s-provider-home">
+  <div style="background:var(--green);padding:16px 16px 20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div>
+        <div style="font-size:12px;color:rgba(255,255,255,.75);font-weight:500;">Provider Dashboard</div>
+        <div style="font-size:18px;font-weight:800;color:white;margin-top:1px;" id="ph-uname">Loading...</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:1px;" id="ph-city">Gwagwalada, Abuja</div>
+      </div>
+      <div onclick="go('s-provider-profile')" style="width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,.25);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+      <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:white;" id="ph-jobs">0</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:2px;">Jobs Done</div>
+      </div>
+      <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:white;" id="ph-rating">&#8212;</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:2px;">Rating</div>
+      </div>
+      <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:white;" id="ph-earnings">&#8358;0</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:2px;">Earned</div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;">
+    <div style="background:white;border-radius:14px;padding:14px 16px;margin-bottom:14px;border:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-weight:700;font-size:15px;" id="avail-label">Available for Jobs</div>
+        <div style="font-size:12px;color:#666;margin-top:2px;">Customers can find and book you</div>
+      </div>
+      <div id="avail-toggle" onclick="toggleAvailability()" style="width:52px;height:28px;background:#1a7a4a;border-radius:14px;cursor:pointer;position:relative;transition:background .2s;">
+        <div style="width:22px;height:22px;background:white;border-radius:50%;position:absolute;top:3px;right:3px;transition:right .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);"></div>
+      </div>
+    </div>
+    <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:10px;">Incoming Requests</div>
+    <div id="ph-incoming"><div class="ld">Checking for new jobs...</div></div>
+    <div style="font-size:16px;font-weight:800;color:#111;margin:14px 0 10px;">My Active Jobs</div>
+    <div id="ph-active"><div class="ld">Loading...</div></div>
+  </div>
+  <div class="bnav">
+    <div class="ni active" onclick="go('s-provider-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="ni" onclick="go('s-provider-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>My Jobs</div>
+    <div class="ni" onclick="go('s-provider-earnings')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Earnings</div>
+    <div class="ni" onclick="go('s-provider-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
+  </div>
+</div>
+
+<!-- PROVIDER JOBS -->
+<div class="screen" id="s-provider-jobs">
+  <div class="header"><button class="back" onclick="go('s-provider-home')">&#8592;</button><h2>All My Jobs</h2></div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;">
+    <div id="pj-list"><div class="ld">Loading jobs...</div></div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="go('s-provider-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="ni active" onclick="go('s-provider-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>My Jobs</div>
+    <div class="ni" onclick="go('s-provider-earnings')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Earnings</div>
+    <div class="ni" onclick="go('s-provider-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
+  </div>
+</div>
+
+<!-- PROVIDER EARNINGS -->
+<div class="screen" id="s-provider-earnings">
+  <div class="header"><button class="back" onclick="go('s-provider-home')">&#8592;</button><h2>My Earnings</h2></div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;">
+    <div style="background:var(--green);border-radius:14px;padding:20px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:12px;color:rgba(255,255,255,.8);font-weight:600;">TOTAL EARNED</div>
+      <div style="font-size:32px;font-weight:800;color:white;margin:8px 0;" id="pe-total">&#8358;0</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.7);">After VeraPro 10% commission</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div style="background:white;border-radius:12px;padding:14px;border:1px solid #ddd;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:#1a7a4a;" id="pe-jobs">0</div>
+        <div style="font-size:12px;color:#666;margin-top:4px;">Jobs Completed</div>
+      </div>
+      <div style="background:white;border-radius:12px;padding:14px;border:1px solid #ddd;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:#1a7a4a;" id="pe-pending">&#8358;0</div>
+        <div style="font-size:12px;color:#666;margin-top:4px;">Pending Release</div>
+      </div>
+    </div>
+    <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:10px;">Payment History</div>
+    <div id="pe-history"><div class="ld">Loading...</div></div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="go('s-provider-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="ni" onclick="go('s-provider-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>My Jobs</div>
+    <div class="ni active" onclick="go('s-provider-earnings')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Earnings</div>
+    <div class="ni" onclick="go('s-provider-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
+  </div>
+</div>
+
+<!-- PROVIDER PROFILE -->
+<div class="screen" id="s-provider-profile">
+  <div class="header"><button class="back" onclick="go('s-provider-home')">&#8592;</button><h2>My Profile</h2></div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:40px;">
+    <div id="al-pp"></div>
+    <div style="background:white;border-radius:14px;padding:16px;border:1px solid #ddd;margin-bottom:14px;">
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px;">
+        <div class="p-avatar" style="width:56px;height:56px;font-size:20px;" id="pp-init">?</div>
+        <div>
+          <div style="font-weight:800;font-size:17px;" id="pp-name">Loading...</div>
+          <div style="font-size:13px;color:#666;" id="pp-cat">Service Provider</div>
+          <div id="pp-badge" style="display:inline-block;background:#e8f5ee;color:#1a7a4a;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:4px;">Pending Verification</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#444;line-height:1.6;" id="pp-bio">No bio yet</div>
+    </div>
+    <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:10px;">Update Profile</div>
+    <div class="fg"><label>Bio / Description</label><textarea id="pp-bio-edit" placeholder="Describe your services, experience and specialties..."></textarea></div>
+    <div class="fg"><label>Service Category</label>
+      <select id="pp-cat-edit">
+        <option value="">Select category...</option>
+        <option value="1">Electrician</option><option value="2">Plumber</option>
+        <option value="3">Cleaner</option><option value="4">Painter</option>
+        <option value="5">AC Technician</option><option value="6">Welder</option>
+        <option value="7">Tailor</option><option value="8">Mechanic</option>
+        <option value="9">Carpenter</option><option value="10">Tiler</option>
+        <option value="11">Tutor</option><option value="12">Accountant</option>
+        <option value="13">Lawyer</option><option value="14">Designer</option>
+        <option value="15">Courier</option><option value="16">Errand Runner</option>
+        <option value="17">Mover</option>
+      </select>
+    </div>
+    <div class="fg"><label>Your Rate / Starting Price (&#8358;)</label><input type="number" id="pp-rate" placeholder="e.g. 5000" inputmode="numeric"></div>
+    <button class="btn btn-p" onclick="updateProviderProfile()">Save Changes</button>
+    <!-- BANK ACCOUNT SECTION -->
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
+      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px;">💳 Payment Setup</div>
+      <div style="font-size:12px;color:#666;margin-bottom:12px;">Add your bank account to receive payments from jobs</div>
+      <div id="bank-status" style="margin-bottom:12px;"></div>
+      <div id="bank-form">
+        <div class="fg"><label>Bank Name</label><select id="pp-bank"><option value="">Select bank...</option><option value="Access Bank">Access Bank</option><option value="GTBank">GTBank</option><option value="First Bank">First Bank</option><option value="UBA">UBA</option><option value="Zenith Bank">Zenith Bank</option><option value="Kuda Bank">Kuda Bank</option><option value="OPay">OPay</option><option value="Palmpay">Palmpay</option><option value="Sterling Bank">Sterling Bank</option><option value="Fidelity Bank">Fidelity Bank</option></select></div>
+        <div class="fg"><label>Account Number</label><input type="tel" id="pp-acct" placeholder="10-digit account number" maxlength="10" inputmode="numeric"></div>
+        <div class="fg"><label>Account Name</label><input type="text" id="pp-acctname" placeholder="As shown on your bank app"></div>
+        <button class="btn btn-p" onclick="saveBankAccount()" id="btn-bank">Save Bank Account</button>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
+      <button class="btn btn-w" onclick="logout()" style="color:#e53e3e;border-color:#e53e3e;">Sign Out</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="go('s-provider-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="ni" onclick="go('s-provider-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>My Jobs</div>
+    <div class="ni" onclick="go('s-provider-earnings')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Earnings</div>
+    <div class="ni active" onclick="go('s-provider-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
   </div>
 </div>
 
@@ -632,6 +786,10 @@ function go(id){
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
   if(id==='s-home')loadHome();
+  if(id==='s-provider-home')loadProviderHome();
+  if(id==='s-provider-jobs')loadProviderJobs();
+  if(id==='s-provider-earnings')loadProviderEarnings();
+  if(id==='s-provider-profile')loadProviderProfilePage();
   if(id==='s-jobs')loadJobs();
   if(id==='s-profile')loadProfile();
   if(id==='s-search')renderAllCats('s-cats');
@@ -666,7 +824,7 @@ async function verifyOTP(){
   b.innerHTML='Verify & Continue';b.disabled=false;
   if(r.token){
     token=r.token;
-    if(r.user?.full_name){user=r.user;save();go('s-home');}
+    if(r.user?.full_name){user=r.user;save();go(user.role==='provider'?'s-provider-home':'s-home');}
     else go('s-register');
   }else al('al-otp',r.error||'Invalid OTP. Please try again.','e');
 }
@@ -713,7 +871,7 @@ async function submitProviderSignup(){
 
 function demoLogin(){
   user={id:'demo',full_name:'Demo User',phone:'+2348000000000',role:'customer',city:'Gwagwalada'};
-  token='demo';save();go('s-home');
+  token='demo';save();go(user.role==='provider'?'s-provider-home':'s-home');
 }
 
 function logout(){
@@ -891,7 +1049,7 @@ async function loadJobs(){
         </div>
         <div style="font-size:12px;color:#666;margin-bottom:6px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
         <div style="font-size:13px;color:#444;margin-bottom:10px;">${statusLabel}</div>
-        ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
+        ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}        ${j.status==='provider_done'?`<div style="background:#e8f5ee;border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;color:#1a7a4a;font-weight:700;">🎉 Your provider has marked this job as done! Please confirm to release their payment.</div>`:''}
         <div style="display:flex;gap:8px;">
           ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
           ${j.status==='in_progress'?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Job Completed — Release Payment</button>`:''}
@@ -1174,7 +1332,328 @@ function al(id,msg,type){
 function sc(s){return{open:'var(--green)',assigned:'#d97706',in_progress:'#2563eb',completed:'#16a34a',cancelled:'var(--red)'}[s]||'#999';}
 function ta(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<60)return m+'m ago';if(m<1440)return Math.floor(m/60)+'h ago';return Math.floor(m/1440)+'d ago';}
 
-if(!loadSess())go('s-splash');else go('s-home');
+if(!loadSess())go('s-splash');else go(user&&user.role==='provider'?'s-provider-home':'s-home');
+
+// ── PROVIDER DASHBOARD FUNCTIONS ─────────────────────────────
+
+let providerAvailable = true;
+
+async function loadProviderHome() {
+  if(!user || user.id==='demo') return;
+  document.getElementById('ph-uname').textContent = user.full_name || 'Provider';
+  document.getElementById('ph-city').textContent = (user.city || 'Gwagwalada') + ', Abuja';
+  await loadIncomingJobs();
+  await loadProviderActiveJobs();
+  await loadProviderStats();
+}
+
+async function loadProviderStats() {
+  const r = await api('GET', '/providers/my-stats');
+  if(r.stats) {
+    document.getElementById('ph-jobs').textContent = r.stats.total_jobs || 0;
+    document.getElementById('ph-rating').textContent = r.stats.rating ? r.stats.rating.toFixed(1) : 'New';
+    document.getElementById('ph-earnings').textContent = '\u20a6' + ((r.stats.total_earned||0)/100).toLocaleString();
+  }
+}
+
+async function toggleAvailability() {
+  providerAvailable = !providerAvailable;
+  const toggle = document.getElementById('avail-toggle');
+  const label = document.getElementById('avail-label');
+  toggle.style.background = providerAvailable ? '#1a7a4a' : '#ccc';
+  toggle.querySelector('div').style.right = providerAvailable ? '3px' : '27px';
+  label.textContent = providerAvailable ? 'Available for Jobs' : 'Not Available';
+  await api('PUT', '/providers/availability', { is_available: providerAvailable });
+}
+
+async function loadIncomingJobs() {
+  const el = document.getElementById('ph-incoming');
+  const r = await api('GET', '/matching/incoming');
+  if(r.matches && r.matches.length > 0) {
+    el.innerHTML = r.matches.map(m => {
+      const j = m.jobs;
+      const urgColor = j.urgency==='emergency' ? '#e53e3e' : j.urgency==='same_day' ? '#f4a623' : '#2a9d5c';
+      const timeLeft = Math.max(0, Math.round((new Date(m.expires_at) - new Date()) / 60000));
+      return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:2px solid ${urgColor};">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-weight:700;font-size:15px;">${j.title||'Service Request'}</div>
+          <span style="background:${urgColor};color:white;font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700;">${j.urgency?.toUpperCase()}</span>
+        </div>
+        <div style="font-size:13px;color:#444;margin-bottom:6px;">📍 ${j.address||j.city||'Gwagwalada'}</div>
+        <div style="font-size:13px;color:#444;margin-bottom:10px;">${j.description}</div>
+        ${j.budget_from ? `<div style="font-size:13px;color:#1a7a4a;font-weight:700;margin-bottom:10px;">Budget: \u20a6${(j.budget_from/100).toLocaleString()} &#8212; \u20a6${(j.budget_to/100).toLocaleString()}</div>` : ''}
+        <div style="font-size:11px;color:#e53e3e;font-weight:700;margin-bottom:10px;">\u23f3 ${timeLeft} min left to respond</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-o btn-sm" style="flex:1;" onclick="respondToJob('${m.id}','decline')">Decline</button>
+          <button class="btn btn-w btn-sm" style="flex:1;" onclick="showQuoteInput('${m.id}')">Send Quote</button>
+          <button class="btn btn-p btn-sm" style="flex:2;" onclick="respondToJob('${m.id}','accept')">Accept Job</button>
+        </div>
+        <div id="quote-input-${m.id}" style="display:none;margin-top:10px;">
+          <input type="number" placeholder="Your quote amount (\u20a6)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:8px;font-size:14px;" id="quote-amt-${m.id}" inputmode="numeric">
+          <textarea placeholder="Note to customer (optional)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:8px;" id="quote-note-${m.id}"></textarea>
+          <button class="btn btn-p btn-sm" style="width:100%;" onclick="submitQuote('${m.id}')">Submit Quote</button>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    el.innerHTML = `<div style="text-align:center;padding:20px;color:#999;">
+      <div style="font-size:32px;margin-bottom:8px;">\ud83d\udd14</div>
+      <div style="font-weight:700;margin-bottom:4px;">No incoming requests</div>
+      <div style="font-size:13px;">Stay available to receive job notifications</div>
+    </div>`;
+  }
+}
+
+function showQuoteInput(matchId) {
+  const el = document.getElementById('quote-input-' + matchId);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+async function respondToJob(matchId, action) {
+  const r = await api('POST', '/matching/respond', { match_id: matchId, action });
+  if(r.success) {
+    alert(r.message);
+    loadProviderHome();
+  } else {
+    alert(r.error || 'Could not respond');
+  }
+}
+
+async function submitQuote(matchId) {
+  const amt = document.getElementById('quote-amt-' + matchId).value;
+  const note = document.getElementById('quote-note-' + matchId).value;
+  if(!amt) return alert('Enter your quote amount');
+  const r = await api('POST', '/matching/respond', { match_id: matchId, action: 'quote', quote_amount: parseInt(amt), quote_note: note });
+  if(r.success) {
+    alert(r.message);
+    loadProviderHome();
+  } else {
+    alert(r.error || 'Could not submit quote');
+  }
+}
+
+async function loadProviderActiveJobs() {
+  const el = document.getElementById('ph-active');
+  const r = await api('GET', '/providers/my-jobs');
+  if(r.jobs && r.jobs.length > 0) {
+    el.innerHTML = r.jobs.filter(j => ['assigned','in_progress','revision_pending'].includes(j.status)).map(j => {
+      const price = j.agreed_price ? (j.agreed_price/100).toLocaleString() : null;
+      return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #ddd;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-weight:700;">${j.title||'Service Job'}</div>
+          <span style="background:#3498db;color:white;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:700;">${j.status?.toUpperCase()}</span>
+        </div>
+        <div style="font-size:12px;color:#666;margin-bottom:8px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
+        ${price ? `<div style="font-size:15px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">\u20a6${price} agreed</div>` : ''}
+        <div style="display:flex;gap:8px;">
+          ${j.status==='assigned' ? `<div style="font-size:12px;color:#f4a623;font-weight:700;">\u23f3 Waiting for customer payment</div>` : ''}
+          ${j.status==='in_progress' ? `
+            <button class="btn btn-w btn-sm" style="flex:1;" onclick="providerReviseQuote('${j.id}')">Revise Quote</button>
+            <button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="markJobDone('${j.id}')">Mark as Done</button>
+          ` : ''}
+        </div>
+      </div>`;
+    }).join('') || '<div style="color:#999;text-align:center;padding:16px;">No active jobs right now</div>';
+  } else {
+    el.innerHTML = '<div style="color:#999;text-align:center;padding:16px;">No active jobs right now</div>';
+  }
+}
+
+async function markJobDone(jobId) {
+  if(!confirm('Mark this job as completed? The customer will be notified to release payment.')) return;
+  const r = await api('PUT', '/providers/mark-done', { job_id: jobId });
+  if(r.success) {
+    alert('Job marked as done! Waiting for customer to confirm and release payment.');
+    loadProviderHome();
+  } else {
+    alert(r.error || 'Could not update job');
+  }
+}
+
+async function providerReviseQuote(jobId) {
+  const amt = prompt('Enter revised quote amount (\u20a6):');
+  const reason = prompt('Reason for price change:');
+  if(!amt || !reason) return;
+  const r = await api('POST', '/matching/revise-quote', { job_id: jobId, revised_amount: parseInt(amt), reason });
+  if(r.success) {
+    alert('Revised quote sent to customer!');
+    loadProviderHome();
+  } else {
+    alert(r.error || 'Could not send revision');
+  }
+}
+
+async function loadProviderJobs() {
+  const el = document.getElementById('pj-list');
+  el.innerHTML = '<div class="ld">Loading...</div>';
+  const r = await api('GET', '/providers/my-jobs');
+  if(r.jobs && r.jobs.length > 0) {
+    el.innerHTML = r.jobs.map(j => {
+      const price = j.agreed_price ? (j.agreed_price/100).toLocaleString() : null;
+      const statusColor = {assigned:'#f4a623',in_progress:'#3498db',completed:'#27ae60',disputed:'#e53e3e'}[j.status]||'#999';
+      return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #ddd;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-weight:700;">${j.title||'Service Job'}</div>
+          <span style="background:${statusColor};color:white;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:700;">${j.status?.toUpperCase()}</span>
+        </div>
+        <div style="font-size:12px;color:#666;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
+        ${price ? `<div style="font-size:14px;font-weight:800;color:#1a7a4a;margin-top:6px;">\u20a6${price}</div>` : ''}
+      </div>`;
+    }).join('');
+  } else {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">No jobs yet</div>';
+  }
+}
+
+async function loadProviderEarnings() {
+  const r = await api('GET', '/providers/earnings');
+  if(r.earnings) {
+    document.getElementById('pe-total').textContent = '\u20a6' + (r.earnings.total/100).toLocaleString();
+    document.getElementById('pe-jobs').textContent = r.earnings.completed_jobs || 0;
+    document.getElementById('pe-pending').textContent = '\u20a6' + ((r.earnings.pending||0)/100).toLocaleString();
+    const el = document.getElementById('pe-history');
+    if(r.earnings.payments && r.earnings.payments.length > 0) {
+      el.innerHTML = r.earnings.payments.map(p => `
+        <div style="background:white;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:700;font-size:14px;">${p.jobs?.title||'Job Payment'}</div>
+            <div style="font-size:12px;color:#666;">${ta(p.released_at||p.paid_at)}</div>
+          </div>
+          <div style="font-size:16px;font-weight:800;color:#1a7a4a;">+\u20a6${(p.provider_amount/100).toLocaleString()}</div>
+        </div>`).join('');
+    } else {
+      el.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">No payments yet</div>';
+    }
+  }
+}
+
+async function loadProviderProfilePage() {
+  if(!user) return;
+  document.getElementById('pp-name').textContent = user.full_name || 'Provider';
+  document.getElementById('pp-init').textContent = (user.full_name||'P').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  const r = await api('GET', '/providers/profile');
+  if(r.profile) {
+    document.getElementById('pp-bio').textContent = r.profile.bio || 'No bio yet';
+    document.getElementById('pp-bio-edit').value = r.profile.bio || '';
+    document.getElementById('pp-rate').value = r.profile.hourly_rate ? r.profile.hourly_rate/100 : '';
+    const badge = document.getElementById('pp-badge');
+    if(r.profile.verification_status === 'verified') {
+      badge.textContent = '\u2713 Verified';
+      badge.style.background = '#e8f5ee';
+      badge.style.color = '#1a7a4a';
+    } else {
+      badge.textContent = 'Pending Verification';
+    }
+  }
+}
+
+async function updateProviderProfile() {
+  const bio = document.getElementById('pp-bio-edit').value.trim();
+  const rate = document.getElementById('pp-rate').value;
+  const r = await api('PUT', '/providers/profile', {
+    bio,
+    hourly_rate: rate ? parseInt(rate) * 100 : null
+  });
+  if(r.success || r.profile) {
+    al('al-pp', 'Profile updated!', 's');
+  } else {
+    al('al-pp', r.error || 'Could not update profile', 'e');
+  }
+}
+
 </script>
 </body>
 </html>
+<script>
+// PATCH: Override loadProviderProfilePage with bank account support
+async function loadProviderProfilePage() {
+  if(!user) return;
+  document.getElementById('pp-name').textContent = user.full_name || 'Provider';
+  document.getElementById('pp-init').textContent = (user.full_name||'P').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  const r = await api('GET', '/providers/profile');
+  if(r.profile) {
+    document.getElementById('pp-bio').textContent = r.profile.bio || 'No bio yet';
+    document.getElementById('pp-bio-edit').value = r.profile.bio || '';
+    document.getElementById('pp-rate').value = r.profile.hourly_rate ? r.profile.hourly_rate/100 : '';
+    const badge = document.getElementById('pp-badge');
+    if(r.profile.verification_status === 'verified') {
+      badge.textContent = '\u2713 Verified'; badge.style.background = '#e8f5ee'; badge.style.color = '#1a7a4a';
+    } else { badge.textContent = 'Pending Verification'; }
+    const bankStatus = document.getElementById('bank-status');
+    if(bankStatus) {
+      if(r.profile.account_number) {
+        bankStatus.innerHTML = `<div style="background:#e8f5ee;border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:700;color:#1a7a4a;font-size:13px;">\u2705 Bank Account Saved</div>
+            <div style="font-size:12px;color:#444;margin-top:2px;">${r.profile.bank_name} \u00b7 ****${r.profile.account_number.slice(-4)}</div>
+            <div style="font-size:12px;color:#666;">${r.profile.account_name||''}</div>
+          </div>
+          <button onclick="document.getElementById('bank-form').style.display='block'" style="font-size:11px;color:#1a7a4a;background:none;border:1px solid #1a7a4a;border-radius:6px;padding:4px 10px;cursor:pointer;">Update</button>
+        </div>`;
+        const bf = document.getElementById('bank-form');
+        if(bf) { bf.style.display='none'; document.getElementById('pp-bank').value=r.profile.bank_name||''; document.getElementById('pp-acct').value=r.profile.account_number||''; document.getElementById('pp-acctname').value=r.profile.account_name||''; }
+      } else {
+        bankStatus.innerHTML = `<div style="background:#fff3cd;border-radius:10px;padding:12px;font-size:13px;color:#856404;">\u26a0\ufe0f No bank account added yet \u2014 you won't receive payments until you add one!</div>`;
+      }
+    }
+  }
+}
+
+async function saveBankAccount() {
+  const bank = document.getElementById('pp-bank').value;
+  const acct = document.getElementById('pp-acct').value.trim();
+  const name = document.getElementById('pp-acctname').value.trim();
+  if(!bank) return alert('Select your bank');
+  if(!acct || acct.length < 10) return alert('Enter a valid 10-digit account number');
+  if(!name) return alert('Enter the account name');
+  const btn = document.getElementById('btn-bank');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  const r = await api('PUT', '/providers/bank-account', { bank_name: bank, account_number: acct, account_name: name });
+  btn.textContent = 'Save Bank Account'; btn.disabled = false;
+  if(r.success || r.profile) {
+    alert('Bank account saved! You can now receive payments.');
+    loadProviderProfilePage();
+  } else {
+    alert(r.error || 'Could not save bank account');
+  }
+}
+</script>
+<script>
+// PATCH: Override loadJobs to handle pending_completion status
+const _origLoadJobs = loadJobs;
+async function loadJobs(){
+  const el=document.getElementById('j-list');
+  if(!user||user.id==='demo'){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><div class="empty-sub">Request a service and get matched with verified professionals in Gwagwalada.</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;" onclick="go('s-postjob')">Request a Service</button></div>`;
+    return;
+  }
+  el.innerHTML='<div class="ld">Loading...</div>';
+  const r=await api('GET','/jobs');
+  if(r.jobs?.length){
+    el.innerHTML=r.jobs.map(j=>{
+      const statusColor={open:'#2a9d5c',assigned:'#f4a623',payment_pending:'#e67e22',in_progress:'#3498db',pending_completion:'#9b59b6',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#8e44ad'}[j.status]||'#999';
+      const statusLabel={open:'Waiting for providers',assigned:'Provider assigned — Pay now',payment_pending:'Payment pending',in_progress:'Work in progress',pending_completion:'Provider says job is done!',completed:'✅ Completed',disputed:'⚠️ Disputed',revision_pending:'Revised quote pending'}[j.status]||j.status;
+      const price=j.agreed_price?(j.agreed_price/100).toLocaleString():null;
+      return`<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:${j.status==='pending_completion'?'2px solid #9b59b6':'1px solid #ddd'};box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+          <div style="font-weight:700;font-size:15px;flex:1;color:#111;">${j.title||'Service Request'}</div>
+          <span style="background:${statusColor};color:white;font-size:10px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:700;">${j.urgency==='emergency'?'🚨 ':''} ${j.status?.toUpperCase().replace('_',' ')}</span>
+        </div>
+        <div style="font-size:12px;color:#666;margin-bottom:6px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
+        <div style="font-size:13px;color:#444;margin-bottom:10px;">${statusLabel}</div>
+        ${j.status==='pending_completion'?`<div style="background:#f3e8ff;border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px;color:#6b21a8;">🎉 Your provider has marked this job as done! Confirm to release their payment.</div>`:''}
+        ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
+          ${j.status==='in_progress'||j.status==='pending_completion'?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm Done — Release Payment</button>`:''}
+          ${j.status==='in_progress'||j.status==='pending_completion'?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
+          ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
+          ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">View Quotes</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }else{
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;margin-top:12px;" onclick="go('s-postjob')">Request a Service</button></div>`;
+  }
+}
+</script>
