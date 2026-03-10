@@ -1144,11 +1144,17 @@ async function checkPendingPayment(){
 }
 
 async function confirmComplete(jobId){
-  if(!confirm('Confirm that the job has been completed? This will release payment to the provider.')) return;
+  // Change button to loading state
+  const btn = document.querySelector(`[onclick="confirmComplete('${jobId}')"]`);
+  if(btn){ btn.textContent='Releasing...'; btn.disabled=true; }
+  
   const r=await api('POST','/payments/release',{job_id:jobId});
+  
+  if(btn){ btn.textContent='✅ Confirm Done — Release Payment'; btn.disabled=false; }
+  
   if(r.success){
     // Show review screen
-    state.reviewJobId = jobId;
+    state.reviewJobId = r.job_id || jobId;
     state.reviewProviderId = r.provider_id || null;
     state.currentRating = 0;
     // Reset stars
