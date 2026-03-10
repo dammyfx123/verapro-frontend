@@ -1366,7 +1366,33 @@ function al(id,msg,type){
 function sc(s){return{open:'var(--green)',assigned:'#d97706',in_progress:'#2563eb',completed:'#16a34a',cancelled:'var(--red)'}[s]||'#999';}
 function ta(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<60)return m+'m ago';if(m<1440)return Math.floor(m/60)+'h ago';return Math.floor(m/1440)+'d ago';}
 
-if(!loadSess())go('s-splash');else go(user&&user.role==='provider'?'s-provider-home':'s-home');
+// Check if returning from Paystack before routing
+(async function(){
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentStatus = urlParams.get('payment');
+  const ref = localStorage.getItem('pending_payment_ref');
+  const jobId = localStorage.getItem('pending_payment_job');
+
+  if(paymentStatus === 'success' && ref && jobId){
+    window.history.replaceState({}, '', window.location.pathname);
+    if(!loadSess()){ go('s-splash'); return; }
+    go(user&&user.role==='provider'?'s-provider-home':'s-jobs');
+    // Small delay to let app render first
+    setTimeout(async ()=>{
+      const r = await api('GET', '/payments/verify/' + ref);
+      if(r.success){
+        localStorage.removeItem('pending_payment_ref');
+        localStorage.removeItem('pending_payment_job');
+        alert('✅ Payment confirmed! Money is safely held in escrow. Provider will start work shortly.');
+        loadJobs();
+      } else {
+        alert('⚠️ Payment verification failed. Please tap your job and try again, or contact support@verapro.ng\nRef: ' + ref);
+      }
+    }, 800);
+  } else {
+    if(!loadSess())go('s-splash');else go(user&&user.role==='provider'?'s-provider-home':'s-home');
+  }
+})();
 
 // ── PROVIDER DASHBOARD FUNCTIONS ─────────────────────────────
 
