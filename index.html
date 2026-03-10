@@ -1067,8 +1067,11 @@ async function loadJobs(){
 async function initPayment(jobId, amount){
   const r=await api('POST','/payments/initialize',{job_id:jobId});
   if(r.payment_url){
-    window.open(r.payment_url,'_blank');
-    setTimeout(()=>verifyPayment(r.reference,jobId),15000);
+    // Store reference so we can verify when user returns
+    localStorage.setItem('pending_payment_ref', r.reference);
+    localStorage.setItem('pending_payment_job', jobId);
+    // Redirect in same tab so we can catch the callback
+    window.location.href = r.payment_url;
   } else {
     alert(r.error||'Could not initialize payment');
   }
@@ -1077,8 +1080,39 @@ async function initPayment(jobId, amount){
 async function verifyPayment(reference, jobId){
   const r=await api('GET','/payments/verify/'+reference);
   if(r.success){
+    localStorage.removeItem('pending_payment_ref');
+    localStorage.removeItem('pending_payment_job');
     alert('Payment confirmed! Your money is in escrow. Provider will start work shortly.');
     loadJobs();
+  } else {
+    // Show manual retry button
+    if(confirm('Payment verification failed. Did you complete the payment? Tap OK to retry.')){
+      await verifyPayment(reference, jobId);
+    }
+  }
+}
+
+// Called on page load — check if returning from Paystack
+async function checkPendingPayment(){
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentStatus = urlParams.get('payment');
+  const ref = localStorage.getItem('pending_payment_ref');
+  const jobId = localStorage.getItem('pending_payment_job');
+  
+  if(paymentStatus === 'success' && ref && jobId){
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+    // Verify with backend
+    const r = await api('GET', '/payments/verify/' + ref);
+    if(r.success){
+      localStorage.removeItem('pending_payment_ref');
+      localStorage.removeItem('pending_payment_job');
+      alert('✅ Payment confirmed! Your money is safely held in escrow. Provider will start work shortly.');
+      if(state.user?.role === 'provider') go('s-provider-home');
+      else { go('s-jobs'); loadJobs(); }
+    } else {
+      alert('Payment verification failed. Please contact support@verapro.ng with your payment reference: ' + ref);
+    }
   }
 }
 
