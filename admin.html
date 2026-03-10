@@ -387,6 +387,28 @@ let adminToken = null;
 let allJobs = [], allPayments = [];
 
 // ── AUTH ─────────────────────────────────────────────
+async function submitAdminOTP(phone) {
+  const otp = document.getElementById('admin-otp').value.trim();
+  const err = document.getElementById('login-err');
+  if (!otp) { err.textContent = 'Enter OTP'; return; }
+  try {
+    const r = await fetch(API + '/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, token: otp })
+    });
+    const data = await r.json();
+    if (data.token) {
+      adminToken = data.token;
+      sessionStorage.setItem('admin_token', adminToken);
+      showApp();
+    } else {
+      err.textContent = data.error || 'Invalid OTP';
+    }
+  } catch(e) {
+    err.textContent = 'Connection error';
+  }
+}
 async function adminLogin() {
   const phone = document.getElementById('admin-phone').value.trim();
   const pass = document.getElementById('admin-pass').value.trim();
@@ -396,37 +418,36 @@ async function adminLogin() {
   if (!phone) { err.textContent = 'Enter phone number'; return; }
 
   try {
-    // Login via normal auth, then verify it's the admin phone
-    const r = await fetch(API + '/auth/login', {
+    // Step 1: Send OTP
+    err.textContent = 'Sending OTP...';
+    const r = await fetch(API + '/auth/send-otp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone })
     });
     const data = await r.json();
-    // For admin, use OTP bypass - admin enters 123456
-    err.textContent = 'OTP sent. Enter 123456 to verify (test mode)';
-    
-    // Store phone for OTP step
-    sessionStorage.setItem('admin_phone', phone);
-    // Prompt for OTP
-    const otp = prompt('Enter OTP (123456 for test mode):');
-    if (!otp) return;
-    
-    const r2 = await fetch(API + '/auth/verify-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, token: otp })
-    });
-    const data2 = await r2.json();
-    if (data2.token) {
-      adminToken = data2.token;
-      sessionStorage.setItem('admin_token', adminToken);
-      showApp();
-    } else {
-      err.textContent = data2.error || 'Login failed';
+    if (!r.ok && !data.message) {
+      err.textContent = data.error || 'Failed to send OTP';
+      return;
     }
+
+    err.textContent = '✓ OTP sent. Enter it below.';
+
+    // Step 2: Show OTP input
+    document.getElementById('admin-phone').style.display = 'none';
+    document.getElementById('admin-pass').style.display = 'none';
+    document.querySelector('.login-box button').style.display = 'none';
+
+    const otpDiv = document.createElement('div');
+    otpDiv.innerHTML = `
+      <input type="text" id="admin-otp" placeholder="Enter OTP (123456 for test)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;margin-bottom:12px;outline:none;">
+      <button onclick="submitAdminOTP('${phone}')" style="width:100%;background:var(--green);color:#000;border:none;border-radius:10px;padding:14px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Verify & Enter →</button>
+    `;
+    document.querySelector('.login-box').appendChild(otpDiv);
+    document.getElementById('admin-otp').focus();
+
   } catch(e) {
-    err.textContent = 'Connection error';
+    err.textContent = 'Connection error — check your internet connection';
   }
 }
 
