@@ -1144,23 +1144,22 @@ async function checkPendingPayment(){
 }
 
 async function confirmComplete(jobId){
-  // Change button to loading state
-  const btn = document.querySelector(`[onclick="confirmComplete('${jobId}')"]`);
-  if(btn){ btn.textContent='Releasing...'; btn.disabled=true; }
-  
   const r=await api('POST','/payments/release',{job_id:jobId});
-  
-  if(btn){ btn.textContent='✅ Confirm Done — Release Payment'; btn.disabled=false; }
-  
   if(r.success){
-    // Show review screen
     state.reviewJobId = r.job_id || jobId;
     state.reviewProviderId = r.provider_id || null;
     state.currentRating = 0;
-    // Reset stars
     document.querySelectorAll('.star-btn').forEach(s => { s.style.opacity='.3'; s.style.color=''; });
-    document.getElementById('review-text').value = '';
-    document.getElementById('rating-label').textContent = 'Tap a star to rate';
+    if(document.getElementById('review-text')) document.getElementById('review-text').value = '';
+    if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
+    go('s-review');
+  } else if(r.error && r.error.includes('not found')){
+    // Payment already released — still show review screen
+    state.reviewJobId = jobId;
+    state.currentRating = 0;
+    document.querySelectorAll('.star-btn').forEach(s => { s.style.opacity='.3'; s.style.color=''; });
+    if(document.getElementById('review-text')) document.getElementById('review-text').value = '';
+    if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
     go('s-review');
   } else {
     alert(r.error||'Could not release payment');
@@ -1195,6 +1194,16 @@ async function submitReview(){
     // Even if it fails, move on
     go('s-jobs'); loadJobs();
   }
+}
+
+function leaveReview(jobId, providerId){
+  state.reviewJobId = jobId;
+  state.reviewProviderId = providerId || null;
+  state.currentRating = 0;
+  document.querySelectorAll('.star-btn').forEach(s => { s.style.opacity='.3'; s.style.color=''; });
+  if(document.getElementById('review-text')) document.getElementById('review-text').value = '';
+  if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
+  go('s-review');
 }
 
 function skipReview(){
