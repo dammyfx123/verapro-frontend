@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VeraPro Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: #2a2a3d;
+    --green: #00e87a;
+    --green-dim: #00e87a22;
+    --yellow: #ffd166;
+    --red: #ff4757;
+    --blue: #4f8ef7;
+    --purple: #9b72ff;
+    --text: #f0f0f8;
+    --text2: #8888aa;
+    --text3: #55556a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; min-height:100vh; }
+
+  /* LOGIN */
+  #login-screen {
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh;
+    background: radial-gradient(ellipse at 30% 40%, #00e87a11 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, #9b72ff11 0%, transparent 60%),
+                var(--bg);
+  }
+  .login-box {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:20px; padding:48px 40px; width:360px;
+    box-shadow: 0 40px 80px #000a;
+  }
+  .login-logo {
+    font-size:28px; font-weight:800; color:var(--green);
+    margin-bottom:4px; letter-spacing:-1px;
+  }
+  .login-sub { color:var(--text2); font-size:13px; margin-bottom:32px; font-family:'JetBrains Mono',monospace; }
+  .login-box input {
+    width:100%; background:var(--surface2); border:1px solid var(--border);
+    border-radius:10px; padding:14px 16px; color:var(--text);
+    font-family:'Syne',sans-serif; font-size:14px; margin-bottom:12px;
+    outline:none; transition:border-color .2s;
+  }
+  .login-box input:focus { border-color:var(--green); }
+  .login-box button {
+    width:100%; background:var(--green); color:#000; border:none;
+    border-radius:10px; padding:14px; font-family:'Syne',sans-serif;
+    font-size:15px; font-weight:700; cursor:pointer; transition:opacity .2s;
+    margin-top:8px;
+  }
+  .login-box button:hover { opacity:.85; }
+  .login-err { color:var(--red); font-size:13px; margin-top:8px; text-align:center; }
+
+  /* MAIN APP */
+  #app { display:none; }
+  .sidebar {
+    position:fixed; left:0; top:0; bottom:0; width:220px;
+    background:var(--surface); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; z-index:100;
+  }
+  .sidebar-logo {
+    padding:24px 20px 20px; font-size:20px; font-weight:800;
+    color:var(--green); letter-spacing:-0.5px; border-bottom:1px solid var(--border);
+  }
+  .sidebar-logo span { color:var(--text2); font-size:11px; font-family:'JetBrains Mono',monospace; display:block; font-weight:400; margin-top:2px; }
+  .nav-item {
+    display:flex; align-items:center; gap:12px; padding:13px 20px;
+    color:var(--text2); cursor:pointer; transition:all .15s; font-size:14px;
+    border-left:3px solid transparent;
+  }
+  .nav-item:hover { color:var(--text); background:var(--surface2); }
+  .nav-item.active { color:var(--green); background:var(--green-dim); border-left-color:var(--green); }
+  .nav-icon { font-size:16px; width:20px; text-align:center; }
+  .sidebar-bottom { margin-top:auto; padding:16px 20px; border-top:1px solid var(--border); }
+  .logout-btn {
+    width:100%; background:transparent; border:1px solid var(--border);
+    color:var(--text2); border-radius:8px; padding:10px;
+    font-family:'Syne',sans-serif; font-size:13px; cursor:pointer; transition:all .2s;
+  }
+  .logout-btn:hover { border-color:var(--red); color:var(--red); }
+
+  .main { margin-left:220px; padding:32px; min-height:100vh; }
+  .page { display:none; }
+  .page.active { display:block; }
+
+  .page-header { margin-bottom:28px; }
+  .page-title { font-size:26px; font-weight:800; letter-spacing:-0.5px; }
+  .page-sub { color:var(--text2); font-size:13px; margin-top:4px; font-family:'JetBrains Mono',monospace; }
+
+  /* STAT CARDS */
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+  .stat-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:20px;
+  }
+  .stat-label { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .stat-value { font-size:28px; font-weight:800; letter-spacing:-1px; }
+  .stat-value.green { color:var(--green); }
+  .stat-value.yellow { color:var(--yellow); }
+  .stat-value.blue { color:var(--blue); }
+  .stat-value.purple { color:var(--purple); }
+  .stat-change { font-size:12px; color:var(--text2); margin-top:4px; }
+
+  /* TABLE */
+  .table-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .table-header { padding:18px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .table-title { font-size:15px; font-weight:700; }
+  .table-actions { display:flex; gap:8px; }
+  .filter-btn {
+    background:var(--surface2); border:1px solid var(--border); color:var(--text2);
+    border-radius:8px; padding:6px 14px; font-family:'Syne',sans-serif;
+    font-size:12px; cursor:pointer; transition:all .15s;
+  }
+  .filter-btn:hover, .filter-btn.active { border-color:var(--green); color:var(--green); }
+  table { width:100%; border-collapse:collapse; }
+  th { padding:12px 20px; text-align:left; font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border); font-weight:400; }
+  td { padding:14px 20px; font-size:13px; border-bottom:1px solid #1a1a26; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#ffffff04; }
+
+  .badge {
+    display:inline-block; padding:3px 10px; border-radius:20px;
+    font-size:11px; font-family:'JetBrains Mono',monospace; font-weight:600;
+  }
+  .badge-green { background:#00e87a22; color:var(--green); }
+  .badge-yellow { background:#ffd16622; color:var(--yellow); }
+  .badge-red { background:#ff475722; color:var(--red); }
+  .badge-blue { background:#4f8ef722; color:var(--blue); }
+  .badge-gray { background:#88888822; color:var(--text2); }
+  .badge-purple { background:#9b72ff22; color:var(--purple); }
+
+  .action-btn {
+    background:transparent; border:1px solid var(--border); color:var(--text2);
+    border-radius:6px; padding:4px 10px; font-family:'Syne',sans-serif;
+    font-size:11px; cursor:pointer; transition:all .15s; margin-right:4px;
+  }
+  .action-btn:hover { border-color:var(--green); color:var(--green); }
+  .action-btn.danger:hover { border-color:var(--red); color:var(--red); }
+  .action-btn.primary { border-color:var(--green); color:var(--green); }
+
+  .loading-row td { text-align:center; color:var(--text3); padding:40px; font-family:'JetBrains Mono',monospace; font-size:13px; }
+  .empty-row td { text-align:center; color:var(--text3); padding:40px; }
+
+  /* MODAL */
+  .modal-overlay {
+    position:fixed; inset:0; background:#000a; z-index:999;
+    display:none; align-items:center; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:32px; width:460px; max-width:95vw;
+    box-shadow:0 40px 80px #000;
+  }
+  .modal-title { font-size:18px; font-weight:700; margin-bottom:20px; }
+  .modal-field { margin-bottom:16px; }
+  .modal-label { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+  .modal-value { font-size:14px; color:var(--text); }
+  .modal-actions { display:flex; gap:8px; margin-top:24px; }
+  .modal-btn {
+    flex:1; padding:12px; border-radius:10px; border:none;
+    font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .modal-btn.confirm { background:var(--green); color:#000; }
+  .modal-btn.danger { background:var(--red); color:#fff; }
+  .modal-btn.cancel { background:var(--surface2); color:var(--text2); border:1px solid var(--border); }
+  .modal-btn:hover { opacity:.85; }
+  .modal-textarea {
+    width:100%; background:var(--surface2); border:1px solid var(--border);
+    border-radius:8px; padding:12px; color:var(--text);
+    font-family:'Syne',sans-serif; font-size:13px; resize:vertical; min-height:80px; outline:none;
+  }
+
+  /* TOAST */
+  .toast {
+    position:fixed; bottom:24px; right:24px; z-index:9999;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:10px; padding:14px 20px; font-size:13px;
+    transform:translateY(80px); opacity:0; transition:all .3s;
+    max-width:320px;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast.success { border-color:var(--green); color:var(--green); }
+  .toast.error { border-color:var(--red); color:var(--red); }
+
+  .section-gap { height:24px; }
+  .refresh-btn {
+    background:var(--surface2); border:1px solid var(--border); color:var(--text2);
+    border-radius:8px; padding:8px 16px; font-family:'Syne',sans-serif;
+    font-size:12px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:6px;
+  }
+  .refresh-btn:hover { border-color:var(--green); color:var(--green); }
+
+  @media(max-width:768px){
+    .sidebar { display:none; }
+    .main { margin-left:0; padding:16px; }
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">VeraPro</div>
+    <div class="login-sub">// admin console</div>
+    <input type="text" id="admin-phone" placeholder="Admin phone number" autocomplete="off">
+    <input type="password" id="admin-pass" placeholder="Admin password" onkeydown="if(event.key==='Enter')adminLogin()">
+    <button onclick="adminLogin()">Access Console →</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">VeraPro <span>// admin v1.0</span></div>
+    <div class="nav-item active" onclick="showPage('overview')"><span class="nav-icon">◈</span> Overview</div>
+    <div class="nav-item" onclick="showPage('jobs')"><span class="nav-icon">⬡</span> Jobs</div>
+    <div class="nav-item" onclick="showPage('payments')"><span class="nav-icon">◎</span> Payments</div>
+    <div class="nav-item" onclick="showPage('users')"><span class="nav-icon">◉</span> Users</div>
+    <div class="nav-item" onclick="showPage('providers')"><span class="nav-icon">◈</span> Providers</div>
+    <div class="nav-item" onclick="showPage('disputes')"><span class="nav-icon">⚠</span> Disputes</div>
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="logout()">← Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="page-header">
+        <div class="page-title">Overview</div>
+        <div class="page-sub">// real-time platform snapshot</div>
+      </div>
+      <div class="stats-grid" id="overview-stats">
+        <div class="stat-card"><div class="stat-label">Total Jobs</div><div class="stat-value blue" id="stat-jobs">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value green" id="stat-revenue">—</div></div>
+        <div class="stat-card"><div class="stat-label">Active Users</div><div class="stat-value yellow" id="stat-users">—</div></div>
+        <div class="stat-card"><div class="stat-label">Providers</div><div class="stat-value purple" id="stat-providers">—</div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">In Escrow</div><div class="stat-value yellow" id="stat-escrow">—</div></div>
+        <div class="stat-card"><div class="stat-label">Completed Jobs</div><div class="stat-value green" id="stat-completed">—</div></div>
+        <div class="stat-card"><div class="stat-label">Open Disputes</div><div class="stat-value red" id="stat-disputes">—</div></div>
+        <div class="stat-card"><div class="stat-label">Pending Release</div><div class="stat-value blue" id="stat-pending-release">—</div></div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Recent Jobs</div>
+          <button class="refresh-btn" onclick="loadOverview()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Job</th><th>Customer</th><th>Status</th><th>Amount</th><th>Date</th></tr></thead>
+          <tbody id="recent-jobs-body"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- JOBS -->
+    <div class="page" id="page-jobs">
+      <div class="page-header">
+        <div class="page-title">All Jobs</div>
+        <div class="page-sub">// manage & monitor every job</div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Jobs</div>
+          <div class="table-actions">
+            <button class="filter-btn active" onclick="filterJobs('all',this)">All</button>
+            <button class="filter-btn" onclick="filterJobs('open',this)">Open</button>
+            <button class="filter-btn" onclick="filterJobs('in_progress',this)">Active</button>
+            <button class="filter-btn" onclick="filterJobs('provider_done',this)">Done</button>
+            <button class="filter-btn" onclick="filterJobs('completed',this)">Completed</button>
+            <button class="filter-btn" onclick="filterJobs('disputed',this)">Disputed</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Title</th><th>Customer</th><th>Provider</th><th>Status</th><th>Price</th><th>Actions</th></tr></thead>
+          <tbody id="jobs-body"><tr class="loading-row"><td colspan="6">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="page" id="page-payments">
+      <div class="page-header">
+        <div class="page-title">Payments</div>
+        <div class="page-sub">// escrow management & payouts</div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Payment Records</div>
+          <div class="table-actions">
+            <button class="filter-btn active" onclick="filterPayments('all',this)">All</button>
+            <button class="filter-btn" onclick="filterPayments('escrow',this)">In Escrow</button>
+            <button class="filter-btn" onclick="filterPayments('released',this)">Released</button>
+            <button class="filter-btn" onclick="filterPayments('refunded',this)">Refunded</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Reference</th><th>Job</th><th>Amount</th><th>Commission</th><th>Provider Gets</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="payments-body"><tr class="loading-row"><td colspan="7">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <div class="page-title">Users</div>
+        <div class="page-sub">// all registered accounts</div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">All Users</div>
+          <button class="refresh-btn" onclick="loadUsers()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Name</th><th>Phone</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="users-body"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PROVIDERS -->
+    <div class="page" id="page-providers">
+      <div class="page-header">
+        <div class="page-title">Providers</div>
+        <div class="page-sub">// verified service providers</div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Provider Profiles</div>
+          <button class="refresh-btn" onclick="loadProviders()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Name</th><th>Category</th><th>Location</th><th>Rating</th><th>Jobs Done</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="providers-body"><tr class="loading-row"><td colspan="7">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DISPUTES -->
+    <div class="page" id="page-disputes">
+      <div class="page-header">
+        <div class="page-title">Disputes</div>
+        <div class="page-sub">// resolve conflicts & issue refunds</div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Open Disputes</div>
+          <button class="refresh-btn" onclick="loadDisputes()">↺ Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Job</th><th>Customer</th><th>Reason</th><th>Amount</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="disputes-body"><tr class="loading-row"><td colspan="6">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://verapro-backend-production.up.railway.app/api';
+const ADMIN_KEY = 'verapro_admin_2024'; // Simple admin password — change before launch
+let adminToken = null;
+let allJobs = [], allPayments = [];
+
+// ── AUTH ─────────────────────────────────────────────
+async function adminLogin() {
+  const phone = document.getElementById('admin-phone').value.trim();
+  const pass = document.getElementById('admin-pass').value.trim();
+  const err = document.getElementById('login-err');
+
+  if (pass !== ADMIN_KEY) { err.textContent = 'Invalid credentials'; return; }
+  if (!phone) { err.textContent = 'Enter phone number'; return; }
+
+  try {
+    // Login via normal auth, then verify it's the admin phone
+    const r = await fetch(API + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    const data = await r.json();
+    // For admin, use OTP bypass - admin enters 123456
+    err.textContent = 'OTP sent. Enter 123456 to verify (test mode)';
+    
+    // Store phone for OTP step
+    sessionStorage.setItem('admin_phone', phone);
+    // Prompt for OTP
+    const otp = prompt('Enter OTP (123456 for test mode):');
+    if (!otp) return;
+    
+    const r2 = await fetch(API + '/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, token: otp })
+    });
+    const data2 = await r2.json();
+    if (data2.token) {
+      adminToken = data2.token;
+      sessionStorage.setItem('admin_token', adminToken);
+      showApp();
+    } else {
+      err.textContent = data2.error || 'Login failed';
+    }
+  } catch(e) {
+    err.textContent = 'Connection error';
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadOverview();
+  loadJobs();
+  loadPayments();
+  loadUsers();
+  loadProviders();
+  loadDisputes();
+}
+
+function logout() {
+  adminToken = null;
+  sessionStorage.removeItem('admin_token');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// Auto-restore session
+window.addEventListener('load', () => {
+  const t = sessionStorage.getItem('admin_token');
+  if (t) { adminToken = t; showApp(); }
+});
+
+// ── API ───────────────────────────────────────────────
+async function api(method, path, body) {
+  const r = await fetch(API + path, {
+    method, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + adminToken
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  return r.json();
+}
+
+// Direct Supabase query via backend admin endpoints
+async function supabaseQuery(table, filters = '') {
+  const r = await fetch(API + '/admin/' + table + filters, {
+    headers: { 'Authorization': 'Bearer ' + adminToken }
+  });
+  return r.json();
+}
+
+// ── NAVIGATION ───────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name)?.classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── OVERVIEW ─────────────────────────────────────────
+async function loadOverview() {
+  try {
+    const [jobsData, paymentsData, usersData, providersData] = await Promise.all([
+      api('GET', '/admin/jobs'),
+      api('GET', '/admin/payments'),
+      api('GET', '/admin/users'),
+      api('GET', '/admin/providers')
+    ]);
+
+    const jobs = jobsData.jobs || [];
+    const payments = paymentsData.payments || [];
+    const users = usersData.users || [];
+    const providers = providersData.providers || [];
+
+    const totalRevenue = payments.filter(p => p.status === 'released')
+      .reduce((s, p) => s + (p.commission_amount || p.commission || 0), 0);
+    const escrow = payments.filter(p => p.status === 'escrow')
+      .reduce((s, p) => s + (p.gross_amount || 0), 0);
+    const completed = jobs.filter(j => j.status === 'completed').length;
+    const disputes = jobs.filter(j => j.status === 'disputed').length;
+    const pendingRelease = jobs.filter(j => j.status === 'provider_done').length;
+
+    document.getElementById('stat-jobs').textContent = jobs.length;
+    document.getElementById('stat-revenue').textContent = '₦' + (totalRevenue/100).toLocaleString();
+    document.getElementById('stat-users').textContent = users.length;
+    document.getElementById('stat-providers').textContent = providers.length;
+    document.getElementById('stat-escrow').textContent = '₦' + (escrow/100).toLocaleString();
+    document.getElementById('stat-completed').textContent = completed;
+    document.getElementById('stat-disputes').textContent = disputes;
+    document.getElementById('stat-pending-release').textContent = pendingRelease;
+
+    const recent = [...jobs].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8);
+    document.getElementById('recent-jobs-body').innerHTML = recent.length ? recent.map(j => `
+      <tr>
+        <td>${j.title || 'N/A'}</td>
+        <td style="color:var(--text2);font-size:12px;">${j.customer_id?.slice(0,8) || '—'}</td>
+        <td>${statusBadge(j.status)}</td>
+        <td>${j.agreed_price ? '₦' + (j.agreed_price/100).toLocaleString() : '—'}</td>
+        <td style="color:var(--text2);font-size:12px;">${timeAgo(j.created_at)}</td>
+      </tr>
+    `).join('') : '<tr class="empty-row"><td colspan="5">No jobs yet</td></tr>';
+
+  } catch(e) {
+    toast('Failed to load overview', 'error');
+  }
+}
+
+// ── JOBS ─────────────────────────────────────────────
+async function loadJobs() {
+  try {
+    const data = await api('GET', '/admin/jobs');
+    allJobs = data.jobs || [];
+    renderJobs(allJobs);
+  } catch(e) {
+    document.getElementById('jobs-body').innerHTML = '<tr class="empty-row"><td colspan="6">Failed to load</td></tr>';
+  }
+}
+
+function filterJobs(status, btn) {
+  document.querySelectorAll('#page-jobs .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = status === 'all' ? allJobs : allJobs.filter(j => j.status === status);
+  renderJobs(filtered);
+}
+
+function renderJobs(jobs) {
+  document.getElementById('jobs-body').innerHTML = jobs.length ? jobs.map(j => `
+    <tr>
+      <td><div style="font-weight:600;">${j.title || 'N/A'}</div><div style="font-size:11px;color:var(--text3);">${j.id?.slice(0,8)}</div></td>
+      <td style="font-size:12px;color:var(--text2);">${j.customer_id?.slice(0,8) || '—'}</td>
+      <td style="font-size:12px;color:var(--text2);">${j.provider_id?.slice(0,8) || 'Unassigned'}</td>
+      <td>${statusBadge(j.status)}</td>
+      <td>${j.agreed_price ? '₦' + (j.agreed_price/100).toLocaleString() : '—'}</td>
+      <td>
+        ${j.status === 'provider_done' ? `<button class="action-btn primary" onclick="adminRelease('${j.id}')">Release</button>` : ''}
+        ${j.status === 'disputed' ? `<button class="action-btn" onclick="viewDispute('${j.id}')">Resolve</button>` : ''}
+        <button class="action-btn danger" onclick="cancelJob('${j.id}')">Cancel</button>
+      </td>
+    </tr>
+  `).join('') : '<tr class="empty-row"><td colspan="6">No jobs found</td></tr>';
+}
+
+// ── PAYMENTS ─────────────────────────────────────────
+async function loadPayments() {
+  try {
+    const data = await api('GET', '/admin/payments');
+    allPayments = data.payments || [];
+    renderPayments(allPayments);
+  } catch(e) {
+    document.getElementById('payments-body').innerHTML = '<tr class="empty-row"><td colspan="7">Failed to load</td></tr>';
+  }
+}
+
+function filterPayments(status, btn) {
+  document.querySelectorAll('#page-payments .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = status === 'all' ? allPayments : allPayments.filter(p => p.status === status);
+  renderPayments(filtered);
+}
+
+function renderPayments(payments) {
+  document.getElementById('payments-body').innerHTML = payments.length ? payments.map(p => `
+    <tr>
+      <td style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);">${(p.reference||p.paystack_reference||'—').slice(0,16)}</td>
+      <td style="font-size:12px;">${p.job_id?.slice(0,8) || '—'}</td>
+      <td style="font-weight:700;">₦${((p.gross_amount||0)/100).toLocaleString()}</td>
+      <td style="color:var(--green);">₦${((p.commission_amount||p.commission||0)/100).toLocaleString()}</td>
+      <td style="color:var(--yellow);">₦${((p.net_amount||p.provider_amount||0)/100).toLocaleString()}</td>
+      <td>${paymentBadge(p.status)}</td>
+      <td>
+        ${p.status === 'escrow' ? `<button class="action-btn primary" onclick="adminReleasePayment('${p.id}','${p.job_id}')">Release</button>` : ''}
+        ${p.status === 'escrow' ? `<button class="action-btn danger" onclick="adminRefund('${p.id}','${p.job_id}')">Refund</button>` : ''}
+      </td>
+    </tr>
+  `).join('') : '<tr class="empty-row"><td colspan="7">No payments found</td></tr>';
+}
+
+// ── USERS ─────────────────────────────────────────────
+async function loadUsers() {
+  try {
+    const data = await api('GET', '/admin/users');
+    const users = data.users || [];
+    document.getElementById('users-body').innerHTML = users.length ? users.map(u => `
+      <tr>
+        <td><div style="font-weight:600;">${u.full_name || 'N/A'}</div></td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">${u.phone || '—'}</td>
+        <td>${u.role === 'provider' ? '<span class="badge badge-purple">Provider</span>' : '<span class="badge badge-blue">Customer</span>'}</td>
+        <td style="font-size:12px;color:var(--text2);">${timeAgo(u.created_at)}</td>
+        <td><button class="action-btn" onclick="viewUser('${u.id}')">View</button></td>
+      </tr>
+    `).join('') : '<tr class="empty-row"><td colspan="5">No users found</td></tr>';
+  } catch(e) {
+    document.getElementById('users-body').innerHTML = '<tr class="empty-row"><td colspan="5">Failed to load</td></tr>';
+  }
+}
+
+// ── PROVIDERS ──────────────────────────────────────────
+async function loadProviders() {
+  try {
+    const data = await api('GET', '/admin/providers');
+    const providers = data.providers || [];
+    document.getElementById('providers-body').innerHTML = providers.length ? providers.map(p => `
+      <tr>
+        <td><div style="font-weight:600;">${p.users?.full_name || p.user_id?.slice(0,8) || 'N/A'}</div></td>
+        <td style="font-size:12px;">${p.service_category || '—'}</td>
+        <td style="font-size:12px;color:var(--text2);">${p.city || p.location || '—'}</td>
+        <td>${p.rating ? '⭐ ' + p.rating : '—'}</td>
+        <td>${p.jobs_completed || 0}</td>
+        <td>${p.is_available ? '<span class="badge badge-green">Available</span>' : '<span class="badge badge-gray">Offline</span>'}</td>
+        <td>
+          <button class="action-btn" onclick="viewProvider('${p.id}')">View</button>
+          ${!p.is_verified ? `<button class="action-btn primary" onclick="verifyProvider('${p.id}')">Verify</button>` : '<span class="badge badge-green">✓ Verified</span>'}
+        </td>
+      </tr>
+    `).join('') : '<tr class="empty-row"><td colspan="7">No providers found</td></tr>';
+  } catch(e) {
+    document.getElementById('providers-body').innerHTML = '<tr class="empty-row"><td colspan="7">Failed to load</td></tr>';
+  }
+}
+
+// ── DISPUTES ──────────────────────────────────────────
+async function loadDisputes() {
+  try {
+    const data = await api('GET', '/admin/jobs');
+    const disputes = (data.jobs || []).filter(j => j.status === 'disputed');
+    document.getElementById('disputes-body').innerHTML = disputes.length ? disputes.map(j => `
+      <tr>
+        <td><div style="font-weight:600;">${j.title || 'N/A'}</div><div style="font-size:11px;color:var(--text3);">${j.id?.slice(0,8)}</div></td>
+        <td style="font-size:12px;color:var(--text2);">${j.customer_id?.slice(0,8) || '—'}</td>
+        <td style="font-size:12px;">${j.dispute_reason || 'No reason provided'}</td>
+        <td>${j.agreed_price ? '₦' + (j.agreed_price/100).toLocaleString() : '—'}</td>
+        <td style="font-size:12px;color:var(--text2);">${timeAgo(j.updated_at)}</td>
+        <td>
+          <button class="action-btn primary" onclick="resolveDispute('${j.id}','release')">Release</button>
+          <button class="action-btn danger" onclick="resolveDispute('${j.id}','refund')">Refund</button>
+        </td>
+      </tr>
+    `).join('') : '<tr class="empty-row"><td colspan="6">No open disputes 🎉</td></tr>';
+  } catch(e) {}
+}
+
+// ── ADMIN ACTIONS ──────────────────────────────────────
+async function adminRelease(jobId) {
+  openModal(`
+    <div class="modal-title">Release Payment</div>
+    <div class="modal-field"><div class="modal-label">Job ID</div><div class="modal-value">${jobId.slice(0,8)}</div></div>
+    <div class="modal-field"><div class="modal-label">Action</div><div class="modal-value">Release escrow funds to provider (90%)</div></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn confirm" onclick="doAdminRelease('${jobId}')">Confirm Release →</button>
+    </div>
+  `);
+}
+
+async function doAdminRelease(jobId) {
+  closeModal();
+  try {
+    const r = await api('POST', '/admin/release', { job_id: jobId });
+    if (r.success) {
+      toast('Payment released successfully', 'success');
+      loadJobs(); loadPayments(); loadOverview();
+    } else {
+      toast(r.error || 'Release failed', 'error');
+    }
+  } catch(e) { toast('Error releasing payment', 'error'); }
+}
+
+async function adminReleasePayment(paymentId, jobId) {
+  openModal(`
+    <div class="modal-title">Release Payment</div>
+    <div class="modal-field"><div class="modal-label">Payment ID</div><div class="modal-value">${paymentId.slice(0,8)}</div></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn confirm" onclick="doAdminRelease('${jobId}')">Confirm Release →</button>
+    </div>
+  `);
+}
+
+async function adminRefund(paymentId, jobId) {
+  openModal(`
+    <div class="modal-title">Issue Refund</div>
+    <div class="modal-field"><div class="modal-label">Reason</div><textarea class="modal-textarea" id="refund-reason" placeholder="Why is this being refunded?"></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn danger" onclick="doRefund('${paymentId}','${jobId}')">Issue Refund</button>
+    </div>
+  `);
+}
+
+async function doRefund(paymentId, jobId) {
+  const reason = document.getElementById('refund-reason')?.value;
+  closeModal();
+  try {
+    const r = await api('POST', '/admin/refund', { payment_id: paymentId, job_id: jobId, reason });
+    if (r.success) {
+      toast('Refund processed', 'success');
+      loadPayments(); loadJobs();
+    } else {
+      toast(r.error || 'Refund failed', 'error');
+    }
+  } catch(e) { toast('Error processing refund', 'error'); }
+}
+
+async function resolveDispute(jobId, action) {
+  const label = action === 'release' ? 'Release to Provider' : 'Refund Customer';
+  openModal(`
+    <div class="modal-title">Resolve Dispute</div>
+    <div class="modal-field"><div class="modal-label">Resolution</div><div class="modal-value">${label}</div></div>
+    <div class="modal-field"><div class="modal-label">Notes</div><textarea class="modal-textarea" id="dispute-notes" placeholder="Admin resolution notes..."></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn ${action === 'release' ? 'confirm' : 'danger'}" onclick="doResolveDispute('${jobId}','${action}')">Confirm →</button>
+    </div>
+  `);
+}
+
+async function doResolveDispute(jobId, action) {
+  const notes = document.getElementById('dispute-notes')?.value;
+  closeModal();
+  try {
+    const r = await api('POST', '/admin/resolve-dispute', { job_id: jobId, action, notes });
+    if (r.success) {
+      toast('Dispute resolved', 'success');
+      loadDisputes(); loadJobs(); loadPayments();
+    } else {
+      toast(r.error || 'Failed to resolve', 'error');
+    }
+  } catch(e) { toast('Error resolving dispute', 'error'); }
+}
+
+async function cancelJob(jobId) {
+  openModal(`
+    <div class="modal-title">Cancel Job</div>
+    <div class="modal-field"><div class="modal-value" style="color:var(--red);">This will cancel the job and trigger refund if payment was made.</div></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Back</button>
+      <button class="modal-btn danger" onclick="doCancelJob('${jobId}')">Cancel Job</button>
+    </div>
+  `);
+}
+
+async function doCancelJob(jobId) {
+  closeModal();
+  try {
+    const r = await api('POST', '/admin/cancel-job', { job_id: jobId });
+    if (r.success) { toast('Job cancelled', 'success'); loadJobs(); }
+    else toast(r.error || 'Failed', 'error');
+  } catch(e) { toast('Error', 'error'); }
+}
+
+async function verifyProvider(providerId) {
+  try {
+    const r = await api('POST', '/admin/verify-provider', { provider_id: providerId });
+    if (r.success) { toast('Provider verified ✓', 'success'); loadProviders(); }
+    else toast(r.error || 'Failed', 'error');
+  } catch(e) { toast('Error', 'error'); }
+}
+
+function viewUser(userId) {
+  openModal(`<div class="modal-title">User Details</div><div class="modal-field"><div class="modal-label">User ID</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${userId}</div></div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal()">Close</button></div>`);
+}
+
+function viewProvider(providerId) {
+  openModal(`<div class="modal-title">Provider Details</div><div class="modal-field"><div class="modal-label">Provider Profile ID</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${providerId}</div></div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal()">Close</button></div>`);
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function statusBadge(s) {
+  const map = {
+    open:'badge-blue', assigned:'badge-yellow', payment_pending:'badge-yellow',
+    in_progress:'badge-blue', provider_done:'badge-purple', completed:'badge-green',
+    disputed:'badge-red', cancelled:'badge-gray'
+  };
+  return `<span class="badge ${map[s]||'badge-gray'}">${(s||'unknown').replace('_',' ')}</span>`;
+}
+
+function paymentBadge(s) {
+  const map = { pending:'badge-yellow', escrow:'badge-blue', released:'badge-green', refunded:'badge-red' };
+  return `<span class="badge ${map[s]||'badge-gray'}">${s||'unknown'}</span>`;
+}
+
+function timeAgo(d) {
+  if (!d) return '—';
+  const m = Math.floor((Date.now() - new Date(d)) / 60000);
+  if (m < 60) return m + 'm ago';
+  if (m < 1440) return Math.floor(m/60) + 'h ago';
+  return Math.floor(m/1440) + 'd ago';
+}
+
+function openModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
