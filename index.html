@@ -1079,7 +1079,7 @@ async function loadJobs(){
         ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}        ${j.status==='provider_done'?`<div style="background:#e8f5ee;border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;color:#1a7a4a;font-weight:700;">🎉 Your provider has marked this job as done! Please confirm to release their payment.</div>`:''}
         <div style="display:flex;gap:8px;">
           ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
-          ${j.status==='in_progress'?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Job Completed — Release Payment</button>`:''}
+          ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
           ${j.status==='in_progress'?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
           ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
           ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">View Quotes</button>`:''}
@@ -1788,7 +1788,7 @@ async function loadJobs(){
         ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
-          ${j.status==='in_progress'||j.status==='pending_completion'?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm Done — Release Payment</button>`:''}
+          ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
           ${j.status==='in_progress'||j.status==='pending_completion'?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
           ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
           ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">View Quotes</button>`:''}
