@@ -1145,8 +1145,23 @@ async function checkPendingPayment(){
 }
 
 async function confirmComplete(jobId){
-  const r=await api('POST','/payments/release',{job_id:jobId});
+  // Step 1 - confirmation
+  if(!confirm('Release payment to provider? This confirms the job is done and cannot be undone.')) return;
+
+  // Step 2 - show loading on button
+  const btns = document.querySelectorAll(`[onclick="confirmComplete('${jobId}')"]`);
+  btns.forEach(b => { b.textContent = '⏳ Releasing...'; b.disabled = true; });
+
+  // Step 3 - call API
+  const r = await api('POST', '/payments/release', {job_id: jobId});
+
+  // Step 4 - restore buttons
+  btns.forEach(b => { b.textContent = '✅ Confirm & Release Payment'; b.disabled = false; });
+
   if(r.success){
+    // Step 5 - reload jobs first so screen updates
+    await loadJobs();
+    // Step 6 - show review screen
     state.reviewJobId = r.job_id || jobId;
     state.reviewProviderId = r.provider_id || null;
     state.currentRating = 0;
@@ -1155,7 +1170,7 @@ async function confirmComplete(jobId){
     if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
     go('s-review');
   } else if(r.error && r.error.includes('not found')){
-    // Payment already released — still show review screen
+    await loadJobs();
     state.reviewJobId = jobId;
     state.currentRating = 0;
     document.querySelectorAll('.star-btn').forEach(s => { s.style.opacity='.3'; s.style.color=''; });
@@ -1163,7 +1178,7 @@ async function confirmComplete(jobId){
     if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
     go('s-review');
   } else {
-    alert(r.error||'Could not release payment');
+    alert(r.error || 'Could not release payment. Please try again.');
   }
 }
 
