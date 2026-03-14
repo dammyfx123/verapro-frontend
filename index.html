@@ -633,7 +633,8 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 
 <div class="screen" id="s-review">
   <div class="header" style="background:linear-gradient(135deg,#1a7a4a,#2a9d5c);">
-    <div style="text-align:center;padding:8px 0;">
+    <div style="text-align:center;padding:8px 0;position:relative;">
+      <button class="back" onclick="go('s-jobs')" style="position:absolute;left:0;top:50%;transform:translateY(-50%);color:white;">←</button>
       <div style="font-size:32px;margin-bottom:4px;">🎉</div>
       <div style="font-size:18px;font-weight:800;color:white;">Job Completed!</div>
       <div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:2px;">How was your experience?</div>
@@ -1148,18 +1149,19 @@ async function checkPendingPayment(){
 async function confirmComplete(jobId){
   if(!confirm('Release payment to provider? This confirms the job is done.')) return;
   const r = await api('POST', '/payments/release', {job_id: jobId});
-  if(r.success || (r.error && r.error.includes('not found'))){
-    reviewJobId = r.job_id || jobId;
-    reviewProviderId = r.provider_id || null;
-    currentRating = 0;
-    document.querySelectorAll('.star-btn').forEach(s => { s.style.opacity='.3'; s.style.color=''; });
-    if(document.getElementById('review-text')) document.getElementById('review-text').value = '';
-    if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
-    loadJobs();
-    go('s-review');
-  } else {
-    alert(r.error || 'Could not release payment. Please try again.');
+  // Show exact response so we can debug
+  if(!r.success){
+    alert('Response: ' + JSON.stringify(r));
+    return;
   }
+  reviewJobId = r.job_id || jobId;
+  reviewProviderId = r.provider_id || null;
+  currentRating = 0;
+  document.querySelectorAll('.star-btn').forEach(s => { s.style.opacity='.3'; s.style.color=''; });
+  if(document.getElementById('review-text')) document.getElementById('review-text').value = '';
+  if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
+  loadJobs();
+  go('s-review');
 }
 
 function setRating(n){
@@ -1173,7 +1175,7 @@ function setRating(n){
 }
 
 async function submitReview(){
-  if(!state.currentRating){ alert('Please select a rating'); return; }
+  if(!currentRating){ alert('Please select a rating'); return; }
   const btn = document.getElementById('submit-review-btn');
   btn.textContent = 'Submitting...'; btn.disabled = true;
   const r = await api('POST','/reviews/submit',{
