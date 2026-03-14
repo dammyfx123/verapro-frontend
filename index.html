@@ -583,19 +583,19 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
       <select id="j-cat" onchange="updatePriceEstimate()">
         <option value="">Select category...</option>
         <optgroup label="Home Services">
-          <option value="1">Electrician</option><option value="2">Plumber</option>
-          <option value="3">Cleaner</option><option value="4">Painter</option><option value="5">AC Technician</option>
+          <option value="Electrician">Electrician</option><option value="Plumber">Plumber</option>
+          <option value="Cleaner">Cleaner</option><option value="Painter">Painter</option><option value="AC Technician">AC Technician</option>
         </optgroup>
         <optgroup label="Skilled Trades">
-          <option value="6">Welder</option><option value="7">Tailor</option>
-          <option value="8">Mechanic</option><option value="9">Carpenter</option><option value="10">Tiler</option>
+          <option value="Welder">Welder</option><option value="Tailor">Tailor</option>
+          <option value="Mechanic">Mechanic</option><option value="Carpenter">Carpenter</option><option value="Tiler">Tiler</option>
         </optgroup>
         <optgroup label="Professional Services">
-          <option value="11">Tutor</option><option value="12">Accountant</option>
-          <option value="13">Lawyer</option><option value="14">Graphic Designer</option>
+          <option value="Tutor">Tutor</option><option value="Accountant">Accountant</option>
+          <option value="Lawyer">Lawyer</option><option value="Graphic Designer">Graphic Designer</option>
         </optgroup>
         <optgroup label="Delivery & Logistics">
-          <option value="15">Same-Day Courier</option><option value="16">Errand Runner</option><option value="17">Mover</option>
+          <option value="Same-Day Courier">Same-Day Courier</option><option value="Errand Runner">Errand Runner</option><option value="Mover">Mover</option>
         </optgroup>
       </select>
     </div>
@@ -826,6 +826,25 @@ function go(id){
 function goBack(){go(prev||'s-home');}
 
 // ── CUSTOM UI DIALOGS (replaces browser alert/confirm) ─────────
+function showInputSheet(title, placeholder, btnLabel, btnColor, onSubmit){
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
+  d.innerHTML = `
+    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;">
+      <div style="font-weight:800;font-size:17px;margin-bottom:16px;color:#111;">${title}</div>
+      <textarea id="vp-input-field" placeholder="${placeholder}" style="width:100%;border:1.5px solid #ddd;border-radius:12px;padding:12px;font-size:14px;font-family:inherit;resize:none;height:90px;outline:none;color:#111;"></textarea>
+      <button id="vp-input-submit" style="width:100%;background:${btnColor};color:white;border:none;border-radius:12px;padding:16px;font-size:15px;font-weight:700;margin-top:10px;cursor:pointer;">${btnLabel}</button>
+      <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:13px;font-size:14px;margin-top:8px;cursor:pointer;">Cancel</button>
+    </div>`;
+  document.body.appendChild(d);
+  d.querySelector('#vp-input-submit').onclick = () => {
+    const val = d.querySelector('#vp-input-field').value.trim();
+    if(!val){ showToast('Please enter something','warning'); return; }
+    d.remove();
+    onSubmit(val);
+  };
+  setTimeout(() => d.querySelector('#vp-input-field').focus(), 100);
+}
 function showToast(msg, type='success'){
   let t = document.getElementById('vp-toast');
   if(!t){
@@ -1291,13 +1310,15 @@ function skipReview(){
 }
 
 async function raiseDispute(jobId){
-  const reason=prompt('Please describe the issue:');
-  if(!reason) return;
-  const r=await api('POST','/payments/dispute',{job_id:jobId,reason});
-  if(r.success){
-    showAlert('Dispute raised. VeraPro will review within 24 hours. Your money is safe.','success');
-    loadJobs();
-  }
+  showInputSheet('⚠️ Raise a Dispute', 'Describe the issue (e.g. provider did not show up)', 'Submit Dispute', '#e53e3e', async (reason) => {
+    const r = await api('POST', '/payments/dispute', {job_id: jobId, reason});
+    if(r.success){
+      showAlert('Dispute raised. VeraPro will review within 24 hours. Your money is safe.', 'success');
+      loadJobs();
+    } else {
+      showAlert(r.error || 'Could not raise dispute', 'error');
+    }
+  });
 }
 
 let currentUrgency='emergency';
@@ -1353,7 +1374,7 @@ async function requestService(){
   b.innerHTML='<span class="spin"></span>Finding Providers...';b.disabled=true;
 
   const payload={
-    category_id:parseInt(cat),
+    category_id: cat,
     title:document.getElementById('j-cat').options[document.getElementById('j-cat').selectedIndex].text+' Request',
     description:desc,
     urgency:currentUrgency,
@@ -1696,16 +1717,18 @@ async function doMarkDone(jobId){
 }
 
 async function providerReviseQuote(jobId) {
-  const amt = prompt('Enter revised quote amount (\u20a6):');
-  const reason = prompt('Reason for price change:');
-  if(!amt || !reason) return;
-  const r = await api('POST', '/matching/revise-quote', { job_id: jobId, revised_amount: parseInt(amt), reason });
-  if(r.success) {
-    showToast('Revised quote sent to customer!');
-    loadProviderHome();
-  } else {
-    showAlert(r.error||'Could not send revision','error');
-  }
+  showInputSheet('Revise Quote', 'Enter new amount in Naira (numbers only)', 'Send Revised Quote', '#1a7a4a', async (amt) => {
+    if(isNaN(amt) || parseInt(amt) < 1) { showToast('Enter a valid amount','warning'); return; }
+    showInputSheet('Reason for change', 'Why are you changing the price?', 'Confirm', '#1a7a4a', async (reason) => {
+      const r = await api('POST', '/matching/revise-quote', { job_id: jobId, revised_amount: parseInt(amt)*100, reason });
+      if(r.success) {
+        showToast('Revised quote sent to customer!');
+        loadProviderHome();
+      } else {
+        showAlert(r.error||'Could not send revision','error');
+      }
+    });
+  });
 }
 
 async function loadProviderJobs() {
