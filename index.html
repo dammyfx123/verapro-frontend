@@ -1154,6 +1154,7 @@ async function confirmComplete(jobId){
 
   // Step 3 - call API
   const r = await api('POST', '/payments/release', {job_id: jobId});
+  console.log('Release response:', JSON.stringify(r));
 
   // Step 4 - restore buttons
   btns.forEach(b => { b.textContent = '✅ Confirm & Release Payment'; b.disabled = false; });
