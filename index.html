@@ -825,6 +825,51 @@ function go(id){
 }
 function goBack(){go(prev||'s-home');}
 
+// ── CUSTOM UI DIALOGS (replaces browser alert/confirm) ─────────
+function showToast(msg, type='success'){
+  let t = document.getElementById('vp-toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'vp-toast';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:white;padding:12px 20px;border-radius:30px;font-size:14px;font-weight:600;z-index:99999;opacity:0;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.background = type==='error'?'#e53e3e':type==='warning'?'#f4a623':'#1a7a4a';
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, 3000);
+}
+
+function showAlert(msg, type='info', onOk){
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  const icon = type==='error'?'⚠️':type==='success'?'✅':type==='warning'?'⚡':'ℹ️';
+  d.innerHTML = `
+    <div style="background:white;border-radius:20px;padding:28px 24px;text-align:center;max-width:320px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+      <div style="font-size:36px;margin-bottom:12px;">${icon}</div>
+      <div style="font-size:15px;color:#333;line-height:1.5;margin-bottom:20px;">${msg}</div>
+      <button id="vp-alert-ok" style="width:100%;background:#1a7a4a;color:white;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">OK</button>
+    </div>`;
+  document.body.appendChild(d);
+  d.querySelector('#vp-alert-ok').onclick = () => { d.remove(); if(onOk) onOk(); };
+}
+
+function showConfirm(msg, onYes, yesLabel='Confirm', yesColor='#1a7a4a'){
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
+  d.innerHTML = `
+    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;">
+      <div style="font-size:15px;color:#333;text-align:center;line-height:1.5;margin-bottom:24px;">${msg}</div>
+      <button id="vp-confirm-yes" style="width:100%;background:${yesColor};color:white;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:700;margin-bottom:10px;cursor:pointer;">${yesLabel}</button>
+      <button id="vp-confirm-no" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:14px;font-size:15px;cursor:pointer;">Cancel</button>
+    </div>`;
+  document.body.appendChild(d);
+  d.querySelector('#vp-confirm-yes').onclick = () => { d.remove(); onYes(); };
+  d.querySelector('#vp-confirm-no').onclick = () => d.remove();
+}
+
 async function api(method,path,data){
   const h={'Content-Type':'application/json'};
   if(token&&token!=='demo')h['Authorization']=`Bearer ${token}`;
@@ -904,7 +949,9 @@ function demoLogin(){
 }
 
 function logout(){
-  if(!confirm('Sign out of VeraPro?'))return;
+  showConfirm('Sign out of VeraPro?', doLogout); return;
+}
+function doLogout(){
   user=null;token=null;
   try{localStorage.removeItem('vp_u');localStorage.removeItem('vp_t');}catch(e){}
   go('s-splash');
@@ -1103,7 +1150,7 @@ async function initPayment(jobId, amount){
     // Redirect in same tab so we can catch the callback
     window.location.href = r.payment_url;
   } else {
-    alert(r.error||'Could not initialize payment');
+    showAlert(r.error||'Could not initialize payment','error');
   }
 }
 
@@ -1112,13 +1159,11 @@ async function verifyPayment(reference, jobId){
   if(r.success){
     localStorage.removeItem('pending_payment_ref');
     localStorage.removeItem('pending_payment_job');
-    alert('Payment confirmed! Your money is in escrow. Provider will start work shortly.');
+    showToast('Payment confirmed! Money is in escrow ✅');
     loadJobs();
   } else {
     // Show manual retry button
-    if(confirm('Payment verification failed. Did you complete the payment? Tap OK to retry.')){
-      await verifyPayment(reference, jobId);
-    }
+    showConfirm('Payment verification failed. Did you complete the payment?', ()=>verifyPayment(reference,jobId), 'Yes, Retry');
   }
 }
 
@@ -1137,11 +1182,11 @@ async function checkPendingPayment(){
     if(r.success){
       localStorage.removeItem('pending_payment_ref');
       localStorage.removeItem('pending_payment_job');
-      alert('✅ Payment confirmed! Your money is safely held in escrow. Provider will start work shortly.');
+      showToast('✅ Payment confirmed! Money held in escrow.');
       if(state.user?.role === 'provider') go('s-provider-home');
       else { go('s-jobs'); loadJobs(); }
     } else {
-      alert('Payment verification failed. Please contact support@verapro.ng with your payment reference: ' + ref);
+      showAlert('Payment verification failed. Contact support@verapro.ng with ref: '+ref,'error');
     }
   }
 }
@@ -1212,7 +1257,7 @@ function setRating(n){
 }
 
 async function submitReview(){
-  if(!currentRating){ alert('Please select a rating'); return; }
+  if(!currentRating){ showToast('Please select a star rating','warning'); return; }
   const btn = document.getElementById('submit-review-btn');
   btn.textContent = 'Submitting...'; btn.disabled = true;
   const r = await api('POST','/reviews/submit',{
@@ -1223,7 +1268,7 @@ async function submitReview(){
   });
   btn.textContent = 'Submit Review'; btn.disabled = false;
   if(r.success){
-    alert('Thank you for your review! ⭐');
+    showToast('Thank you for your review! ⭐');
     go('s-jobs'); loadJobs();
   } else {
     // Even if it fails, move on
@@ -1250,7 +1295,7 @@ async function raiseDispute(jobId){
   if(!reason) return;
   const r=await api('POST','/payments/dispute',{job_id:jobId,reason});
   if(r.success){
-    alert('Dispute raised. VeraPro will review within 24 hours. Your money is safe.');
+    showAlert('Dispute raised. VeraPro will review within 24 hours. Your money is safe.','success');
     loadJobs();
   }
 }
@@ -1501,10 +1546,10 @@ function ta(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<60)return
       if(r.success){
         localStorage.removeItem('pending_payment_ref');
         localStorage.removeItem('pending_payment_job');
-        alert('✅ Payment confirmed! Money is safely held in escrow. Provider will start work shortly.');
+        showToast('✅ Payment confirmed! Money held in escrow.');
         loadJobs();
       } else {
-        alert('⚠️ Payment verification failed. Please tap your job and try again, or contact support@verapro.ng\nRef: ' + ref);
+        showAlert('Payment verification failed. Please try again or contact support@verapro.ng with ref: ' + ref,'error');
       }
     }, 800);
   } else {
@@ -1590,23 +1635,23 @@ function showQuoteInput(matchId) {
 async function respondToJob(matchId, action) {
   const r = await api('POST', '/matching/respond', { match_id: matchId, action });
   if(r.success) {
-    alert(r.message);
+    showToast(r.message||'Done');
     loadProviderHome();
   } else {
-    alert(r.error || 'Could not respond');
+    showAlert(r.error||'Could not respond','error');
   }
 }
 
 async function submitQuote(matchId) {
   const amt = document.getElementById('quote-amt-' + matchId).value;
   const note = document.getElementById('quote-note-' + matchId).value;
-  if(!amt) return alert('Enter your quote amount');
+  if(!amt) return showToast('Enter your quote amount','warning');
   const r = await api('POST', '/matching/respond', { match_id: matchId, action: 'quote', quote_amount: parseInt(amt), quote_note: note });
   if(r.success) {
-    alert(r.message);
+    showToast(r.message||'Done');
     loadProviderHome();
   } else {
-    alert(r.error || 'Could not submit quote');
+    showAlert(r.error||'Could not submit quote','error');
   }
 }
 
@@ -1638,13 +1683,15 @@ async function loadProviderActiveJobs() {
 }
 
 async function markJobDone(jobId) {
-  if(!confirm('Mark this job as completed? The customer will be notified to release payment.')) return;
+  showConfirm('Mark this job as completed? The customer will be notified to release payment.', ()=>doMarkDone(jobId)); return;
+}
+async function doMarkDone(jobId){
   const r = await api('PUT', '/providers/mark-done', { job_id: jobId });
   if(r.success) {
-    alert('Job marked as done! Waiting for customer to confirm and release payment.');
+    showToast('Job marked as done! Waiting for customer to confirm.');
     loadProviderHome();
   } else {
-    alert(r.error || 'Could not update job');
+    showAlert(r.error||'Could not update job','error');
   }
 }
 
@@ -1654,10 +1701,10 @@ async function providerReviseQuote(jobId) {
   if(!amt || !reason) return;
   const r = await api('POST', '/matching/revise-quote', { job_id: jobId, revised_amount: parseInt(amt), reason });
   if(r.success) {
-    alert('Revised quote sent to customer!');
+    showToast('Revised quote sent to customer!');
     loadProviderHome();
   } else {
-    alert(r.error || 'Could not send revision');
+    showAlert(r.error||'Could not send revision','error');
   }
 }
 
@@ -1781,18 +1828,18 @@ async function saveBankAccount() {
   const bank = document.getElementById('pp-bank').value;
   const acct = document.getElementById('pp-acct').value.trim();
   const name = document.getElementById('pp-acctname').value.trim();
-  if(!bank) return alert('Select your bank');
-  if(!acct || acct.length < 10) return alert('Enter a valid 10-digit account number');
-  if(!name) return alert('Enter the account name');
+  if(!bank) return showToast('Select your bank','warning');
+  if(!acct || acct.length < 10) return showToast('Enter a valid 10-digit account number','warning');
+  if(!name) return showToast('Enter the account name','warning');
   const btn = document.getElementById('btn-bank');
   btn.textContent = 'Saving...'; btn.disabled = true;
   const r = await api('PUT', '/providers/bank-account', { bank_name: bank, account_number: acct, account_name: name });
   btn.textContent = 'Save Bank Account'; btn.disabled = false;
   if(r.success || r.profile) {
-    alert('Bank account saved! You can now receive payments.');
+    showToast('Bank account saved! ✅');
     loadProviderProfilePage();
   } else {
-    alert(r.error || 'Could not save bank account');
+    showAlert(r.error||'Could not save bank account','error');
   }
 }
 </script>
