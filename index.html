@@ -950,12 +950,15 @@ async function submitProviderSignup(){
   // Store verification data
   const r=await api('PUT','/providers/profile',{
     bio:document.getElementById('ps-bio').value,
+    service_category:document.getElementById('ps-cat').value,
+    years_experience:document.getElementById('ps-exp').value,
     verification_type:document.getElementById('ps-id-type').value,
     id_number:idNum,
     bank_name:document.getElementById('ps-bank').value,
     account_number:accNum,
     account_name:document.getElementById('ps-acc-name').value,
-    hourly_rate:document.getElementById('ps-price').value
+    hourly_rate:document.getElementById('ps-price').value,
+    location: user?.city || 'Gwagwalada'
   });
   b.innerHTML='Submit for Verification';b.disabled=false;
   al('al-psignup','✅ Submitted! Your profile is under review. You can start bidding once verified.','s');
