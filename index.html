@@ -1147,21 +1147,58 @@ async function checkPendingPayment(){
 }
 
 async function confirmComplete(jobId){
-  if(!confirm('Release payment to provider? This confirms the job is done.')) return;
+  // No confirm() - use inline confirmation instead
+  showReleaseConfirm(jobId);
+}
+
+function showReleaseConfirm(jobId){
+  // Create inline confirmation overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'release-confirm-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:flex-end;justify-content:center;';
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;">
+      <div style="font-size:24px;text-align:center;margin-bottom:8px;">💳</div>
+      <div style="font-weight:800;font-size:18px;text-align:center;margin-bottom:8px;color:#111;">Release Payment?</div>
+      <div style="color:#666;font-size:14px;text-align:center;margin-bottom:24px;">This confirms the job is done and releases the provider's payment. This cannot be undone.</div>
+      <button id="release-yes-btn" style="width:100%;background:#1a7a4a;color:white;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:700;margin-bottom:10px;cursor:pointer;">✅ Yes, Release Payment</button>
+      <button onclick="document.getElementById('release-confirm-overlay').remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:14px;font-size:15px;cursor:pointer;">Cancel</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById('release-yes-btn').onclick = async () => {
+    overlay.remove();
+    await doRelease(jobId);
+  };
+}
+
+async function doRelease(jobId){
+  // Show loading screen
+  const loading = document.createElement('div');
+  loading.id = 'release-loading';
+  loading.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:700;';
+  loading.textContent = 'Releasing payment...';
+  document.body.appendChild(loading);
+
   const r = await api('POST', '/payments/release', {job_id: jobId});
-  // Show exact response so we can debug
-  if(!r.success){
-    alert('Response: ' + JSON.stringify(r));
-    return;
+  
+  loading.remove();
+
+  if(r.success){
+    reviewJobId = r.job_id || jobId;
+    reviewProviderId = r.provider_id || null;
+    currentRating = 0;
+    document.querySelectorAll('.star-btn').forEach(s => { s.style.opacity='.3'; s.style.color=''; });
+    if(document.getElementById('review-text')) document.getElementById('review-text').value = '';
+    if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
+    loadJobs();
+    go('s-review');
+  } else {
+    const errDiv = document.createElement('div');
+    errDiv.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    errDiv.innerHTML = `<div style="background:white;border-radius:16px;padding:24px;text-align:center;max-width:320px;"><div style="font-size:24px;margin-bottom:8px;">⚠️</div><div style="font-weight:700;margin-bottom:8px;">${r.error||'Release failed'}</div><button onclick="this.closest('div').parentNode.remove()" style="background:#1a7a4a;color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;cursor:pointer;">OK</button></div>`;
+    document.body.appendChild(errDiv);
   }
-  reviewJobId = r.job_id || jobId;
-  reviewProviderId = r.provider_id || null;
-  currentRating = 0;
-  document.querySelectorAll('.star-btn').forEach(s => { s.style.opacity='.3'; s.style.color=''; });
-  if(document.getElementById('review-text')) document.getElementById('review-text').value = '';
-  if(document.getElementById('rating-label')) document.getElementById('rating-label').textContent = 'Tap a star to rate';
-  loadJobs();
-  go('s-review');
 }
 
 function setRating(n){
