@@ -673,7 +673,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
       </div>
       <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
         <span style="font-size:13px;color:var(--text-2);">Response window</span>
-        <span style="font-size:13px;font-weight:700;" id="w-timer">5:00</span>
+        <span style="font-size:13px;font-weight:700;" id="w-timer">30:00</span>
       </div>
       <div style="display:flex;justify-content:space-between;">
         <span style="font-size:13px;color:var(--text-2);">Estimated price</span>
@@ -1406,7 +1406,7 @@ async function requestService(){
 }
 
 function startWaitingTimer(providerCount){
-  let secs=300;
+  let secs=1800;
   if(waitingTimer)clearInterval(waitingTimer);
   waitingTimer=setInterval(()=>{
     secs--;
