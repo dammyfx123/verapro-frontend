@@ -1730,9 +1730,10 @@ function ta(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<60)return
 // ── PROVIDER DASHBOARD FUNCTIONS ─────────────────────────────
 
 let providerAvailable = true;
-
-// Auto-poll for incoming jobs every 20 seconds when on provider home
 let providerPollTimer = null;
+let incomingPollTimer = null;
+
+// Auto-poll for incoming jobs
 function startProviderPolling() {
   stopProviderPolling();
   providerPollTimer = setInterval(() => {
@@ -1775,7 +1776,6 @@ async function toggleAvailability() {
   await api('PUT', '/providers/availability', { is_available: providerAvailable });
 }
 
-let incomingPollTimer = null;
 function startIncomingPoll() {
   if(incomingPollTimer) clearInterval(incomingPollTimer);
   loadIncomingJobs();
