@@ -1096,7 +1096,7 @@ function pCard(p){
           <span class="chip">${p.total_jobs_completed||0} jobs</span>
           <span class="chip chip-g">✓ Verified</span>
         </div>
-        <div class="p-location">📍 ${p.city||'Gwagwalada'}</div>
+        <div class="p-location">📍 ${p.location||p.users?.city||'Gwagwalada'}</div>
       </div>
     </div>
   </div>`;
@@ -1122,25 +1122,47 @@ function dCard(p,i){
 }
 
 async function loadCat(catId,nm,em){
-  document.getElementById('cat-title').textContent=nm;go('s-cat');
-  const el=document.getElementById('cat-list');el.innerHTML='<div class="ld">Loading...</div>';
+  document.getElementById('cat-title').textContent=nm;
+  go('s-cat');
+  const el=document.getElementById('cat-list');
+  el.innerHTML='<div class="ld">Loading...</div>';
   const r=await api('GET',`/providers?category=${encodeURIComponent(catId)}`);
-  if(r.providers?.length){el.innerHTML=r.providers.map(p=>pCard(p)).join('');}
-  else{
-    const f=DEMO_P.filter(p=>String(p.cat)===String(catId)||p.job?.toLowerCase().includes(String(catId).toLowerCase()));
-    el.innerHTML=f.length?f.map(p=>dCard(p,DEMO_P.indexOf(p))).join(''):`
-      <div class="empty">
-        <div class="empty-icon">${em}</div>
-        <div class="empty-title">No ${nm} listed yet</div>
-        <div class="empty-sub">Post a job and verified ${nm.toLowerCase()} in your area will send you quotes.</div>
-        <button class="btn btn-p" style="max-width:220px;margin:0 auto;" onclick="go('s-postjob')">Post a Job</button>
+  const providers = r.providers || [];
+  if(providers.length){
+    el.innerHTML=providers.map(p=>pCard(p)).join('');
+  } else {
+    el.innerHTML=`
+      <div style="padding:20px;">
+        <div style="text-align:center;padding:24px 0 20px;">
+          <div style="font-size:48px;margin-bottom:12px;">${em}</div>
+          <div style="font-size:18px;font-weight:800;color:#111;margin-bottom:8px;">Find a ${nm.slice(0,-1)}</div>
+          <div style="font-size:14px;color:#666;margin-bottom:24px;line-height:1.5;">Post your job and verified ${nm.toLowerCase()} in Gwagwalada will send you quotes directly.</div>
+          <button class="btn btn-p" style="width:100%;max-width:280px;" onclick="go('s-postjob')">📋 Post a Job — Get Quotes</button>
+        </div>
+        <div style="border-top:1px solid #eee;padding-top:16px;margin-top:8px;">
+          <div style="font-size:12px;color:#999;text-align:center;margin-bottom:12px;">HOW IT WORKS</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;background:#e8f5ee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1a7a4a;flex-shrink:0;">1</div>
+              <div style="font-size:13px;color:#444;">Describe your problem and post your job</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;background:#e8f5ee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1a7a4a;flex-shrink:0;">2</div>
+              <div style="font-size:13px;color:#444;">Verified providers send you quotes</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;background:#e8f5ee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1a7a4a;flex-shrink:0;">3</div>
+              <div style="font-size:13px;color:#444;">Choose the best quote and pay securely</div>
+            </div>
+          </div>
+        </div>
       </div>`;
   }
 }
 
 async function loadProvider(id){
   curProvider={id};go('s-provider');
-  const el=document.getElementById('p-detail');el.innerHTML='<div class="ld">Loading...</div>';
+  const el=document.getElementById('prov-detail');if(el)el.innerHTML='<div class="ld">Loading...</div>';
   const r=await api('GET',`/providers/${id}`);
   if(r.provider){
     const p=r.provider,nm=p.users?.full_name||'Provider';
@@ -1517,6 +1539,7 @@ async function checkForQuotes(jobId){
 }
 
 async function loadQuotes(jobId){
+  currentJobId = jobId || currentJobId;
   go('s-quotes');
   const el=document.getElementById('q-list');
   el.innerHTML='<div class="ld">Loading quotes...</div>';
@@ -1546,8 +1569,8 @@ async function loadQuotes(jobId){
     el.innerHTML=`<div class="empty">
       <div class="empty-icon">⏳</div>
       <div class="empty-title">No quotes yet</div>
-      <div class="empty-sub">Providers have 5 minutes to respond. Check back shortly.</div>
-      <button class="btn btn-w" style="max-width:200px;margin:0 auto;" onclick="loadQuotes('${jobId||currentJobId}')">Refresh</button>
+      <div class="empty-sub">Providers will respond shortly. You can check back anytime.</div>
+      <button class="btn btn-p" style="max-width:200px;margin:0 auto;" onclick="loadQuotes('${jobId||currentJobId}')">↺ Refresh</button>
     </div>`;
   }
 }
@@ -1555,10 +1578,10 @@ async function loadQuotes(jobId){
 async function acceptQuote(matchId){
   const r=await api('POST','/matching/accept-quote',{match_id:matchId});
   if(r.success){
-    al('al-quotes','Quote accepted! Proceed to payment to confirm the job.','s');
-    setTimeout(()=>go('s-jobs'),2000);
+    showToast('✅ Quote accepted! Proceed to payment.');
+    setTimeout(()=>{ go('s-jobs'); loadJobs(); },1500);
   } else {
-    al('al-quotes',r.error||'Could not accept quote','e');
+    showAlert(r.error||'Could not accept quote','error');
   }
 }
 
