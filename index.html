@@ -156,7 +156,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
       </div>
     </div>
     <div style="padding:24px;">
-      <button class="btn btn-p" style="margin-bottom:10px;" onclick="go('s-login')">Get Started — It's Free</button>
+      <button class="btn btn-p" style="margin-bottom:10px;" onclick="go('s-register-phone')">Get Started — It's Free</button>
       <button class="btn btn-o" onclick="go('s-login')">I Already Have an Account</button>
       <div style="text-align:center;margin-top:16px;">
         <div class="guarantee-bar" style="justify-content:center;font-size:12px;">🛡️ VeraPro Guarantee — Pay safely, always protected</div>
@@ -165,11 +165,32 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
   </div>
 </div>
 
+<!-- REGISTER PHONE (new users) -->
+<div class="screen" id="s-register-phone">
+  <div style="flex:1;padding:32px 20px;display:flex;flex-direction:column;justify-content:center;">
+    <button class="back" onclick="go('s-splash')" style="align-self:flex-start;margin-bottom:24px;">←</button>
+    <div style="margin-bottom:28px;">
+      <div style="font-size:24px;font-weight:800;margin-bottom:6px;">Create your account</div>
+      <p style="color:var(--text-2);font-size:14px;line-height:1.5;">Enter your Nigerian phone number to get started. It's free.</p>
+    </div>
+    <div id="al-reg-phone"></div>
+    <div class="fg">
+      <label>Phone Number</label>
+      <div style="display:flex;gap:8px;">
+        <div style="padding:13px 12px;background:var(--bg);border-radius:var(--radius-sm);font-size:14px;font-weight:700;white-space:nowrap;border:1.5px solid var(--border);color:var(--text);">🇳🇬 +234</div>
+        <input type="tel" id="inp-phone-reg" placeholder="0812 345 6789" style="flex:1;" maxlength="11" inputmode="numeric">
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="sendOTPNew()" id="btn-otp-new">Continue →</button>
+    <p style="text-align:center;font-size:12px;color:var(--text-3);margin-top:20px;line-height:1.5;">By continuing you agree to our Terms of Service and Privacy Policy</p>
+  </div>
+</div>
+
 <!-- LOGIN -->
 <div class="screen" id="s-login">
   <div style="flex:1;padding:32px 20px;display:flex;flex-direction:column;justify-content:center;">
     <div style="margin-bottom:28px;">
-      <div style="font-size:24px;font-weight:800;margin-bottom:6px;">Sign in to VeraPro</div>
+      <div style="font-size:24px;font-weight:800;margin-bottom:6px;">Welcome back</div>
       <p style="color:var(--text-2);font-size:14px;line-height:1.5;">Enter your Nigerian phone number. We will send you a one-time code.</p>
     </div>
     <div id="al-login"></div>
@@ -946,6 +967,25 @@ async function api(method,path,data){
   catch(e){return{error:'Network error — check your connection'};}
 }
 
+async function sendOTPNew(){
+  const raw = document.getElementById('inp-phone-reg').value.trim();
+  if(!raw || raw.length < 10) return al('al-reg-phone','Enter a valid phone number','e');
+  const phone = raw.startsWith('0') ? '+234' + raw.slice(1) : '+234' + raw;
+  document.getElementById('otp-ph').textContent = phone;
+  const b = document.getElementById('btn-otp-new');
+  b.textContent = 'Sending...'; b.disabled = true;
+  const r = await api('POST', '/auth/send-otp', { phone });
+  b.textContent = 'Continue →'; b.disabled = false;
+  if(r.success || r.message) {
+    // Store phone and flag as new user
+    window._regPhone = phone;
+    window._isNewUser = true;
+    go('s-otp');
+  } else {
+    al('al-reg-phone', r.error || 'Could not send OTP', 'e');
+  }
+}
+
 async function sendOTP(){
   const ph=document.getElementById('inp-phone').value.trim();
   if(!ph)return al('al-login','Enter your phone number','e');
@@ -1224,6 +1264,10 @@ function providerHTML(init,name,bio,rating,jobs,exp,loc,services,price,jobTitle)
       <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--text-3);text-align:center;border:1px solid var(--border);">
         Reviews are only shown for completed in-app jobs — this keeps reviews genuine and trustworthy.
       </div>
+      <div style="margin-top:20px;display:flex;gap:10px;">
+        <button class="btn btn-p" style="flex:2;" onclick="go('s-postjob')">📋 Post a Job Request</button>
+      </div>
+      <p style="font-size:12px;color:#999;text-align:center;margin-top:10px;">Post your job and this provider will be notified to quote you</p>
     </div>`;
 }
 
