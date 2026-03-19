@@ -275,14 +275,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
     <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
       <div class="section-title" style="font-size:14px;margin-bottom:4px;">Identity Verification</div>
       <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;line-height:1.5;">Submit your BVN or NIN for verification. This is required to receive payments. Your details are never shared with customers.</p>
-      <div class="fg">
-        <label>Verification Type</label>
-        <select id="ps-id-type">
-          <option value="BVN">BVN (Bank Verification Number)</option>
-          <option value="NIN">NIN (National Identification Number)</option>
-        </select>
-      </div>
-      <div class="fg"><label>BVN / NIN Number</label><input type="text" id="ps-id-num" placeholder="Enter your 11-digit number" maxlength="11" inputmode="numeric"></div>
+      <div class="fg"><label>NIN (National Identification Number)</label><p style="font-size:12px;color:#666;margin-bottom:8px;">Your NIN keeps the platform safe. It is never shared with customers.</p><input type="text" id="ps-id-num" placeholder="Enter your 11-digit NIN" maxlength="11" inputmode="numeric"></div>
     </div>
     <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px;">
       <div class="section-title" style="font-size:14px;margin-bottom:4px;">Bank Details (for payments)</div>
@@ -446,98 +439,109 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 
 <!-- PROVIDER PROFILE -->
 <div class="screen" id="s-provider-profile">
-  <div class="header"><button class="back" onclick="go('s-provider-home')">&#8592;</button><h2>My Profile</h2></div>
-  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:40px;">
-    <div id="al-pp"></div>
-    <div style="background:white;border-radius:14px;padding:16px;border:1px solid #ddd;margin-bottom:14px;">
+  <div class="header"><h2>My Profile</h2></div>
+  <div style="flex:1;overflow-y:auto;padding:16px;padding-bottom:100px;">
+
+    <!-- Profile Card -->
+    <div style="background:linear-gradient(135deg,#1a7a4a,#2a9d5c);border-radius:16px;padding:20px;margin-bottom:16px;color:white;">
       <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px;">
-        <div class="p-avatar" style="width:56px;height:56px;font-size:20px;" id="pp-init">?</div>
+        <div class="p-avatar" style="width:56px;height:56px;font-size:20px;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);" id="pp-init">?</div>
         <div>
-          <div style="font-weight:800;font-size:17px;" id="pp-name">Loading...</div>
-          <div style="font-size:13px;color:#666;" id="pp-cat">Service Provider</div>
-          <div id="pp-badge" style="display:inline-block;background:#e8f5ee;color:#1a7a4a;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:4px;">Pending Verification</div>
+          <div style="font-weight:800;font-size:18px;" id="pp-name">Loading...</div>
+          <div style="font-size:13px;opacity:.85;margin-top:2px;" id="pp-cat-display">Service Provider</div>
+          <div id="pp-badge" style="display:inline-block;margin-top:6px;background:rgba(255,255,255,.2);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">⏳ Pending Verification</div>
         </div>
       </div>
-      <div style="font-size:13px;color:#444;line-height:1.6;" id="pp-bio">No bio yet</div>
-    </div>
-    <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:10px;">Update Profile</div>
-    <div class="fg"><label>Bio / Description</label><textarea id="pp-bio-edit" placeholder="Describe your services, experience and specialties..."></textarea></div>
-    <div class="fg"><label>Service Category</label>
-      <select id="pp-cat-edit">
-        <option value="">Select category...</option>
-        <option value="1">Electrician</option><option value="2">Plumber</option>
-        <option value="3">Cleaner</option><option value="4">Painter</option>
-        <option value="5">AC Technician</option><option value="6">Welder</option>
-        <option value="7">Tailor</option><option value="8">Mechanic</option>
-        <option value="9">Carpenter</option><option value="10">Tiler</option>
-        <option value="11">Tutor</option><option value="12">Accountant</option>
-        <option value="13">Lawyer</option><option value="14">Designer</option>
-        <option value="15">Courier</option><option value="16">Errand Runner</option>
-        <option value="17">Mover</option>
-      </select>
-    </div>
-    <div class="fg"><label>Your Rate / Starting Price (&#8358;)</label><input type="number" id="pp-rate" placeholder="e.g. 5000" inputmode="numeric"></div>
-    <button class="btn btn-p" onclick="updateProviderProfile()">Save Changes</button>
-    <!-- BANK ACCOUNT SECTION -->
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
-      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px;">💳 Payment Setup</div>
-      <div style="font-size:12px;color:#666;margin-bottom:12px;">Add your bank account to receive payments from jobs</div>
-      <div id="bank-status" style="margin-bottom:12px;"></div>
-      <div id="bank-form">
-        <div class="fg"><label>Bank Name</label><select id="pp-bank"><option value="">Select bank...</option><option value="Access Bank">Access Bank</option><option value="GTBank">GTBank</option><option value="First Bank">First Bank</option><option value="UBA">UBA</option><option value="Zenith Bank">Zenith Bank</option><option value="Kuda Bank">Kuda Bank</option><option value="OPay">OPay</option><option value="Palmpay">Palmpay</option><option value="Sterling Bank">Sterling Bank</option><option value="Fidelity Bank">Fidelity Bank</option></select></div>
-        <div class="fg"><label>Account Number</label><input type="tel" id="pp-acct" placeholder="10-digit account number" maxlength="10" inputmode="numeric"></div>
-        <div class="fg"><label>Account Name</label><input type="text" id="pp-acctname" placeholder="As shown on your bank app"></div>
-        <button class="btn btn-p" onclick="saveBankAccount()" id="btn-bank">Save Bank Account</button>
+      <div style="font-size:13px;opacity:.9;line-height:1.5;margin-bottom:14px;" id="pp-bio-disp">No bio yet.</div>
+      <div style="display:flex;gap:20px;">
+        <div style="text-align:center;"><div style="font-size:18px;font-weight:800;" id="pp-rating-disp">—</div><div style="font-size:11px;opacity:.7;">Rating</div></div>
+        <div style="text-align:center;"><div style="font-size:18px;font-weight:800;" id="pp-jobs-disp">0</div><div style="font-size:11px;opacity:.7;">Jobs Done</div></div>
+        <div style="text-align:center;"><div style="font-size:18px;font-weight:800;" id="pp-rate-disp">—</div><div style="font-size:11px;opacity:.7;">Starting Price</div></div>
       </div>
     </div>
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
-      <button class="btn btn-w" onclick="logout()" style="color:#e53e3e;border-color:#e53e3e;">Sign Out</button>
+
+    <!-- Update Profile -->
+    <div style="background:white;border-radius:14px;padding:16px;border:1px solid #eee;margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:14px;">✏️ Update Profile</div>
+      <div class="fg">
+        <label>Service Category</label>
+        <select id="pp-cat-edit">
+          <option value="">Select category...</option>
+          <optgroup label="Home Services">
+            <option value="Electrician">Electrician</option>
+            <option value="Plumber">Plumber</option>
+            <option value="Cleaner">Cleaner</option>
+            <option value="Painter">Painter</option>
+            <option value="AC Technician">AC Technician</option>
+          </optgroup>
+          <optgroup label="Skilled Trades">
+            <option value="Welder">Welder</option>
+            <option value="Tailor">Tailor</option>
+            <option value="Mechanic">Mechanic</option>
+            <option value="Carpenter">Carpenter</option>
+            <option value="Tiler">Tiler</option>
+          </optgroup>
+          <optgroup label="Professional Services">
+            <option value="Tutor">Tutor</option>
+            <option value="Accountant">Accountant</option>
+            <option value="Lawyer">Lawyer</option>
+            <option value="Graphic Designer">Graphic Designer</option>
+          </optgroup>
+          <optgroup label="Delivery & Logistics">
+            <option value="Same-Day Courier">Same-Day Courier</option>
+            <option value="Errand Runner">Errand Runner</option>
+            <option value="Mover">Mover</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="fg"><label>Bio / Description</label><textarea id="pp-bio-edit" placeholder="Describe your skills, experience and what makes you the best choice..." style="height:80px;"></textarea></div>
+      <div class="fg"><label>Starting Price (₦)</label><input type="number" id="pp-rate" placeholder="e.g. 5000" inputmode="numeric"></div>
+      <button class="btn btn-p" onclick="updateProviderProfile()" style="width:100%;">Save Changes</button>
     </div>
+
+    <!-- Bank Account -->
+    <div style="background:white;border-radius:14px;padding:16px;border:1px solid #eee;margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px;">💳 Bank Account</div>
+      <div style="font-size:12px;color:#666;margin-bottom:12px;">Required to receive payment after each job</div>
+      <div id="bank-status" style="margin-bottom:12px;"></div>
+      <div id="bank-form">
+        <div class="fg">
+          <label>Bank Name</label>
+          <select id="pp-bank">
+            <option value="">Select bank...</option>
+            <option>Access Bank</option><option>First Bank</option><option>GTBank</option>
+            <option>Zenith Bank</option><option>UBA</option><option>Kuda Bank</option>
+            <option>OPay</option><option>PalmPay</option><option>Moniepoint</option>
+            <option>Fidelity Bank</option><option>Union Bank</option><option>Sterling Bank</option>
+          </select>
+        </div>
+        <div class="fg"><label>Account Number</label><input type="tel" id="pp-acct" placeholder="10-digit account number" maxlength="10" inputmode="numeric"></div>
+        <div class="fg"><label>Account Name</label><input type="text" id="pp-acctname" placeholder="As shown on your bank app"></div>
+        <button class="btn btn-p" onclick="saveBankAccount()" id="btn-bank" style="width:100%;">Save Bank Account</button>
+      </div>
+    </div>
+
+    <!-- NIN Verification -->
+    <div style="background:white;border-radius:14px;padding:16px;border:1px solid #eee;margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px;">🪪 Identity Verification</div>
+      <div style="font-size:12px;color:#666;margin-bottom:12px;">Required before you can receive payments</div>
+      <div id="nin-status" style="margin-bottom:12px;"></div>
+      <div id="nin-form">
+        <div class="fg"><label>NIN (National Identification Number)</label><input type="text" id="pp-nin" placeholder="Enter your 11-digit NIN" maxlength="11" inputmode="numeric"></div>
+        <button class="btn btn-p" onclick="saveNIN()" style="width:100%;background:#6b21a8;">Submit NIN for Verification</button>
+      </div>
+    </div>
+
+    <!-- Sign Out -->
+    <button class="btn btn-w" onclick="logout()" style="width:100%;color:#e53e3e;border-color:#e53e3e;margin-top:8px;">Sign Out</button>
   </div>
-  <div class="bnav">
+  <div class="nav-bar">
     <div class="ni" onclick="go('s-provider-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
-    <div class="ni" onclick="go('s-provider-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>My Jobs</div>
+    <div class="ni" onclick="go('s-provider-jobs')"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>My Jobs</div>
     <div class="ni" onclick="go('s-provider-earnings')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Earnings</div>
     <div class="ni active" onclick="go('s-provider-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
   </div>
 </div>
-
-<!-- SEARCH -->
-<div class="screen" id="s-search">
-  <div style="background:var(--white);padding:12px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px;">
-    <button class="back" onclick="go('s-home')">←</button>
-    <div style="flex:1;background:var(--bg);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="s-inp" placeholder="Search services or providers..." style="border:none;outline:none;font-size:14px;background:transparent;width:100%;font-family:'DM Sans',sans-serif;" oninput="doSearch(this.value)">
-    </div>
-  </div>
-  <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;" id="s-results">
-    <div id="s-cats"></div>
-  </div>
-  <div class="bnav">
-    <div class="ni" onclick="go('s-home')"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
-    <div class="ni active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</div>
-    <div class="ni" onclick="go('s-jobs')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jobs</div>
-    <div class="ni" onclick="go('s-profile')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profile</div>
-  </div>
-</div>
-
-<!-- CATEGORY -->
-<div class="screen" id="s-cat">
-  <div class="header"><button class="back" onclick="go('s-home')">←</button><h2 id="cat-title">Providers</h2></div>
-  <div style="flex:1;overflow-y:auto;padding:14px 16px;" id="cat-list"><div class="ld">Loading...</div></div>
-</div>
-
-<!-- PROVIDER PROFILE -->
-<div class="screen" id="s-provider">
-  <div class="header"><button class="back" onclick="goBack()">←</button><h2>Provider Profile</h2></div>
-  <div style="flex:1;overflow-y:auto;padding-bottom:90px;" id="p-detail"><div class="ld">Loading...</div></div>
-  <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:white;padding:12px 16px;border-top:2px solid #e0e0e0;box-shadow:0 -2px 12px rgba(0,0,0,.08);">
-    <button class="btn btn-p" style="width:100%;" onclick="openChat()">💬 Message Provider</button>
-  </div>
-</div>
-
-<!-- JOBS -->
 <div class="screen" id="s-jobs">
   <div class="header"><h2>My Jobs</h2><button class="btn btn-p btn-sm" onclick="go('s-postjob')">+ Post Job</button></div>
   <div style="flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:80px;" id="j-list"><div class="ld">Loading...</div></div>
@@ -941,28 +945,51 @@ async function register(){
 }
 
 async function submitProviderSignup(){
-  const idNum=document.getElementById('ps-id-num').value.trim();
-  const accNum=document.getElementById('ps-acc').value.trim();
-  if(!idNum||idNum.length<11)return al('al-psignup','Enter a valid 11-digit BVN or NIN','e');
-  if(!accNum||accNum.length<10)return al('al-psignup','Enter a valid 10-digit account number','e');
-  const b=document.getElementById('btn-psignup');
-  b.innerHTML='<span class="spin"></span>Submitting...';b.disabled=true;
-  // Store verification data
-  const r=await api('PUT','/providers/profile',{
-    bio:document.getElementById('ps-bio').value,
-    service_category:document.getElementById('ps-cat').value,
-    years_experience:document.getElementById('ps-exp').value,
-    verification_type:document.getElementById('ps-id-type').value,
-    id_number:idNum,
-    bank_name:document.getElementById('ps-bank').value,
-    account_number:accNum,
-    account_name:document.getElementById('ps-acc-name').value,
-    hourly_rate:document.getElementById('ps-price').value,
+  const nin = document.getElementById('ps-id-num').value.trim();
+  const cat = document.getElementById('ps-cat').value;
+  const bio = document.getElementById('ps-bio').value.trim();
+  const price = document.getElementById('ps-price').value;
+  const accNum = document.getElementById('ps-acc').value.trim();
+  const bank = document.getElementById('ps-bank').value;
+  const accName = document.getElementById('ps-acc-name').value.trim();
+
+  if(!cat) return al('al-psignup','Please select your service category','e');
+  if(!bio) return al('al-psignup','Please add a short bio about yourself','e');
+  if(!nin || nin.length !== 11) return al('al-psignup','Enter a valid 11-digit NIN','e');
+  if(!bank || !accNum || accNum.length < 10 || !accName) return al('al-psignup','Please complete your bank details','e');
+
+  const b = document.getElementById('btn-psignup');
+  b.innerHTML = '<span class="spin"></span>Submitting...'; b.disabled = true;
+
+  // Step 1: Save profile
+  const r1 = await api('PUT', '/providers/profile', {
+    bio,
+    service_category: cat,
+    years_experience: document.getElementById('ps-exp').value,
+    hourly_rate: price ? parseInt(price) * 100 : 0,
     location: user?.city || 'Gwagwalada'
   });
-  b.innerHTML='Submit for Verification';b.disabled=false;
-  al('al-psignup','✅ Submitted! Your profile is under review. You can start bidding once verified.','s');
-  setTimeout(()=>go('s-home'),2000);
+
+  // Step 2: Save bank account
+  const r2 = await api('PUT', '/providers/bank-account', {
+    bank_name: bank,
+    account_number: accNum,
+    account_name: accName
+  });
+
+  // Step 3: Submit NIN
+  const r3 = await api('POST', '/providers/verify-nin', { nin });
+
+  b.innerHTML = 'Submit for Verification'; b.disabled = false;
+
+  if(r3.success || r1.success || r1.profile) {
+    // Update local user role
+    if(user) { user.role = 'provider'; save(); }
+    al('al-psignup','✅ Profile submitted! Your NIN is under review. You can start accepting jobs once verified.','s');
+    setTimeout(() => go('s-provider-home'), 2000);
+  } else {
+    al('al-psignup', r3.error || r1.error || 'Could not submit. Please try again.', 'e');
+  }
 }
 
 function demoLogin(){
@@ -1778,58 +1805,78 @@ async function loadProviderEarnings() {
   }
 }
 
-async function loadProviderProfilePage() {
-  if(!user) return;
-  document.getElementById('pp-name').textContent = user.full_name || 'Provider';
-  document.getElementById('pp-init').textContent = (user.full_name||'P').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-  const r = await api('GET', '/providers/profile');
-  if(r.profile) {
-    document.getElementById('pp-bio').textContent = r.profile.bio || 'No bio yet';
-    document.getElementById('pp-bio-edit').value = r.profile.bio || '';
-    document.getElementById('pp-rate').value = r.profile.hourly_rate ? r.profile.hourly_rate/100 : '';
-    const badge = document.getElementById('pp-badge');
-    if(r.profile.verification_status === 'verified') {
-      badge.textContent = '\u2713 Verified';
-      badge.style.background = '#e8f5ee';
-      badge.style.color = '#1a7a4a';
-    } else {
-      badge.textContent = 'Pending Verification';
-    }
-  }
-}
-
 async function updateProviderProfile() {
   const bio = document.getElementById('pp-bio-edit').value.trim();
   const rate = document.getElementById('pp-rate').value;
+  const category = document.getElementById('pp-cat-edit').value;
+  if(!category) return showToast('Please select your service category','warning');
   const r = await api('PUT', '/providers/profile', {
     bio,
-    hourly_rate: rate ? parseInt(rate) * 100 : null
+    service_category: category,
+    hourly_rate: rate ? parseInt(rate) * 100 : null,
+    location: user?.city || 'Gwagwalada'
   });
   if(r.success || r.profile) {
-    al('al-pp', 'Profile updated!', 's');
+    showToast('Profile updated! ✅');
+    loadProviderProfilePage();
   } else {
-    al('al-pp', r.error || 'Could not update profile', 'e');
+    showAlert(r.error || 'Could not update profile', 'error');
   }
 }
 
-</script>
-</body>
-</html>
-<script>
-// PATCH: Override loadProviderProfilePage with bank account support
+
+
+// Provider profile with bank account support
 async function loadProviderProfilePage() {
   if(!user) return;
   document.getElementById('pp-name').textContent = user.full_name || 'Provider';
   document.getElementById('pp-init').textContent = (user.full_name||'P').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
   const r = await api('GET', '/providers/profile');
   if(r.profile) {
-    document.getElementById('pp-bio').textContent = r.profile.bio || 'No bio yet';
-    document.getElementById('pp-bio-edit').value = r.profile.bio || '';
-    document.getElementById('pp-rate').value = r.profile.hourly_rate ? r.profile.hourly_rate/100 : '';
+    const p = r.profile;
+    if(document.getElementById('pp-bio-disp')) document.getElementById('pp-bio-disp').textContent = p.bio || 'No bio yet. Update your profile below.';
+    document.getElementById('pp-bio-edit').value = p.bio || '';
+    document.getElementById('pp-rate').value = p.hourly_rate ? Math.round(p.hourly_rate/100) : '';
+    document.getElementById('pp-cat-display').textContent = p.service_category || 'Service Provider';
+    document.getElementById('pp-rating-disp').textContent = p.average_rating ? '⭐ ' + p.average_rating.toFixed(1) : 'New';
+    document.getElementById('pp-jobs-disp').textContent = p.total_jobs_completed || 0;
+    document.getElementById('pp-rate-disp').textContent = p.hourly_rate ? '₦' + Math.round(p.hourly_rate/100).toLocaleString() : 'Not set';
+    // Set category dropdown to current value
+    const catSelect = document.getElementById('pp-cat-edit');
+    if(p.service_category) {
+      for(let opt of catSelect.options){ if(opt.value === p.service_category){ opt.selected=true; break; } }
+    }
+    // Bank details
+    if(p.bank_name || p.account_number){
+      document.getElementById('bank-status').innerHTML = `<div style="background:#e8f5ee;border-radius:8px;padding:10px;font-size:13px;color:#1a7a4a;font-weight:700;">✅ Bank: ${p.bank_name||''} — ${p.account_number||''}</div>`;
+    }
+    // Verification badge
     const badge = document.getElementById('pp-badge');
-    if(r.profile.verification_status === 'verified') {
-      badge.textContent = '\u2713 Verified'; badge.style.background = '#e8f5ee'; badge.style.color = '#1a7a4a';
-    } else { badge.textContent = 'Pending Verification'; }
+    if(p.verification_status === 'verified') {
+      badge.textContent = '✓ Verified'; badge.style.background = '#e8f5ee'; badge.style.color = '#1a7a4a';
+    } else if(p.nin) {
+      badge.textContent = '⏳ NIN Under Review';
+    } else {
+      badge.textContent = '⚠️ NIN Required';
+      badge.style.background = '#fff3cd'; badge.style.color = '#856404';
+    }
+
+    // NIN status
+    const ninStatus = document.getElementById('nin-status');
+    const ninForm = document.getElementById('nin-form');
+    if(ninStatus && ninForm) {
+      if(p.verification_status === 'verified') {
+        ninStatus.innerHTML = '<div style="background:#e8f5ee;border-radius:8px;padding:10px;font-size:13px;color:#1a7a4a;font-weight:700;">✅ Identity Verified</div>';
+        ninForm.style.display = 'none';
+      } else if(p.nin) {
+        ninStatus.innerHTML = '<div style="background:#fff3cd;border-radius:8px;padding:10px;font-size:13px;color:#856404;font-weight:700;">⏳ NIN submitted — under review by VeraPro</div>';
+        ninForm.style.display = 'none';
+      } else {
+        ninStatus.innerHTML = '<div style="background:#fee;border-radius:8px;padding:10px;font-size:13px;color:#e53e3e;">⚠️ Submit your NIN to start receiving jobs</div>';
+        ninForm.style.display = 'block';
+      }
+    }
+
     const bankStatus = document.getElementById('bank-status');
     if(bankStatus) {
       if(r.profile.account_number) {
@@ -1847,6 +1894,21 @@ async function loadProviderProfilePage() {
         bankStatus.innerHTML = `<div style="background:#fff3cd;border-radius:10px;padding:12px;font-size:13px;color:#856404;">\u26a0\ufe0f No bank account added yet \u2014 you won't receive payments until you add one!</div>`;
       }
     }
+  }
+}
+
+async function saveNIN() {
+  const nin = document.getElementById('pp-nin')?.value.trim();
+  if(!nin || nin.length !== 11) return showToast('Enter a valid 11-digit NIN','warning');
+  const btn = document.getElementById('btn-nin');
+  if(btn) { btn.textContent = 'Submitting...'; btn.disabled = true; }
+  const r = await api('POST', '/providers/verify-nin', { nin });
+  if(btn) { btn.textContent = 'Submit NIN'; btn.disabled = false; }
+  if(r.success) {
+    showToast('NIN submitted for review ✅');
+    loadProviderProfilePage();
+  } else {
+    showAlert(r.error || 'Could not submit NIN', 'error');
   }
 }
 
@@ -1868,10 +1930,9 @@ async function saveBankAccount() {
     showAlert(r.error||'Could not save bank account','error');
   }
 }
-</script>
-<script>
+
+
 // PATCH: Override loadJobs to handle pending_completion status
-const _origLoadJobs = loadJobs;
 async function loadJobs(){
   const el=document.getElementById('j-list');
   if(!user||user.id==='demo'){
@@ -1898,7 +1959,7 @@ async function loadJobs(){
           ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
-          ${j.status==='in_progress'||j.status==='pending_completion'?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
+
           ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
           ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">View Quotes</button>`:''}
         </div>
@@ -1908,4 +1969,7 @@ async function loadJobs(){
     el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;margin-top:12px;" onclick="go('s-postjob')">Request a Service</button></div>`;
   }
 }
+
 </script>
+</body>
+</html>
