@@ -1165,15 +1165,20 @@ async function loadProvider(id){
   const el=document.getElementById('prov-detail');if(el)el.innerHTML='<div class="ld">Loading...</div>';
   const r=await api('GET',`/providers/${id}`);
   if(r.provider){
-    const p=r.provider,nm=p.users?.full_name||'Provider';
+    const p=r.provider;
+    const nm=p.users?.full_name||'Provider';
     const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-    el.innerHTML=providerHTML(init,nm,p.bio||'Professional',p.average_rating?.toFixed(1)||'New',p.total_jobs_completed||0,p.years_experience||'—',p.city||'Gwagwalada',p.provider_services||[],null);
-  }else el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load provider</div></div>';
+    const loc=p.location||p.users?.city||'Gwagwalada';
+    el.innerHTML=providerHTML(init,nm,p.bio||'Professional service provider',p.average_rating?.toFixed(1)||'New',p.total_jobs_completed||0,p.years_experience||'—',loc,[],p.hourly_rate?(p.hourly_rate/100).toLocaleString():null,p.service_category);
+  } else {
+    el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load provider</div><div class="empty-sub">Please try again</div></div>';
+  }
 }
 
 function showDemoP(i){
   const p=DEMO_P[i];curProvider=p;go('s-provider');
-  document.getElementById('p-detail').innerHTML=providerHTML(p.init,p.name,p.bio,p.r,p.n,'—',p.loc,[],p.price,p.job);
+  const el=document.getElementById('prov-detail');
+  if(el) el.innerHTML=providerHTML(p.init,p.name,p.bio,p.r,p.n,'—',p.loc,[],p.price,p.job);
 }
 
 function providerHTML(init,name,bio,rating,jobs,exp,loc,services,price,jobTitle){
