@@ -401,7 +401,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
         <div style="width:22px;height:22px;background:white;border-radius:50%;position:absolute;top:3px;right:3px;transition:right .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);"></div>
       </div>
     </div>
-    <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:10px;">Incoming Requests</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-size:16px;font-weight:800;color:#111;">Incoming Requests</div><button onclick="loadIncomingJobs()" style="background:#e8f5ee;color:#1a7a4a;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">↺ Refresh</button></div>
     <div id="ph-incoming"><div class="ld">Checking for new jobs...</div></div>
     <div style="font-size:16px;font-weight:800;color:#111;margin:14px 0 10px;">My Active Jobs</div>
     <div id="ph-active"><div class="ld">Loading...</div></div>
@@ -1786,6 +1786,7 @@ async function loadIncomingJobs() {
   const el = document.getElementById('ph-incoming');
   if(!el) return;
   const r = await api('GET', '/matching/incoming');
+  console.log('Incoming jobs response:', JSON.stringify(r));
   if(r.matches && r.matches.length > 0) {
     el.innerHTML = r.matches.map(m => {
       const j = m.jobs;
