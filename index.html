@@ -1164,24 +1164,25 @@ async function loadJobs(){
   const r=await api('GET','/jobs');
   if(r.jobs?.length){
     el.innerHTML=r.jobs.map(j=>{
-      const statusColor={open:'#2a9d5c',assigned:'#f4a623',payment_pending:'#e67e22',in_progress:'#3498db',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#9b59b6'}[j.status]||'#999';
-      const statusLabel={open:'Waiting for providers',assigned:'Provider assigned — Pay now',payment_pending:'Payment pending',in_progress:'Work in progress',completed:'Completed',disputed:'Disputed',revision_pending:'Revised quote pending'}[j.status]||j.status;
+      const statusColor={open:'#f4a623',assigned:'#3498db',payment_pending:'#e67e22',in_progress:'#3498db',provider_done:'#9b59b6',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#9b59b6',cancelled:'#999'}[j.status]||'#999';
+      const statusLabel={open:'🔍 Searching for providers...',assigned:'✅ Provider found — Pay to confirm',payment_pending:'⏳ Payment pending',in_progress:'🔧 Work in progress',provider_done:'🎉 Provider marked done — Release payment',completed:'✅ Completed',disputed:'⚠️ Disputed',revision_pending:'📝 Revised quote received',cancelled:'❌ Cancelled'}[j.status]||j.status;
       const price=j.agreed_price?(j.agreed_price/100).toLocaleString():null;
-      return`<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+      return`<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:${j.status==='provider_done'?'2px solid #9b59b6':j.status==='assigned'?'2px solid #3498db':'1px solid #eee'};box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
           <div style="font-weight:700;font-size:15px;flex:1;color:#111;">${j.title||'Service Request'}</div>
-          <span style="background:${statusColor};color:white;font-size:10px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:700;">${j.urgency==='emergency'?'🚨 ':''} ${j.status?.toUpperCase()}</span>
+          <span style="background:${statusColor};color:white;font-size:10px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:700;">${j.urgency==='emergency'?'🚨 ':''}${(j.status||'').toUpperCase().replace(/_/g,' ')}</span>
         </div>
-        <div style="font-size:12px;color:#666;margin-bottom:6px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
-        <div style="font-size:13px;color:#444;margin-bottom:10px;">${statusLabel}</div>
-        ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}        ${j.status==='provider_done'?`<div style="background:#e8f5ee;border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;color:#1a7a4a;font-weight:700;">🎉 Your provider has marked this job as done! Please confirm to release their payment.</div>`:''}
-        <div style="display:flex;gap:8px;">
+        <div style="font-size:12px;color:#666;margin-bottom:4px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
+        <div style="font-size:13px;color:#555;margin-bottom:10px;font-weight:600;">${statusLabel}</div>
+        ${j.status==='provider_done'?`<div style="background:#f3e8ff;border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px;color:#6b21a8;font-weight:700;">🎉 Provider has marked this job as done! Confirm to release payment.</div>`:''}
+        ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${j.status==='open'?`<button class="btn btn-p btn-sm" style="flex:2;background:#f4a623;" onclick="loadQuotes('${j.id}')">👀 View Quotes</button>`:''}
           ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
-          ${j.status==='in_progress'?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
           ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
-          ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">View Quotes</button>`:''}
+          ${j.status==='completed'&&!j.reviewed?`<button class="btn btn-w btn-sm" style="flex:1;color:#f4a623;" onclick="leaveReview('${j.id}','${j.provider_id}')">⭐ Rate</button>`:''}
         </div>
       </div>`;
     }).join('');
@@ -1943,8 +1944,8 @@ async function loadJobs(){
   const r=await api('GET','/jobs');
   if(r.jobs?.length){
     el.innerHTML=r.jobs.map(j=>{
-      const statusColor={open:'#2a9d5c',assigned:'#f4a623',payment_pending:'#e67e22',in_progress:'#3498db',pending_completion:'#9b59b6',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#8e44ad'}[j.status]||'#999';
-      const statusLabel={open:'Waiting for providers',assigned:'Provider assigned — Pay now',payment_pending:'Payment pending',in_progress:'Work in progress',pending_completion:'Provider says job is done!',completed:'✅ Completed',disputed:'⚠️ Disputed',revision_pending:'Revised quote pending'}[j.status]||j.status;
+      const statusColor={open:'#2a9d5c',assigned:'#f4a623',payment_pending:'#e67e22',in_progress:'#3498db',provider_done:'#9b59b6',pending_completion:'#9b59b6',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#8e44ad',cancelled:'#999'}[j.status]||'#999';
+      const statusLabel={open:'🔍 Searching for providers...',assigned:'Provider found — Pay now',payment_pending:'Payment pending',in_progress:'Work in progress',provider_done:'🎉 Provider marked done!',pending_completion:'Provider says job is done!',completed:'✅ Completed',disputed:'⚠️ Disputed',revision_pending:'New quote received',cancelled:'Cancelled'}[j.status]||j.status;
       const price=j.agreed_price?(j.agreed_price/100).toLocaleString():null;
       return`<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:${j.status==='pending_completion'?'2px solid #9b59b6':'1px solid #ddd'};box-shadow:0 2px 8px rgba(0,0,0,.06);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
@@ -1961,7 +1962,7 @@ async function loadJobs(){
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
 
           ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
-          ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">View Quotes</button>`:''}
+          ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">👀 View Applicants</button>`:''}
         </div>
       </div>`;
     }).join('');
