@@ -766,7 +766,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 <!-- CHAT -->
 <div class="screen" id="s-chat">
   <div class="header">
-    <button class="back" onclick="goBack()">←</button>
+    <button class="back" onclick="closeChatAndGoBack()">←</button>
     <div style="flex:1;">
       <div style="font-size:15px;font-weight:700;" id="chat-nm">Chat</div>
       <div style="font-size:11px;color:var(--green);font-weight:600;">● Online</div>
@@ -886,13 +886,18 @@ function go(id){
   target.classList.add('active');
   window.scrollTo(0,0);
   if(id==='s-home')loadHome();
-  if(id==='s-provider-home'){ loadProviderHome(); startProviderPolling(); }
+  if(id==='s-provider-home'){ setTimeout(()=>{ loadProviderHome(); startProviderPolling(); }, 100); }
   if(id==='s-provider-jobs'){ stopProviderPolling(); loadProviderJobs(); }
   if(id==='s-provider-earnings')loadProviderEarnings();
   if(id==='s-provider-profile')loadProviderProfilePage();
   if(id==='s-jobs')loadJobs();
   if(id==='s-profile')loadProfile();
   if(id==='s-search'){ renderAllCats('s-cats'); const inp=document.getElementById('s-inp'); if(inp) inp.value=''; }
+}
+function closeChatAndGoBack(){
+  if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer=null; }
+  currentChatJobId = null;
+  go(prev||'s-home');
 }
 function goBack(){
   if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer=null; }
@@ -1875,9 +1880,10 @@ async function loadIncomingJobs() {
         </div>` : '<div style="background:#fff3cd;border-radius:8px;padding:8px 10px;font-size:12px;color:#856404;margin-bottom:8px;">📷 No photo provided by customer</div>'}
         ${j.budget_from ? `<div style="font-size:13px;color:#1a7a4a;font-weight:700;margin-bottom:10px;">Budget: \u20a6${(j.budget_from/100).toLocaleString()} &#8212; \u20a6${(j.budget_to/100).toLocaleString()}</div>` : ''}
         <div style="font-size:11px;color:#e53e3e;font-weight:700;margin-bottom:10px;">\u23f3 ${timeLeft} min left to respond</div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-o btn-sm" style="flex:1;" onclick="respondToJob('${m.id}','decline')">❌ Decline</button>
-          <button class="btn btn-p btn-sm" style="flex:2;" onclick="showQuoteInput('${m.id}')">💰 Send Quote & Price</button>
+          <button class="btn btn-w btn-sm" style="flex:1;" onclick="openChat('${m.jobs?.id||m.job_id}','Customer')">💬 Message</button>
+          <button class="btn btn-p btn-sm" style="width:100%;margin-top:6px;" onclick="showQuoteInput('${m.id}')">💰 Send Quote & Price</button>
         </div>
         ${hasCounter ? `<div style="background:#fff3cd;border:2px solid #f4a623;border-radius:8px;padding:10px;margin-top:8px;margin-bottom:8px;">
           <div style="font-size:12px;font-weight:700;color:#856404;">💬 Customer Counter Offer: ₦${(m.counter_amount/100).toLocaleString()}</div>
