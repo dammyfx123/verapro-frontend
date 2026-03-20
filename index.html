@@ -1295,7 +1295,7 @@ async function loadJobs(){
         ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           ${j.status==='open'?`<button class="btn btn-p btn-sm" style="flex:2;background:#f4a623;" onclick="loadQuotes('${j.id}')">👀 View Quotes</button>`:''}
-          ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
+          ${j.status==='assigned'&&j.agreed_price?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price}')">💳 Pay Now — ₦${price}</button>`:j.status==='assigned'?`<div style="font-size:13px;color:#f4a623;font-weight:700;padding:8px 0;">⏳ Waiting for provider to send a price quote</div>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
           ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
@@ -1309,7 +1309,7 @@ async function loadJobs(){
 }
 
 async function initPayment(jobId, amount){
-  const r=await api('POST','/payments/initialize',{job_id:jobId});
+  const r=await api('POST','/payments/initialize',{job_id:jobId, amount: amount ? Math.round(amount/100) : null});
   if(r.payment_url){
     // Store reference so we can verify when user returns
     localStorage.setItem('pending_payment_ref', r.reference);
@@ -1595,30 +1595,26 @@ async function loadQuotes(jobId){
   const r=await api('GET','/matching/quotes/'+(jobId||currentJobId));
   if(r.quotes&&r.quotes.length>0){
     el.innerHTML=r.quotes.map(q=>{
-      const nm=q.provider_profiles?.users?.full_name||'Provider';
-      const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
       const amt=q.quote_amount?(q.quote_amount/100).toLocaleString():null;
-      return`<div style="background:white;border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--border);">
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div class="p-avatar">${init}</div>
-          <div style="flex:1;">
-            <div style="font-weight:700;font-size:15px;">${nm}</div>
-            <div style="font-size:12px;color:var(--text-3);">★ ${q.provider_profiles?.average_rating||'New'} · ${q.provider_profiles?.total_jobs_completed||0} jobs</div>
-            ${q.quote_note?`<div style="font-size:13px;color:var(--text-2);margin-top:6px;line-height:1.5;">${q.quote_note}</div>`:''}
-            ${amt?`<div style="font-size:18px;font-weight:800;color:var(--green);margin-top:8px;">₦${amt}</div>`:'<div style="font-size:14px;color:var(--green);font-weight:700;margin-top:8px;">Ready to start — price on inspection</div>'}
+      const rating=q.provider_profiles?.average_rating||0;
+      const jobs=q.provider_profiles?.total_jobs_completed||0;
+      return`<div style="background:white;border-radius:14px;padding:16px;margin-bottom:12px;border:2px solid #1a7a4a;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div>
+            <div style="font-weight:700;font-size:15px;color:#111;">Provider Quote</div>
+            <div style="font-size:12px;color:#666;margin-top:2px;">★ ${rating||'New'} · ${jobs} jobs completed</div>
           </div>
+          ${amt?`<div style="font-size:22px;font-weight:900;color:#1a7a4a;">₦${amt}</div>`:'<div style="font-size:13px;color:#1a7a4a;font-weight:700;">Price on arrival</div>'}
         </div>
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${nm}')">Message</button>
-          <button class="btn btn-p btn-sm" style="flex:2;" onclick="acceptQuote('${q.id}')">Accept Quote</button>
-        </div>
+        ${q.quote_note?`<div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:13px;color:#444;margin-bottom:12px;line-height:1.5;">💬 "${q.quote_note}"</div>`:''}
+        <button class="btn btn-p btn-sm" style="width:100%;" onclick="acceptQuote('${q.id}')">✅ Accept This Quote — Pay ₦${amt||'agreed amount'}</button>
       </div>`;
     }).join('');
   } else {
     el.innerHTML=`<div class="empty">
       <div class="empty-icon">⏳</div>
       <div class="empty-title">No quotes yet</div>
-      <div class="empty-sub">Providers will respond shortly. You can check back anytime.</div>
+      <div class="empty-sub">Providers will respond shortly. Check back in a few minutes.</div>
       <button class="btn btn-p" style="max-width:200px;margin:0 auto;" onclick="loadQuotes('${jobId||currentJobId}')">↺ Refresh</button>
     </div>`;
   }
@@ -1802,14 +1798,17 @@ async function loadIncomingJobs() {
         ${j.budget_from ? `<div style="font-size:13px;color:#1a7a4a;font-weight:700;margin-bottom:10px;">Budget: \u20a6${(j.budget_from/100).toLocaleString()} &#8212; \u20a6${(j.budget_to/100).toLocaleString()}</div>` : ''}
         <div style="font-size:11px;color:#e53e3e;font-weight:700;margin-bottom:10px;">\u23f3 ${timeLeft} min left to respond</div>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-o btn-sm" style="flex:1;" onclick="respondToJob('${m.id}','decline')">Decline</button>
-          <button class="btn btn-w btn-sm" style="flex:1;" onclick="showQuoteInput('${m.id}')">Send Quote</button>
-          <button class="btn btn-p btn-sm" style="flex:2;" onclick="respondToJob('${m.id}','accept')">Accept Job</button>
+          <button class="btn btn-o btn-sm" style="flex:1;" onclick="respondToJob('${m.id}','decline')">❌ Decline</button>
+          <button class="btn btn-p btn-sm" style="flex:2;" onclick="showQuoteInput('${m.id}')">💰 Send Quote & Price</button>
         </div>
-        <div id="quote-input-${m.id}" style="display:none;margin-top:10px;">
-          <input type="number" placeholder="Your quote amount (\u20a6)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:8px;font-size:14px;" id="quote-amt-${m.id}" inputmode="numeric">
-          <textarea placeholder="Note to customer (optional)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:8px;" id="quote-note-${m.id}"></textarea>
-          <button class="btn btn-p btn-sm" style="width:100%;" onclick="submitQuote('${m.id}')">Submit Quote</button>
+        <div id="quote-input-${m.id}" style="display:none;margin-top:12px;background:#f9f9f9;border-radius:10px;padding:12px;">
+          <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:8px;">Your Quote</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <span style="font-weight:700;color:#1a7a4a;">₦</span>
+            <input type="number" placeholder="Enter your price" style="flex:1;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-weight:700;" id="quote-amt-${m.id}" inputmode="numeric">
+          </div>
+          <textarea placeholder="Tell the customer what you will do (optional)" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:8px;resize:none;height:70px;" id="quote-note-${m.id}"></textarea>
+          <button class="btn btn-p btn-sm" style="width:100%;" onclick="submitQuote('${m.id}')">Send Quote to Customer →</button>
         </div>
       </div>`;
     }).join('');
@@ -1824,7 +1823,11 @@ async function loadIncomingJobs() {
 
 function showQuoteInput(matchId) {
   const el = document.getElementById('quote-input-' + matchId);
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  if(el) {
+    el.style.display = 'block';
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    document.getElementById('quote-amt-' + matchId)?.focus();
+  }
 }
 
 async function respondToJob(matchId, action) {
@@ -1838,13 +1841,21 @@ async function respondToJob(matchId, action) {
 }
 
 async function submitQuote(matchId) {
-  const amt = document.getElementById('quote-amt-' + matchId).value;
-  const note = document.getElementById('quote-note-' + matchId).value;
-  if(!amt) return showToast('Enter your quote amount','warning');
-  const r = await api('POST', '/matching/respond', { match_id: matchId, action: 'quote', quote_amount: parseInt(amt), quote_note: note });
+  const amt = document.getElementById('quote-amt-' + matchId)?.value;
+  const note = document.getElementById('quote-note-' + matchId)?.value;
+  if(!amt || parseInt(amt) < 100) return showToast('Enter a valid price (minimum ₦100)','warning');
+  const btn = document.querySelector(`#quote-input-${matchId} .btn-p`);
+  if(btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
+  const r = await api('POST', '/matching/respond', { 
+    match_id: matchId, 
+    action: 'quote', 
+    quote_amount: parseInt(amt), 
+    quote_note: note || '' 
+  });
+  if(btn) { btn.textContent = 'Send Quote to Customer →'; btn.disabled = false; }
   if(r.success) {
-    showToast(r.message||'Done');
-    loadProviderHome();
+    showToast('Quote sent! Waiting for customer to accept ✅');
+    setTimeout(() => loadProviderHome(), 1500);
   } else {
     showAlert(r.error||'Could not submit quote','error');
   }
@@ -2100,7 +2111,7 @@ async function loadJobs(){
         ${j.status==='pending_completion'?`<div style="background:#f3e8ff;border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px;color:#6b21a8;">🎉 Your provider has marked this job as done! Confirm to release their payment.</div>`:''}
         ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          ${j.status==='assigned'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price||0}')">💳 Pay Now — ₦${price||'TBD'}</button>`:''}
+          ${j.status==='assigned'&&j.agreed_price?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price}')">💳 Pay Now — ₦${price}</button>`:j.status==='assigned'?`<div style="font-size:13px;color:#f4a623;font-weight:700;padding:8px 0;">⏳ Waiting for provider to send a price quote</div>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
 
