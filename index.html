@@ -1119,7 +1119,7 @@ function renderAllCats(cid){
     <div class="cat-section">
       <div class="cat-section-label">${g.label}</div>
       <div class="cat-grid">${g.cats.map(c=>`
-        <div class="cat-card" onclick="loadCat(${c.id},'${c.name}','${c.e}')">
+        <div class="cat-card" onclick="loadCat('${c.id}','${c.name}','${c.e}')">
           <div class="cat-icon">${c.e}</div>
           <div class="cat-nm">${c.name}</div>
         </div>`).join('')}
