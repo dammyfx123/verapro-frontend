@@ -1508,10 +1508,13 @@ function updatePriceEstimate(){
   el.style.display='block';
 }
 
+let jobImageData = null;
+
 function previewImg(input){
   if(input.files&&input.files[0]){
     const reader=new FileReader();
     reader.onload=e=>{
+      jobImageData = e.target.result; // store globally
       document.getElementById('img-thumb').src=e.target.result;
       document.getElementById('img-preview').style.display='block';
       document.getElementById('img-placeholder').style.display='none';
@@ -1531,10 +1534,6 @@ async function requestService(){
   const b=document.getElementById('btn-job');
   b.innerHTML='<span class="spin"></span>Finding Providers...';b.disabled=true;
 
-  // Get image if uploaded
-  const imgThumb = document.getElementById('img-thumb');
-  const imgData = imgThumb && imgThumb.src && imgThumb.src.startsWith('data:') ? imgThumb.src : null;
-
   const payload={
     category_id: cat,
     title:document.getElementById('j-cat').options[document.getElementById('j-cat').selectedIndex].text+' Request',
@@ -1543,13 +1542,14 @@ async function requestService(){
     address:addr,
     city:user?.city||'Gwagwalada',
     scheduled_date:document.getElementById('j-date')?.value||null,
-    image_url: imgData
+    image_url: jobImageData || null
   };
 
   const r=await api('POST','/matching/request',payload);
   b.innerHTML='Find Providers Now';b.disabled=false;
 
   if(r.success||r.job){
+    jobImageData = null; // reset image
     currentJobId=r.job?.id;
     const count=r.matched_providers||0;
     const price=r.estimated_price;
