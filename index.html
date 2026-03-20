@@ -897,7 +897,9 @@ function go(id){
 function closeChatAndGoBack(){
   if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer=null; }
   currentChatJobId = null;
-  go(prev||'s-home');
+  // Go to the right screen based on role, never loop back to chat
+  const dest = prev === 's-chat' ? (user?.role==='provider' ? 's-provider-home' : 's-jobs') : (prev||'s-jobs');
+  go(dest);
 }
 function goBack(){
   if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer=null; }
