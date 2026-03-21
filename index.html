@@ -1476,6 +1476,23 @@ function skipReview(){
   go('s-jobs'); loadJobs();
 }
 
+async function cancelJob(jobId, status){
+  let msg = 'Cancel this job?';
+  if(status === 'in_progress') msg = 'Cancel this job? Since payment is in escrow you will receive a full refund.';
+  else if(status === 'assigned') msg = 'Cancel this job? The provider will be notified.';
+  
+  showConfirm(msg, async () => {
+    const reason = 'Customer cancelled';
+    const r = await api('POST', '/jobs/' + jobId + '/cancel', { reason });
+    if(r.success) {
+      showToast(r.message || 'Job cancelled');
+      loadJobs();
+    } else {
+      showAlert(r.error || 'Could not cancel job', 'error');
+    }
+  }, 'Yes, Cancel Job', '#e53e3e');
+}
+
 async function raiseDispute(jobId){
   showInputSheet('⚠️ Raise a Dispute', 'Describe the issue (e.g. provider did not show up)', 'Submit Dispute', '#e53e3e', async (reason) => {
     const r = await api('POST', '/payments/dispute', {job_id: jobId, reason});
@@ -2008,6 +2025,10 @@ async function loadProviderActiveJobs() {
             <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Message</button>
             <button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="markJobDone('${j.id}')">✅ Mark as Done</button>
           ` : ''}
+          ${j.status==='assigned' ? `
+            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Message</button>
+            <button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="providerCancelJob('${j.id}')">✕ Cancel</button>
+          ` : ''}
         </div>
       </div>`;
     }).join('') || '<div style="color:#999;text-align:center;padding:16px;">No active jobs right now</div>';
@@ -2042,6 +2063,23 @@ async function providerReviseQuote(jobId) {
       }
     });
   });
+}
+
+async function providerCancelJob(jobId){
+  showConfirm(
+    'Cancel this job? The customer will be notified and the job will go back to open for other providers.',
+    async () => {
+      const r = await api('POST', '/jobs/' + jobId + '/provider-cancel', { reason: 'Provider cancelled' });
+      if(r.success) {
+        showToast('Job cancelled. Customer has been notified.');
+        loadProviderHome();
+      } else {
+        showAlert(r.error || 'Could not cancel', 'error');
+      }
+    },
+    'Yes, Cancel Job',
+    '#e53e3e'
+  );
 }
 
 async function loadProviderJobs() {
@@ -2245,6 +2283,8 @@ async function loadJobs(){
 
           ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
           ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">👀 View Applicants</button>`:''}
+          ${(j.status==='open'||j.status==='assigned')?`<button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="cancelJob('${j.id}','${j.status}')">✕ Cancel</button>`:''}
+          ${j.status==='in_progress'?`<button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="cancelJob('${j.id}','${j.status}')">✕ Cancel</button>`:''}
         </div>
       </div>`;
     }).join('');
