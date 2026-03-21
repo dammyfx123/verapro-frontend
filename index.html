@@ -235,7 +235,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
   <div style="padding:20px;flex:1;overflow-y:auto;padding-bottom:40px;">
     <div id="al-reg"></div>
     <div class="fg"><label>Full Name</label><input type="text" id="r-name" placeholder="e.g. Emeka Okonkwo"></div>
-    <div class="fg"><label>Email Address (optional)</label><input type="email" id="r-email" placeholder="you@gmail.com"></div>
+    <div class="fg"><label>Email Address</label><input type="email" id="r-email" placeholder="you@gmail.com" required></div>
     <div class="fg">
       <label>I want to</label>
       <select id="r-role">
@@ -1029,7 +1029,9 @@ async function verifyOTP(){
 
 async function register(){
   const nm=document.getElementById('r-name').value.trim();
+  const em=document.getElementById('r-email').value.trim();
   if(!nm)return al('al-reg','Enter your full name','e');
+  if(!em||!em.includes('@'))return al('al-reg','Enter a valid email address — needed for job notifications','e');
   const b=document.getElementById('btn-reg');
   b.innerHTML='<span class="spin"></span>Creating...';b.disabled=true;
   const role=document.getElementById('r-role').value;
