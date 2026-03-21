@@ -1699,37 +1699,55 @@ async function acceptQuote(matchId){
   }
 }
 
-function openChat(nm){
-  const name=nm||(curProvider?.name)||'Provider';
-  document.getElementById('chat-nm').textContent=name;
-  chatMsgs=[
-    {s:0,t:'Hello! I am interested in your job post. I can help with that.'},
-    {s:1,t:'Great! When can you come?'},
-    {s:0,t:'I am available from tomorrow. What time works best for you?'},
-  ];
-  renderMsgs();go('s-chat');
+let currentChatJobId = null;
+let chatPollTimer = null;
+
+async function openChat(jobId, otherName) {
+  if(!jobId || jobId === 'undefined') return showToast('Cannot open chat — job not found','error');
+  currentChatJobId = jobId;
+  document.getElementById('chat-nm').textContent = otherName || 'Chat';
+  document.getElementById('chat-msgs').innerHTML = '<div style="text-align:center;padding:20px;color:#999;font-size:13px;">Loading messages...</div>';
+  go('s-chat');
+  await loadMessages(jobId);
+  if(chatPollTimer) clearInterval(chatPollTimer);
+  chatPollTimer = setInterval(() => { if(currentChatJobId) loadMessages(currentChatJobId); }, 8000);
 }
 
-function renderMsgs(){
-  const el=document.getElementById('chat-msgs');
-  el.innerHTML=chatMsgs.map(m=>`<div class="msg ${m.s?'sent':'recv'}">${m.t}</div>`).join('');
-  el.scrollTop=el.scrollHeight;
+async function loadMessages(jobId) {
+  const r = await api('GET', '/messages/' + jobId);
+  if(r.messages !== undefined) renderMsgs(r.messages, r.my_id);
 }
 
-function sendMsg(){
-  const inp=document.getElementById('c-inp');
-  const t=inp.value.trim();if(!t)return;inp.value='';
-  if(/(\+?234|0)[789][01]\d{8}/.test(t)){
-    chatMsgs.push({s:1,t:t.replace(/(\+?234|0)([789][01])(\d{3})(\d{4})/g,'$1$2***$4')});renderMsgs();
-    setTimeout(()=>{chatMsgs.push({s:0,t:'⚠️ Phone numbers are hidden for your protection. Contact details are shared only after payment is confirmed through VeraPro.'});renderMsgs();},600);
+function renderMsgs(messages, myId){
+  const el = document.getElementById('chat-msgs');
+  if(!el) return;
+  if(!messages || messages.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:#999;font-size:13px;">No messages yet.<br>Start the conversation!</div>';
     return;
   }
-  if(/wa\.me|whatsapp\.com|t\.me/i.test(t)){chatMsgs.push({s:0,t:'External links are not allowed in VeraPro chat.'});renderMsgs();return;}
-  if(/pay.*outside|pay.*cash.*direct|bypass/i.test(t)){chatMsgs.push({s:0,t:'Arranging payment outside VeraPro removes your VeraPro Guarantee protection.'});renderMsgs();return;}
-  chatMsgs.push({s:1,t});renderMsgs();
-  if(token==='demo'){
-    const replies=['Understood! I can come by tomorrow morning.','That works. What time is convenient for you?','I have done this many times. No problem at all.','Let me check my schedule and confirm shortly.'];
-    setTimeout(()=>{chatMsgs.push({s:0,t:replies[Math.floor(Math.random()*replies.length)]});renderMsgs();},900);
+  el.innerHTML = messages.map(m => {
+    const isMine = m.sender_id === myId;
+    const time = new Date(m.created_at).toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="msg ${isMine?'sent':'recv'}">${m.message}<div style="font-size:10px;opacity:.6;margin-top:2px;">${time}</div></div>`;
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendMsg(){
+  const inp = document.getElementById('c-inp');
+  const t = inp?.value.trim();
+  if(!t) return;
+  if(!currentChatJobId) return showToast('No active chat','error');
+  inp.value = '';
+  inp.disabled = true;
+  const r = await api('POST', '/messages/' + currentChatJobId, { message: t });
+  inp.disabled = false;
+  inp.focus();
+  if(r.success) {
+    await loadMessages(currentChatJobId);
+  } else {
+    showToast(r.error || 'Could not send message', 'error');
+    inp.value = t;
   }
 }
 
