@@ -1728,7 +1728,7 @@ function renderMsgs(messages, myId){
   el.innerHTML = messages.map(m => {
     const isMine = m.sender_id === myId;
     const time = new Date(m.created_at).toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
-    return `<div class="msg ${isMine?'sent':'recv'}">${m.message}<div style="font-size:10px;opacity:.6;margin-top:2px;">${time}</div></div>`;
+    return `<div class="msg ${isMine?'sent':'recv'}">${m.content}<div style="font-size:10px;opacity:.6;margin-top:2px;">${time}</div></div>`;
   }).join('');
   el.scrollTop = el.scrollHeight;
 }
