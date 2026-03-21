@@ -1312,7 +1312,9 @@ async function loadJobs(){
         ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           ${j.status==='open'?`<button class="btn btn-p btn-sm" style="flex:2;background:#f4a623;" onclick="loadQuotes('${j.id}')">👀 View Quotes</button>`:''}
-          ${j.status==='assigned'&&j.agreed_price?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price}')">💳 Pay Now — ₦${price}</button>`:j.status==='assigned'?`<div style="font-size:13px;color:#f4a623;font-weight:700;padding:8px 0;">⏳ Waiting for provider to send a price quote</div>`:''}
+          ${j.status==='assigned'&&j.agreed_price?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price}')">💳 Pay Now — ₦${price}</button>`:j.status==='assigned'?`<div style="font-size:13px;color:#f4a623;font-weight:700;padding:8px 0;">⏳ Waiting for provider quote</div>`:''}
+          ${(j.status==='assigned'||j.status==='in_progress'||j.status==='provider_done')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Provider')">💬 Message</button>`:''}
+          ${(j.status==='assigned'||j.status==='in_progress'||j.status==='provider_done')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Provider')">💬 Message</button>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
           ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
           ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
