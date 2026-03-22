@@ -251,8 +251,14 @@
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">In Escrow</div><div class="stat-value yellow" id="stat-escrow">—</div></div>
         <div class="stat-card"><div class="stat-label">Completed Jobs</div><div class="stat-value green" id="stat-completed">—</div></div>
+        <div class="stat-card"><div class="stat-label">Active Users</div><div class="stat-value yellow" id="stat-users">—</div></div>
+        <div class="stat-card"><div class="stat-label">Providers</div><div class="stat-value purple" id="stat-providers">—</div></div>
+      </div>
+      <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">Open Disputes</div><div class="stat-value red" id="stat-disputes">—</div></div>
         <div class="stat-card"><div class="stat-label">Pending Release</div><div class="stat-value blue" id="stat-pending-release">—</div></div>
+        <div class="stat-card"><div class="stat-label">Refunds Issued</div><div class="stat-value red" id="stat-refunds">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Withdrawn</div><div class="stat-value green" id="stat-withdrawn">—</div></div>
       </div>
 
       <div class="table-card">
@@ -537,6 +543,9 @@ async function loadOverview() {
     document.getElementById('stat-users').textContent = users.length;
     document.getElementById('stat-providers').textContent = providers.length;
     document.getElementById('stat-refunds').textContent = totalRefunds;
+    const totalWithdrawn = payments.filter(p => p.status === 'released')
+      .reduce((s, p) => s + (p.net_amount || p.provider_amount || 0), 0);
+    if(document.getElementById('stat-withdrawn')) document.getElementById('stat-withdrawn').textContent = '₦' + (totalWithdrawn/100).toLocaleString();
     document.getElementById('stat-escrow').textContent = '₦' + (escrow/100).toLocaleString();
     document.getElementById('stat-completed').textContent = completed;
     document.getElementById('stat-disputes').textContent = disputes;
@@ -624,6 +633,7 @@ function renderPayments(payments) {
         ${p.status === 'escrow' ? `<button class="action-btn primary" onclick="adminReleasePayment('${p.id}','${p.job_id}')">Release</button>` : ''}
         ${p.status === 'escrow' ? `<button class="action-btn danger" onclick="adminRefund('${p.id}','${p.job_id}')">Refund</button>` : ''}
         ${p.status === 'released' ? `<button class="action-btn danger" onclick="adminRefund('${p.id}','${p.job_id}')">Issue Refund</button>` : ''}
+        ${p.status === 'released' ? `<button class="action-btn primary" onclick="viewPayout('${p.id}','${p.job_id}')">💳 Payout Info</button>` : ''}
       </td>
     </tr>
   `).join('') : '<tr class="empty-row"><td colspan="7">No payments found</td></tr>';
@@ -730,6 +740,37 @@ async function doAdminRelease(jobId) {
       toast(r.error || 'Release failed', 'error');
     }
   } catch(e) { toast('Error releasing payment', 'error'); }
+}
+
+async function viewPayout(paymentId, jobId) {
+  // Get payment and provider bank details
+  const r = await api('GET', '/admin/payout-info/' + jobId);
+  if(r.info) {
+    const i = r.info;
+    openModal(`
+      <div class="modal-title">💳 Payout Information</div>
+      <div style="background:var(--green-dim);border:1px solid var(--green);border-radius:10px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:24px;font-weight:900;color:var(--green);">₦${((i.net_amount||i.provider_amount||0)/100).toLocaleString()}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;">Amount to pay provider</div>
+      </div>
+      <div class="modal-field"><div class="modal-label">Provider</div><div class="modal-value">${i.provider_name || '—'}</div></div>
+      <div class="modal-field"><div class="modal-label">Job</div><div class="modal-value">${i.job_title || '—'}</div></div>
+      <div style="border-top:1px solid var(--border);margin:12px 0;padding-top:12px;">
+        <div style="font-size:12px;font-weight:700;color:var(--yellow);margin-bottom:10px;">BANK DETAILS</div>
+        <div class="modal-field"><div class="modal-label">Bank</div><div class="modal-value">${i.bank_name || '⚠️ Not provided'}</div></div>
+        <div class="modal-field"><div class="modal-label">Account Number</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:2px;">${i.account_number || '—'}</div></div>
+        <div class="modal-field"><div class="modal-label">Account Name</div><div class="modal-value">${i.account_name || '—'}</div></div>
+      </div>
+      <div style="background:#1a1a26;border-radius:8px;padding:12px;font-size:12px;color:var(--text2);margin-bottom:16px;">
+        Transfer ₦${((i.net_amount||i.provider_amount||0)/100).toLocaleString()} to the account above via your bank app or transfer.
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeModal()">Close</button>
+      </div>
+    `);
+  } else {
+    toast('Could not load payout info', 'error');
+  }
 }
 
 async function adminReleasePayment(paymentId, jobId) {
