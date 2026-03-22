@@ -856,12 +856,51 @@ async function verifyProvider(providerId) {
   } catch(e) { toast('Error', 'error'); }
 }
 
-function viewUser(userId) {
-  openModal(`<div class="modal-title">User Details</div><div class="modal-field"><div class="modal-label">User ID</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${userId}</div></div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal()">Close</button></div>`);
+async function viewUser(userId) {
+  openModal(`<div class="modal-title">Loading...</div>`);
+  const r = await fetch(API + '/admin/user/' + userId, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+  const data = await r.json();
+  const u = data.user || {};
+  openModal(`
+    <div class="modal-title">Customer Details</div>
+    <div class="modal-field"><div class="modal-label">Full Name</div><div class="modal-value">${u.full_name || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Phone</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${u.phone || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Email</div><div class="modal-value">${u.email || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Location</div><div class="modal-value">${u.city || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Joined</div><div class="modal-value">${new Date(u.created_at).toLocaleDateString()}</div></div>
+    <div class="modal-field"><div class="modal-label">Total Jobs</div><div class="modal-value">${u.job_count || 0}</div></div>
+    <div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal()">Close</button></div>
+  `);
 }
 
-function viewProvider(providerId) {
-  openModal(`<div class="modal-title">Provider Details</div><div class="modal-field"><div class="modal-label">Provider Profile ID</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${providerId}</div></div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal()">Close</button></div>`);
+async function viewProvider(providerId) {
+  openModal(`<div class="modal-title">Loading...</div>`);
+  const r = await fetch(API + '/admin/provider/' + providerId, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+  const data = await r.json();
+  const p = data.provider || {};
+  const u = p.users || {};
+  openModal(`
+    <div class="modal-title">Provider Details</div>
+    ${p.photo_url ? `<div style="text-align:center;margin-bottom:16px;"><img src="${p.photo_url}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--green);"></div>` : ''}
+    <div class="modal-field"><div class="modal-label">Full Name</div><div class="modal-value">${u.full_name || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Phone</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${u.phone || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Email</div><div class="modal-value">${u.email || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Category</div><div class="modal-value">${p.service_category || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Location</div><div class="modal-value">${p.location || '—'}</div></div>
+    <div class="modal-field"><div class="modal-label">NIN</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${p.nin || 'Not provided'}</div></div>
+    <div class="modal-field"><div class="modal-label">Rating</div><div class="modal-value">⭐ ${p.average_rating || 'New'} (${p.total_reviews || 0} reviews)</div></div>
+    <div class="modal-field"><div class="modal-label">Jobs Done</div><div class="modal-value">${p.total_jobs_completed || 0}</div></div>
+    <div style="border-top:1px solid var(--border);margin:16px 0;padding-top:16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:12px;">💳 Bank Details (for manual payout)</div>
+      <div class="modal-field"><div class="modal-label">Bank Name</div><div class="modal-value">${p.bank_name || 'Not provided'}</div></div>
+      <div class="modal-field"><div class="modal-label">Account Number</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${p.account_number || '—'}</div></div>
+      <div class="modal-field"><div class="modal-label">Account Name</div><div class="modal-value">${p.account_name || '—'}</div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Close</button>
+      ${p.verification_status !== 'verified' ? `<button class="modal-btn confirm" onclick="closeModal();verifyProvider('${providerId}')">✓ Verify</button>` : ''}
+    </div>
+  `);
 }
 
 // ── HELPERS ───────────────────────────────────────────
