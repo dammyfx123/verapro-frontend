@@ -466,7 +466,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
     <!-- Profile Card -->
     <div style="background:linear-gradient(135deg,#1a7a4a,#2a9d5c);border-radius:16px;padding:20px;margin-bottom:16px;color:white;">
       <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px;">
-        <div class="p-avatar" style="width:56px;height:56px;font-size:20px;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);" id="pp-init">?</div>
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;" id="pp-init">?</div>
         <div>
           <div style="font-weight:800;font-size:18px;" id="pp-name">Loading...</div>
           <div style="font-size:13px;opacity:.85;margin-top:2px;" id="pp-cat-display">Service Provider</div>
@@ -484,6 +484,25 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
     <!-- Update Profile -->
     <div style="background:white;border-radius:14px;padding:16px;border:1px solid #eee;margin-bottom:14px;">
       <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:14px;">✏️ Update Profile</div>
+      
+      <!-- Profile Photo -->
+      <div style="margin-bottom:16px;">
+        <label style="font-size:13px;font-weight:600;color:#444;display:block;margin-bottom:8px;">Profile Photo <span style="color:#e53e3e;">*</span></label>
+        <div style="background:#fff3cd;border-radius:8px;padding:10px;font-size:12px;color:#856404;margin-bottom:10px;">
+          📋 Your photo will be verified against your NIN. Use a clear face photo.
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div id="pp-photo-preview" style="width:72px;height:72px;border-radius:50%;background:#e8f5ee;border:3px solid #1a7a4a;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a7a4a" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div style="flex:1;">
+            <button onclick="document.getElementById('pp-photo-input').click()" style="width:100%;background:#e8f5ee;color:#1a7a4a;border:2px dashed #1a7a4a;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;">📷 Upload Profile Photo</button>
+            <input type="file" id="pp-photo-input" accept="image/*" style="display:none;" onchange="previewProfilePhoto(this)">
+            <div style="font-size:11px;color:#999;margin-top:4px;text-align:center;">Clear face photo required</div>
+          </div>
+        </div>
+        <div id="pp-photo-status" style="margin-top:8px;"></div>
+      </div>
       <div class="fg">
         <label>Service Category</label>
         <select id="pp-cat-edit">
@@ -1144,7 +1163,7 @@ function pCard(p){
   const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
   return`<div class="pcard" onclick="loadProvider('${p.id}')">
     <div style="display:flex;gap:12px;">
-      <div class="p-avatar">${init}</div>
+      <div class="p-avatar" style="${p.photo_url?'padding:0;overflow:hidden;':''}">${p.photo_url?`<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`:init}</div>
       <div style="flex:1;min-width:0;">
         <div class="p-name">${nm}</div>
         <div class="p-job">${p.bio||'Professional'}</div>
@@ -2128,6 +2147,33 @@ async function loadProviderEarnings() {
   }
 }
 
+function previewProfilePhoto(input) {
+  if(input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const preview = document.getElementById('pp-photo-preview');
+      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      // Compress image
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const SIZE = 300;
+        canvas.width = SIZE; canvas.height = SIZE;
+        const ctx = canvas.getContext('2d');
+        // Crop to square
+        const min = Math.min(img.width, img.height);
+        const sx = (img.width - min) / 2;
+        const sy = (img.height - min) / 2;
+        ctx.drawImage(img, sx, sy, min, min, 0, 0, SIZE, SIZE);
+        window._providerPhotoData = canvas.toDataURL('image/jpeg', 0.8);
+        document.getElementById('pp-photo-status').innerHTML = '<div style="color:#1a7a4a;font-size:12px;font-weight:700;">✅ Photo ready to save</div>';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
 async function updateProviderProfile() {
   const bio = document.getElementById('pp-bio-edit').value.trim();
   const rate = document.getElementById('pp-rate').value;
@@ -2137,7 +2183,8 @@ async function updateProviderProfile() {
     bio,
     service_category: category,
     hourly_rate: rate ? parseInt(rate) * 100 : null,
-    location: user?.city || 'Gwagwalada'
+    location: user?.city || 'Gwagwalada',
+    photo_url: window._providerPhotoData || null
   });
   if(r.success || r.profile) {
     showToast('Profile updated! ✅');
@@ -2157,6 +2204,14 @@ async function loadProviderProfilePage() {
   const r = await api('GET', '/providers/profile');
   if(r.profile) {
     const p = r.profile;
+    // Show profile photo
+    if(p.photo_url) {
+      const initEl = document.getElementById('pp-init');
+      if(initEl) initEl.innerHTML = `<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      const preview = document.getElementById('pp-photo-preview');
+      if(preview) preview.innerHTML = `<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      window._providerPhotoData = p.photo_url; // keep existing photo
+    }
     if(document.getElementById('pp-bio-disp')) document.getElementById('pp-bio-disp').textContent = p.bio || 'No bio yet. Update your profile below.';
     document.getElementById('pp-bio-edit').value = p.bio || '';
     document.getElementById('pp-rate').value = p.hourly_rate ? Math.round(p.hourly_rate/100) : '';
