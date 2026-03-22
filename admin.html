@@ -244,9 +244,9 @@
       </div>
       <div class="stats-grid" id="overview-stats">
         <div class="stat-card"><div class="stat-label">Total Jobs</div><div class="stat-value blue" id="stat-jobs">—</div></div>
-        <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value green" id="stat-revenue">—</div></div>
-        <div class="stat-card"><div class="stat-label">Active Users</div><div class="stat-value yellow" id="stat-users">—</div></div>
-        <div class="stat-card"><div class="stat-label">Providers</div><div class="stat-value purple" id="stat-providers">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Revenue (Commission)</div><div class="stat-value green" id="stat-revenue">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Transactions</div><div class="stat-value yellow" id="stat-transactions">—</div></div>
+        <div class="stat-card"><div class="stat-label">Transaction Volume</div><div class="stat-value purple" id="stat-volume">—</div></div>
       </div>
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">In Escrow</div><div class="stat-value yellow" id="stat-escrow">—</div></div>
@@ -520,6 +520,10 @@ async function loadOverview() {
 
     const totalRevenue = payments.filter(p => p.status === 'released')
       .reduce((s, p) => s + (p.commission_amount || p.commission || 0), 0);
+    const totalVolume = payments.filter(p => ['released','escrow'].includes(p.status))
+      .reduce((s, p) => s + (p.gross_amount || 0), 0);
+    const totalTransactions = payments.filter(p => p.status !== 'pending').length;
+    const totalRefunds = payments.filter(p => p.status === 'refunded').length;
     const escrow = payments.filter(p => p.status === 'escrow')
       .reduce((s, p) => s + (p.gross_amount || 0), 0);
     const completed = jobs.filter(j => j.status === 'completed').length;
@@ -528,8 +532,11 @@ async function loadOverview() {
 
     document.getElementById('stat-jobs').textContent = jobs.length;
     document.getElementById('stat-revenue').textContent = '₦' + (totalRevenue/100).toLocaleString();
+    document.getElementById('stat-transactions').textContent = totalTransactions;
+    document.getElementById('stat-volume').textContent = '₦' + (totalVolume/100).toLocaleString();
     document.getElementById('stat-users').textContent = users.length;
     document.getElementById('stat-providers').textContent = providers.length;
+    document.getElementById('stat-refunds').textContent = totalRefunds;
     document.getElementById('stat-escrow').textContent = '₦' + (escrow/100).toLocaleString();
     document.getElementById('stat-completed').textContent = completed;
     document.getElementById('stat-disputes').textContent = disputes;
@@ -616,6 +623,7 @@ function renderPayments(payments) {
       <td>
         ${p.status === 'escrow' ? `<button class="action-btn primary" onclick="adminReleasePayment('${p.id}','${p.job_id}')">Release</button>` : ''}
         ${p.status === 'escrow' ? `<button class="action-btn danger" onclick="adminRefund('${p.id}','${p.job_id}')">Refund</button>` : ''}
+        ${p.status === 'released' ? `<button class="action-btn danger" onclick="adminRefund('${p.id}','${p.job_id}')">Issue Refund</button>` : ''}
       </td>
     </tr>
   `).join('') : '<tr class="empty-row"><td colspan="7">No payments found</td></tr>';
@@ -891,14 +899,24 @@ async function viewProvider(providerId) {
     <div class="modal-field"><div class="modal-label">Rating</div><div class="modal-value">⭐ ${p.average_rating || 'New'} (${p.total_reviews || 0} reviews)</div></div>
     <div class="modal-field"><div class="modal-label">Jobs Done</div><div class="modal-value">${p.total_jobs_completed || 0}</div></div>
     <div style="border-top:1px solid var(--border);margin:16px 0;padding-top:16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:12px;">🪪 Identity Verification</div>
+      <div class="modal-field">
+        <div class="modal-label">NIN Submitted</div>
+        <div class="modal-value" style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:2px;color:${p.nin?'var(--green)':'var(--red)'};">
+          ${p.nin || '✗ Not provided'}
+        </div>
+      </div>
+      ${p.photo_url ? `<div style="margin-top:8px;"><div class="modal-label">Photo for NIN Match</div><img src="${p.photo_url}" style="width:100px;height:100px;object-fit:cover;border-radius:8px;border:2px solid var(--border);margin-top:6px;"></div>` : ''}
+    </div>
+    <div style="border-top:1px solid var(--border);margin:16px 0;padding-top:16px;">
       <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:12px;">💳 Bank Details (for manual payout)</div>
       <div class="modal-field"><div class="modal-label">Bank Name</div><div class="modal-value">${p.bank_name || 'Not provided'}</div></div>
-      <div class="modal-field"><div class="modal-label">Account Number</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${p.account_number || '—'}</div></div>
+      <div class="modal-field"><div class="modal-label">Account Number</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:1px;">${p.account_number || '—'}</div></div>
       <div class="modal-field"><div class="modal-label">Account Name</div><div class="modal-value">${p.account_name || '—'}</div></div>
     </div>
     <div class="modal-actions">
       <button class="modal-btn cancel" onclick="closeModal()">Close</button>
-      ${p.verification_status !== 'verified' ? `<button class="modal-btn confirm" onclick="closeModal();verifyProvider('${providerId}')">✓ Verify</button>` : ''}
+      ${p.verification_status !== 'verified' ? `<button class="modal-btn confirm" onclick="closeModal();verifyProvider('${providerId}')">✓ Verify Now</button>` : '<span style="color:var(--green);font-size:13px;font-weight:700;">✓ Already Verified</span>'}
     </div>
   `);
 }
