@@ -536,6 +536,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
       </div>
       <div class="fg"><label>Bio / Description</label><textarea id="pp-bio-edit" placeholder="Describe your skills, experience and what makes you the best choice..." style="height:80px;"></textarea></div>
       <div class="fg"><label>Starting Price (₦)</label><input type="number" id="pp-rate" placeholder="e.g. 5000" inputmode="numeric"></div>
+      <div class="fg"><label>Your Location / Area</label><select id="pp-location-edit"><option value="Gwagwalada">Gwagwalada, Abuja</option><option value="Abuja">Abuja (Central)</option><option value="Kubwa">Kubwa, Abuja</option><option value="Lugbe">Lugbe, Abuja</option><option value="Kuje">Kuje, Abuja</option><option value="Zuba">Zuba, Abuja</option><option value="Bwari">Bwari, Abuja</option><option value="Kwali">Kwali, Abuja</option><option value="Lagos">Lagos</option></select></div>
       <button class="btn btn-p" onclick="updateProviderProfile()" style="width:100%;">Save Changes</button>
     </div>
 
@@ -2179,11 +2180,12 @@ async function updateProviderProfile() {
   const rate = document.getElementById('pp-rate').value;
   const category = document.getElementById('pp-cat-edit').value;
   if(!category) return showToast('Please select your service category','warning');
+  const location = document.getElementById('pp-location-edit')?.value || user?.city || 'Gwagwalada';
   const r = await api('PUT', '/providers/profile', {
     bio,
     service_category: category,
     hourly_rate: rate ? parseInt(rate) * 100 : null,
-    location: user?.city || 'Gwagwalada',
+    location,
     photo_url: window._providerPhotoData || null
   });
   if(r.success || r.profile) {
@@ -2223,6 +2225,15 @@ async function loadProviderProfilePage() {
     const catSelect = document.getElementById('pp-cat-edit');
     if(p.service_category) {
       for(let opt of catSelect.options){ if(opt.value === p.service_category){ opt.selected=true; break; } }
+    }
+    // Load location
+    const locSelect = document.getElementById('pp-location-edit');
+    if(locSelect && p.location) {
+      for(let opt of locSelect.options){ if(opt.value === p.location){ opt.selected=true; break; } }
+    }
+    // Show location in profile header
+    if(document.getElementById('pp-cat-display')) {
+      document.getElementById('pp-cat-display').textContent = (p.service_category || 'Provider') + (p.location ? ' • ' + p.location : '');
     }
     // Bank details
     if(p.bank_name || p.account_number){
