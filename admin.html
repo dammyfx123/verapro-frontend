@@ -345,7 +345,7 @@
           <button class="refresh-btn" onclick="loadProviders()">↺ Refresh</button>
         </div>
         <table>
-          <thead><tr><th>Name</th><th>Category</th><th>Location</th><th>Rating</th><th>Jobs Done</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Photo</th><th>Name</th><th>Category</th><th>NIN</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="providers-body"><tr class="loading-row"><td colspan="7">Loading...</td></tr></tbody>
         </table>
       </div>
@@ -647,15 +647,28 @@ async function loadProviders() {
     const providers = data.providers || [];
     document.getElementById('providers-body').innerHTML = providers.length ? providers.map(p => `
       <tr>
-        <td><div style="font-weight:600;">${p.users?.full_name || p.user_id?.slice(0,8) || 'N/A'}</div></td>
-        <td style="font-size:12px;">${p.service_category || '—'}</td>
-        <td style="font-size:12px;color:var(--text2);">${p.city || p.location || '—'}</td>
-        <td>${p.rating ? '⭐ ' + p.rating : '—'}</td>
-        <td>${p.jobs_completed || 0}</td>
-        <td>${p.is_available ? '<span class="badge badge-green">Available</span>' : '<span class="badge badge-gray">Offline</span>'}</td>
         <td>
-          <button class="action-btn" onclick="viewProvider('${p.id}')">View</button>
-          ${!p.is_verified ? `<button class="action-btn primary" onclick="verifyProvider('${p.id}')">Verify</button>` : '<span class="badge badge-green">✓ Verified</span>'}
+          ${p.photo_url ? 
+            `<img src="${p.photo_url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--border);">` : 
+            `<div style="width:40px;height:40px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:16px;">👤</div>`
+          }
+        </td>
+        <td>
+          <div style="font-weight:600;">${p.users?.full_name || 'N/A'}</div>
+          <div style="font-size:11px;color:var(--text2);">${p.users?.phone || ''}</div>
+          ${p.is_suspended ? '<span class="badge badge-red">SUSPENDED</span>' : ''}
+        </td>
+        <td style="font-size:12px;">${p.service_category || '—'}</td>
+        <td style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${p.nin ? 'var(--green)' : 'var(--red)'};">${p.nin ? '✓ ' + p.nin.slice(0,4) + '****' : '✗ None'}</td>
+        <td>${p.average_rating ? '⭐ ' + p.average_rating.toFixed(1) : 'New'}</td>
+        <td>
+          ${p.verification_status === 'verified' ? '<span class="badge badge-green">✓ Verified</span>' : '<span class="badge badge-yellow">Pending</span>'}
+          ${p.is_available ? '<span class="badge badge-blue" style="margin-left:4px;">Online</span>' : ''}
+        </td>
+        <td>
+          ${p.photo_url ? `<button class="action-btn primary" onclick="viewProviderPhoto('${p.photo_url}','${p.users?.full_name||''}','${p.nin||''}')">Verify ID</button>` : ''}
+          ${p.verification_status !== 'verified' ? `<button class="action-btn" onclick="verifyProvider('${p.id}')">✓ Verify</button>` : ''}
+          ${!p.is_suspended ? `<button class="action-btn danger" onclick="suspendProvider('${p.id}','${p.users?.full_name||'Provider'}')">Suspend</button>` : `<button class="action-btn primary" onclick="unsuspendProvider('${p.id}')">Unsuspend</button>`}
         </td>
       </tr>
     `).join('') : '<tr class="empty-row"><td colspan="7">No providers found</td></tr>';
@@ -792,6 +805,47 @@ async function doCancelJob(jobId) {
     if (r.success) { toast('Job cancelled', 'success'); loadJobs(); }
     else toast(r.error || 'Failed', 'error');
   } catch(e) { toast('Error', 'error'); }
+}
+
+function viewProviderPhoto(photoUrl, name, nin) {
+  openModal(`
+    <div class="modal-title">Verify Provider Identity</div>
+    <div style="text-align:center;margin-bottom:16px;">
+      <img src="${photoUrl}" style="width:160px;height:160px;border-radius:12px;object-fit:cover;border:3px solid var(--border);">
+    </div>
+    <div class="modal-field"><div class="modal-label">Provider Name</div><div class="modal-value">${name}</div></div>
+    <div class="modal-field"><div class="modal-label">NIN Submitted</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${nin || 'Not provided'}</div></div>
+    <div class="modal-field"><div class="modal-label">Action</div><div class="modal-value" style="font-size:13px;color:var(--text2);">Compare the photo with the person's NIN record manually before verifying.</div></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Close</button>
+    </div>
+  `);
+}
+
+async function suspendProvider(providerId, name) {
+  openModal(`
+    <div class="modal-title">Suspend Provider</div>
+    <div class="modal-field"><div class="modal-value" style="color:var(--red);">This will prevent ${name} from receiving or accepting jobs.</div></div>
+    <div class="modal-field"><div class="modal-label">Reason</div><textarea class="modal-textarea" id="suspend-reason" placeholder="Reason for suspension..."></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn danger" onclick="doSuspend('${providerId}')">Suspend Account</button>
+    </div>
+  `);
+}
+
+async function doSuspend(providerId) {
+  const reason = document.getElementById('suspend-reason')?.value;
+  closeModal();
+  const r = await api('POST', '/admin/suspend-provider', { provider_id: providerId, reason });
+  if(r.success) { toast('Provider suspended', 'success'); loadProviders(); }
+  else toast(r.error || 'Failed', 'error');
+}
+
+async function unsuspendProvider(providerId) {
+  const r = await api('POST', '/admin/unsuspend-provider', { provider_id: providerId });
+  if(r.success) { toast('Provider unsuspended ✓', 'success'); loadProviders(); }
+  else toast(r.error || 'Failed', 'error');
 }
 
 async function verifyProvider(providerId) {
