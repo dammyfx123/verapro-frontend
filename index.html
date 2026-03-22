@@ -134,7 +134,6 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 .urgency-card.active{border-color:var(--green);background:var(--green-light)}
 .urgency-card:active{transform:scale(.96)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -144,20 +143,13 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
   <div style="flex:1;display:flex;flex-direction:column;background:var(--white);">
     <div style="background:var(--green);padding:56px 32px 40px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;">
       <div style="margin-bottom:24px;">
-        <div style="margin-bottom:16px;">
-          <div id="app-logo" style="display:inline-flex;align-items:center;gap:14px;">
-            <div style="width:64px;height:64px;background:white;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg width="44" height="44" viewBox="0 0 44 44">
-                <rect width="44" height="44" rx="10" fill="#1a7a4a"/>
-                <rect x="4" y="4" width="36" height="36" rx="7" fill="#229659"/>
-                <polygon points="8,10 22,34 36,10 30,10 22,26 14,10" fill="white"/>
-                <circle cx="22" cy="38" r="3" fill="white"/>
-              </svg>
-            </div>
-            <div style="text-align:left;">
-              <div style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;line-height:1.1;">VeraPro</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.7);letter-spacing:1.5px;margin-top:3px;text-transform:uppercase;">Verified Pros. Trusted Results.</div>
-            </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:48px;height:48px;background:white;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:24px;">✓</span>
+          </div>
+          <div>
+            <div style="font-size:28px;font-weight:900;color:white;letter-spacing:-.5px;">VeraPro</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.7);font-style:italic;">Verified Pros. Trusted Results.</div>
           </div>
         </div>
         <div style="font-size:22px;font-weight:800;color:white;line-height:1.3;margin-bottom:8px;">Find trusted professionals<br>in Gwagwalada & Abuja</div>
@@ -171,51 +163,6 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
         <div class="guarantee-bar" style="justify-content:center;font-size:12px;">🛡️ VeraPro Guarantee — Pay safely, always protected</div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- TERMS & CONDITIONS -->
-<div class="screen" id="s-terms">
-  <div class="header"><button class="back" onclick="goBack()">←</button><h2>Terms & Conditions</h2></div>
-  <div style="flex:1;overflow-y:auto;padding:20px 16px;padding-bottom:40px;">
-    <div style="font-size:13px;color:#666;margin-bottom:16px;">Last updated: March 2026</div>
-    
-    <div style="margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:8px;">1. About VeraPro</div>
-      <p style="font-size:14px;color:#444;line-height:1.7;">VeraPro is a marketplace platform connecting customers with verified service providers in Gwagwalada and Abuja. We are not a direct service provider — we facilitate connections between customers and independent professionals.</p>
-    </div>
-
-    <div style="margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:8px;">2. Payments & Escrow</div>
-      <p style="font-size:14px;color:#444;line-height:1.7;">All payments are held in escrow and only released to the provider after the customer confirms the job is complete. VeraPro charges a 10% commission on each completed job. The first 3 jobs for new providers are commission-free.</p>
-    </div>
-
-    <div style="margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:8px;">3. VeraPro Guarantee</div>
-      <p style="font-size:14px;color:#444;line-height:1.7;">If a provider does not show up or fails to complete the agreed service, customers are entitled to a full refund. Disputes must be raised within 48 hours of the scheduled service date.</p>
-    </div>
-
-    <div style="margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:8px;">4. Provider Verification</div>
-      <p style="font-size:14px;color:#444;line-height:1.7;">All service providers must submit a valid NIN and profile photo for identity verification. Providers found to have submitted false information will be permanently banned. VeraPro reserves the right to suspend any account.</p>
-    </div>
-
-    <div style="margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:8px;">5. Prohibited Activities</div>
-      <p style="font-size:14px;color:#444;line-height:1.7;">Users may not arrange payments outside the VeraPro platform, share personal contact details before payment is confirmed, or use the platform for any illegal activity. Violations result in immediate account suspension.</p>
-    </div>
-
-    <div style="margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:8px;">6. Privacy</div>
-      <p style="font-size:14px;color:#444;line-height:1.7;">We collect your name, phone number, email, and NIN (for providers) to operate the platform. Your NIN is never shared with customers. We do not sell your data to third parties.</p>
-    </div>
-
-    <div style="margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:8px;">7. Contact</div>
-      <p style="font-size:14px;color:#444;line-height:1.7;">For support, disputes or inquiries: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="176462676778656357617265766765783979767a72397970">[email&#160;protected]</a></strong></p>
-    </div>
-
-    <button class="btn btn-p" onclick="goBack()" style="width:100%;margin-top:8px;">I Understand — Go Back</button>
   </div>
 </div>
 
@@ -236,7 +183,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
       </div>
     </div>
     <button class="btn btn-p" onclick="sendOTPNew()" id="btn-otp-new">Continue →</button>
-    <p style="text-align:center;font-size:12px;color:var(--text-3);margin-top:20px;line-height:1.5;">By continuing you agree to our <span onclick="go('s-terms')" style="color:var(--green);cursor:pointer;font-weight:700;">Terms of Service</span> and <span onclick="go('s-terms')" style="color:var(--green);cursor:pointer;font-weight:700;">Privacy Policy</span></p>
+    <p style="text-align:center;font-size:12px;color:var(--text-3);margin-top:20px;line-height:1.5;">By continuing you agree to our Terms of Service and Privacy Policy</p>
   </div>
 </div>
 
@@ -925,7 +872,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const API='https://verapro-backend-production.up.railway.app/api';
 let user=null,token=null,prev='s-home',chatMsgs=[],curProvider=null;
 let reviewJobId=null,reviewProviderId=null,currentRating=0;
@@ -1178,17 +1125,9 @@ function logout(){
   showConfirm('Sign out of VeraPro?', doLogout); return;
 }
 function doLogout(){
-  // Show loading
-  const loading = document.createElement('div');
-  loading.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,.9);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;';
-  loading.innerHTML = '<div style="width:40px;height:40px;border:4px solid #e0e0e0;border-top-color:#1a7a4a;border-radius:50%;animation:spin .8s linear infinite;"></div><div style="font-size:14px;color:#666;font-weight:600;">Signing out...</div>';
-  document.body.appendChild(loading);
-  setTimeout(() => {
-    user=null;token=null;
-    try{localStorage.removeItem('vp_u');localStorage.removeItem('vp_t');}catch(e){}
-    loading.remove();
-    go('s-splash');
-  }, 800);
+  user=null;token=null;
+  try{localStorage.removeItem('vp_u');localStorage.removeItem('vp_t');}catch(e){}
+  go('s-splash');
 }
 
 function save(){try{localStorage.setItem('vp_u',JSON.stringify(user));localStorage.setItem('vp_t',token);}catch(e){}}
@@ -1946,51 +1885,6 @@ async function loadProviderHome() {
   if(!user || user.id==='demo') return;
   document.getElementById('ph-uname').textContent = user.full_name || 'Provider';
   document.getElementById('ph-city').textContent = (user.city || 'Gwagwalada') + ', Abuja';
-  
-  // Check if NIN is verified before showing jobs
-  const profileR = await api('GET', '/providers/profile');
-  const profile = profileR?.profile;
-  
-  if(!profile?.nin) {
-    // Show NIN required banner
-    const incoming = document.getElementById('ph-incoming');
-    if(incoming) incoming.innerHTML = `
-      <div style="background:#fff3cd;border:2px solid #f4a623;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-size:24px;margin-bottom:8px;">🪪</div>
-        <div style="font-weight:800;color:#856404;margin-bottom:6px;">NIN Verification Required</div>
-        <div style="font-size:13px;color:#856404;margin-bottom:12px;">You must submit your NIN before you can receive job requests.</div>
-        <button class="btn btn-p" style="max-width:200px;margin:0 auto;" onclick="go('s-provider-profile')">Submit NIN Now</button>
-      </div>`;
-    await loadProviderActiveJobs();
-    await loadProviderStats();
-    return;
-  }
-  
-  if(profile?.is_suspended) {
-    const incoming = document.getElementById('ph-incoming');
-    if(incoming) incoming.innerHTML = `
-      <div style="background:#fee;border:2px solid #e53e3e;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-size:24px;margin-bottom:8px;">🚫</div>
-        <div style="font-weight:800;color:#e53e3e;margin-bottom:6px;">Account Suspended</div>
-        <div style="font-size:13px;color:#444;">Your account has been suspended. Please contact support@verapro.name.ng for assistance.</div>
-      </div>`;
-    return;
-  }
-  
-  if(profile?.verification_status !== 'verified') {
-    const incoming = document.getElementById('ph-incoming');
-    if(incoming) incoming.innerHTML = `
-      <div style="background:#e8f5ee;border:2px solid #1a7a4a;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-size:24px;margin-bottom:8px;">⏳</div>
-        <div style="font-weight:800;color:#1a7a4a;margin-bottom:6px;">Verification Pending</div>
-        <div style="font-size:13px;color:#444;margin-bottom:4px;">Your NIN has been submitted and is being reviewed by VeraPro.</div>
-        <div style="font-size:12px;color:#666;">You will be notified by email once verified. This usually takes 24 hours.</div>
-      </div>`;
-    await loadProviderActiveJobs();
-    await loadProviderStats();
-    return;
-  }
-  
   startIncomingPoll();
   await loadProviderActiveJobs();
   await loadProviderStats();
@@ -2467,4 +2361,10 @@ async function loadJobs(){
       </div>`;
     }).join('');
   }else{
-    el.innerHTML=`<div class="empty"><div class="empt
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;margin-top:12px;" onclick="go('s-postjob')">Request a Service</button></div>`;
+  }
+}
+
+</script>
+</body>
+</html>
