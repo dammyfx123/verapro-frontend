@@ -677,7 +677,7 @@ async function loadProviders() {
           ${p.is_suspended ? '<span class="badge badge-red">SUSPENDED</span>' : ''}
         </td>
         <td style="font-size:12px;">${p.service_category || '—'}</td>
-        <td style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${p.nin ? 'var(--green)' : 'var(--red)'};">${p.nin ? '✓ ' + p.nin.slice(0,4) + '****' : '✗ None'}</td>
+        <td style="font-size:12px;font-family:'JetBrains Mono',monospace;color:${p.nin ? 'var(--green)' : 'var(--red)'};">${p.nin || '✗ None'}</td>
         <td>${p.average_rating ? '⭐ ' + p.average_rating.toFixed(1) : 'New'}</td>
         <td>
           ${p.verification_status === 'verified' ? '<span class="badge badge-green">✓ Verified</span>' : '<span class="badge badge-yellow">Pending</span>'}
@@ -943,7 +943,7 @@ async function viewProvider(providerId) {
       <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:12px;">🪪 Identity Verification</div>
       <div class="modal-field">
         <div class="modal-label">NIN Submitted</div>
-        <div class="modal-value" style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:2px;color:${p.nin?'var(--green)':'var(--red)'};">
+        <div class="modal-value" style="font-family:'JetBrains Mono',monospace;font-size:22px;letter-spacing:3px;font-weight:800;color:${p.nin?'var(--green)':'var(--red)'};">
           ${p.nin || '✗ Not provided'}
         </div>
       </div>
