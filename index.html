@@ -796,8 +796,8 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     </div>
   </div>
-  <div style="background:#fffbeb;padding:9px 14px;font-size:12px;color:#b45309;border-bottom:1px solid #fde68a;font-weight:500;">
-    🔒 Contact details are hidden until payment is confirmed through VeraPro
+  <div id="chat-lock-bar" style="background:#fffbeb;padding:9px 14px;font-size:12px;color:#b45309;border-bottom:1px solid #fde68a;font-weight:500;">
+    ⚠️ Do not pay outside VeraPro. Payments outside are not protected.
   </div>
   <div class="chat-msgs" id="chat-msgs"></div>
   <div class="cinput">
@@ -1321,24 +1321,125 @@ async function loadJobs(){
   const r=await api('GET','/jobs');
   if(r.jobs?.length){
     el.innerHTML=r.jobs.map(j=>{
-      const statusColor={open:'#f4a623',assigned:'#3498db',payment_pending:'#e67e22',in_progress:'#3498db',provider_done:'#9b59b6',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#9b59b6',cancelled:'#999'}[j.status]||'#999';
-      const statusLabel={open:'🔍 Searching for providers...',assigned:'✅ Provider found — Pay to confirm',inspection_requested:'🔍 Provider wants to inspect first',inspection_accepted:'✅ Inspection accepted — Pay inspection fee',inspecting:'🔧 Provider is inspecting...',final_quote_sent:'📋 Final quote received — Review and pay',adjustment_requested:'⚡ Provider needs extra cost approval',adjustment_approved:'💳 Adjustment approved — Pay to continue',
-      const price=j.agreed_price?(j.agreed_price/100).toLocaleString():null;
-      return`<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:${j.status==='provider_done'?'2px solid #9b59b6':j.status==='assigned'?'2px solid #3498db':'1px solid #eee'};box-shadow:0 2px 8px rgba(0,0,0,.06);">
+      const statusColor={
+        open:'#f4a623',
+        inspection_requested:'#9b59b6',
+        inspection_accepted:'#8e44ad',
+        inspecting:'#2980b9',
+        quoted_final:'#e67e22',
+        assigned:'#3498db',
+        payment_pending:'#e67e22',
+        in_progress:'#27ae60',
+        adjustment_requested:'#e67e22',
+        adjustment_approved:'#f39c12',
+        provider_done:'#9b59b6',
+        completed:'#27ae60',
+        disputed:'#e53e3e',
+        revision_pending:'#9b59b6',
+        cancelled:'#999'
+      }[j.status]||'#999';
+
+      const statusLabel={
+        open:'🔍 Finding providers...',
+        inspection_requested:'🔍 Provider wants to inspect first',
+        inspection_accepted:'✅ Inspection accepted — Pay inspection fee',
+        inspecting:'🔧 Provider is inspecting your job',
+        quoted_final:'📋 Final quote received — Review & Pay',
+        assigned:'✅ Provider found — Pay to confirm',
+        payment_pending:'⏳ Payment pending...',
+        in_progress:'🔧 Work in progress',
+        adjustment_requested:'⚠️ Provider requesting extra cost',
+        adjustment_approved:'💳 Extra cost approved — Pay to continue',
+        provider_done:'🎉 Provider marked done — Confirm & Release',
+        completed:'✅ Completed',
+        disputed:'⚠️ Under Dispute',
+        revision_pending:'📝 Revised quote received',
+        cancelled:'❌ Cancelled'
+      }[j.status]||j.status;
+
+      const laborPrice = j.labor_cost ? (j.labor_cost/100).toLocaleString() : null;
+      const materialPrice = j.material_cost ? (j.material_cost/100).toLocaleString() : null;
+      const inspFee = j.inspection_fee ? (j.inspection_fee/100).toLocaleString() : null;
+      const adjAmt = j.adjustment_amount ? (j.adjustment_amount/100).toLocaleString() : null;
+      const agreedPrice = j.agreed_price ? (j.agreed_price/100).toLocaleString() : null;
+      const isInspection = j.flow_type === 'inspection';
+      const border = j.status==='provider_done'?'2px solid #9b59b6':
+                     j.status==='adjustment_requested'?'2px solid #e67e22':
+                     j.status==='quoted_final'?'2px solid #e67e22':
+                     j.status==='inspection_requested'?'2px solid #9b59b6':'1px solid #eee';
+
+      return`<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:${border};box-shadow:0 2px 8px rgba(0,0,0,.06);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
           <div style="font-weight:700;font-size:15px;flex:1;color:#111;">${j.title||'Service Request'}</div>
           <span style="background:${statusColor};color:white;font-size:10px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:700;">${j.urgency==='emergency'?'🚨 ':''}${(j.status||'').toUpperCase().replace(/_/g,' ')}</span>
         </div>
-        <div style="font-size:12px;color:#666;margin-bottom:4px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
+        <div style="font-size:12px;color:#666;margin-bottom:4px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}${isInspection?' · 🔍 Inspection Flow':''}</div>
         <div style="font-size:13px;color:#555;margin-bottom:10px;font-weight:600;">${statusLabel}</div>
+
+        ${j.status==='inspection_requested'&&inspFee?`
+          <div style="background:#f3e8ff;border-radius:10px;padding:12px;margin-bottom:10px;">
+            <div style="font-size:13px;font-weight:700;color:#6b21a8;margin-bottom:4px;">🔍 Inspection Request</div>
+            <div style="font-size:13px;color:#444;">Provider needs to visit to give accurate pricing.</div>
+            <div style="font-size:16px;font-weight:800;color:#6b21a8;margin-top:6px;">Fee: ₦${inspFee}</div>
+          </div>`:''}
+
+        ${j.status==='quoted_final'?`
+          <div style="background:#fff8ec;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #fde68a;">
+            <div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:6px;">📋 Final Quote Breakdown</div>
+            ${laborPrice?`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#555;">Labor</span><span style="font-weight:700;">₦${laborPrice}</span></div>`:''}
+            ${materialPrice?`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#555;">Materials</span><span style="font-weight:700;">₦${materialPrice}</span></div>`:''}
+            ${agreedPrice?`<div style="display:flex;justify-content:space-between;font-size:14px;border-top:1px solid #fde68a;padding-top:6px;margin-top:4px;"><span style="font-weight:700;color:#b45309;">Total</span><span style="font-weight:800;color:#b45309;">₦${agreedPrice}</span></div>`:''}
+            ${!j.material_paid&&materialPrice?`<div style="background:#fffbeb;border-radius:6px;padding:6px 8px;margin-top:8px;font-size:12px;color:#b45309;">⚠️ Pay materials first — released immediately so provider can buy materials.</div>`:''}
+          </div>`:''}
+
+        ${j.status==='adjustment_requested'&&adjAmt?`
+          <div style="background:#fef3c7;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #fde68a;">
+            <div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:4px;">⚠️ Extra Cost Requested</div>
+            <div style="font-size:13px;color:#444;margin-bottom:6px;">${j.adjustment_reason||'Provider needs additional funds to continue.'}</div>
+            <div style="font-size:16px;font-weight:800;color:#b45309;">₦${adjAmt}</div>
+          </div>`:''}
+
         ${j.status==='provider_done'?`<div style="background:#f3e8ff;border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px;color:#6b21a8;font-weight:700;">🎉 Provider has marked this job as done! Confirm to release payment.</div>`:''}
-        ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
+        ${agreedPrice&&!['inspection_requested','inspection_accepted','quoted_final'].includes(j.status)?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${agreedPrice} agreed</div>`:''}
+
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           ${j.status==='open'?`<button class="btn btn-p btn-sm" style="flex:2;background:#f4a623;" onclick="loadQuotes('${j.id}')">👀 View Quotes</button>`:''}
-          ${j.status==='inspection_requested'?`<button class="btn btn-p btn-sm" style="flex:2;background:#3498db;" onclick="loadInspectionQuotes('${j.id}')">🔍 Review Inspection Request</button>`:''}
-          ${j.status==='inspection_accepted'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="payInspectionFee('${j.id}','${j.inspection_fee}')">💳 Pay Inspection Fee — ₦${j.inspection_fee?(j.inspection_fee/100).toLocaleString():'...'}</button>`:''}
-          ${j.status==='final_quote_sent'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="showFinalQuotePayment('${j.id}','${j.labor_cost||0}','${j.material_cost||0}','')">📋 Review & Pay Final Quote</button>`:''}
-          ${j.status==='adjustment_requested'?`<button class="btn btn-p btn-sm" style="flex:2;background:#f4a623;" onclick="approveAdjustment('${j.id}','${(j.adjustment_amount||0)/100}','${j.adjustment_reason||''}')">⚡ Review Extra Cost Request</button>`:''}
+
+          ${j.status==='inspection_requested'?`
+            <button class="btn btn-p btn-sm" style="flex:2;" onclick="acceptInspection('${j.id}','${j.inspection_fee}')">✅ Accept Inspection — ₦${inspFee||'0'}</button>
+            <button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="cancelJob('${j.id}','${j.status}')">✕ Decline</button>`:''}
+
+          ${j.status==='inspection_accepted'?`
+            <button class="btn btn-p btn-sm" style="flex:2;background:#6b21a8;" onclick="payInspection('${j.id}')">💳 Pay Inspection Fee — ₦${inspFee||'0'}</button>`:''}
+
+          ${j.status==='inspecting'?`
+            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Provider')">💬 Message</button>
+            <a href="tel:" id="call-btn-${j.id}" class="btn btn-w btn-sm" style="flex:1;text-decoration:none;text-align:center;" onclick="callProvider('${j.id}',this)">📞 Call</a>`:''}
+
+          ${j.status==='quoted_final'?`
+            ${!j.material_paid&&j.material_cost?`<button class="btn btn-p btn-sm" style="flex:2;background:#e67e22;" onclick="payMaterials('${j.id}')">💳 Pay Materials — ₦${materialPrice}</button>`:''}
+            ${(j.material_paid||!j.material_cost)?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="payLabor('${j.id}')">💳 Pay Labor — ₦${laborPrice} (Escrow)</button>`:''}
+            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Provider')">💬 Message</button>`:''}
+
+          ${j.status==='assigned'&&j.agreed_price?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price}')">💳 Pay Now — ₦${agreedPrice}</button>`:j.status==='assigned'?`<div style="font-size:13px;color:#f4a623;font-weight:700;padding:8px 0;">⏳ Waiting for provider quote</div>`:''}
+
+          ${j.status==='in_progress'?`
+            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Provider')">💬 Message</button>
+            <a href="tel:" id="call-btn-${j.id}" class="btn btn-w btn-sm" style="flex:1;text-decoration:none;text-align:center;" onclick="callProvider('${j.id}',this)">📞 Call</a>`:''}
+
+          ${j.status==='adjustment_requested'?`
+            <button class="btn btn-p btn-sm" style="flex:2;background:#f39c12;" onclick="approveAdjustment('${j.id}')">✅ Approve Extra Cost</button>
+            <button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="rejectAdjustment('${j.id}')">✕ Reject</button>`:''}
+
+          ${j.status==='adjustment_approved'?`
+            <button class="btn btn-p btn-sm" style="flex:2;background:#f39c12;" onclick="payAdjustment('${j.id}')">💳 Pay Extra — ₦${adjAmt}</button>`:''}
+
+          ${(j.status==='in_progress'||j.status==='provider_done')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
+          ${(j.status==='in_progress'||j.status==='provider_done')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
+
+          ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
+          ${j.status==='completed'&&!j.reviewed?`<button class="btn btn-w btn-sm" style="flex:1;color:#f4a623;" onclick="leaveReview('${j.id}','${j.provider_id}')">⭐ Rate</button>`:''}
+          ${['open','assigned','inspection_requested'].includes(j.status)?`<button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="cancelJob('${j.id}','${j.status}')">✕ Cancel</button>`:''}
         </div>
       </div>`;
     }).join('');
@@ -1373,29 +1474,7 @@ async function verifyPayment(reference, jobId){
   }
 }
 
-// Called on page load — check if returning from Paystack
-async function checkPendingPayment(){
-  const urlParams = new URLSearchParams(window.location.search);
-  const paymentStatus = urlParams.get('payment');
-  const ref = localStorage.getItem('pending_payment_ref');
-  const jobId = localStorage.getItem('pending_payment_job');
-  
-  if(paymentStatus === 'success' && ref && jobId){
-    // Clean URL
-    window.history.replaceState({}, '', window.location.pathname);
-    // Verify with backend
-    const r = await api('GET', '/payments/verify/' + ref);
-    if(r.success){
-      localStorage.removeItem('pending_payment_ref');
-      localStorage.removeItem('pending_payment_job');
-      showToast('✅ Payment confirmed! Money held in escrow.');
-      if(state.user?.role === 'provider') go('s-provider-home');
-      else { go('s-jobs'); loadJobs(); }
-    } else {
-      showAlert('Payment verification failed. Contact support@verapro.ng with ref: '+ref,'error');
-    }
-  }
-}
+// checkPendingPayment is defined below in the inspection flow section
 
 async function confirmComplete(jobId){
   // No confirm() - use inline confirmation instead
@@ -1946,7 +2025,7 @@ async function loadIncomingJobs() {
           <button class="btn btn-o btn-sm" style="flex:1;" onclick="respondToJob('${m.id}','decline')">❌ Decline</button>
           <button class="btn btn-w btn-sm" style="flex:1;" onclick="openChat('${m.jobs?.id||m.job_id}','Customer')">💬 Message</button>
           <button class="btn btn-p btn-sm" style="width:100%;margin-top:6px;" onclick="showQuoteInput('${m.id}')">💰 Send Direct Quote</button>
-          <button class="btn btn-w btn-sm" style="width:100%;margin-top:6px;" onclick="showInspectionOption('${m.id}')">🔍 Request Inspection First</button>
+          <button class="btn btn-w btn-sm" style="width:100%;margin-top:4px;" onclick="sendInspectionRequest('${m.id}','${m.jobs?.id||m.job_id}')">🔍 Request Inspection Instead</button>
         </div>
         ${hasCounter ? `<div style="background:#fff3cd;border:2px solid #f4a623;border-radius:8px;padding:10px;margin-top:8px;margin-bottom:8px;">
           <div style="font-size:12px;font-weight:700;color:#856404;">💬 Customer Counter Offer: ₦${(m.counter_amount/100).toLocaleString()}</div>
@@ -2032,28 +2111,38 @@ async function submitQuote(matchId) {
 async function loadProviderActiveJobs() {
   const el = document.getElementById('ph-active');
   const r = await api('GET', '/providers/my-jobs');
+  const activeStatuses = ['assigned','in_progress','inspecting','inspection_accepted','quoted_final','adjustment_requested','adjustment_approved','revision_pending'];
   if(r.jobs && r.jobs.length > 0) {
-    el.innerHTML = r.jobs.filter(j => ['assigned','in_progress','revision_pending'].includes(j.status)).map(j => {
+    const active = r.jobs.filter(j => activeStatuses.includes(j.status));
+    if (!active.length) { el.innerHTML = '<div style="color:#999;text-align:center;padding:16px;">No active jobs right now</div>'; return; }
+    el.innerHTML = active.map(j => {
       const price = j.agreed_price ? (j.agreed_price/100).toLocaleString() : null;
+      const laborPrice = j.labor_cost ? (j.labor_cost/100).toLocaleString() : null;
+      const isInspection = j.flow_type === 'inspection';
+      const statusColor = {assigned:'#f4a623',in_progress:'#27ae60',inspecting:'#2980b9',quoted_final:'#e67e22',adjustment_requested:'#e67e22',adjustment_approved:'#f39c12'}[j.status]||'#999';
       return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #ddd;">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
           <div style="font-weight:700;">${j.title||'Service Job'}</div>
-          <span style="background:#3498db;color:white;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:700;">${j.status?.toUpperCase()}</span>
+          <span style="background:${statusColor};color:white;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:700;">${j.status?.toUpperCase().replace(/_/g,' ')}</span>
         </div>
-        <div style="font-size:12px;color:#666;margin-bottom:8px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
-        ${price ? `<div style="font-size:15px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">\u20a6${price} agreed</div>` : ''}
-        <div style="display:flex;gap:8px;">
-          ${j.status==='assigned' ? `<div style="font-size:12px;color:#f4a623;font-weight:700;">⏳ Waiting for customer payment</div>` : ''}
-          ${j.status==='in_progress' && j.customer_phone ? `<div style="background:#e8f5ee;border-radius:8px;padding:8px 12px;font-size:13px;color:#1a7a4a;font-weight:700;margin-bottom:8px;">📞 Customer: ${j.customer_phone}</div>` : ''}
+        <div style="font-size:12px;color:#666;margin-bottom:8px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}${isInspection?' · 🔍 Inspection':''}</div>
+        ${price ? `<div style="font-size:15px;font-weight:800;color:#1a7a4a;margin-bottom:8px;">₦${price} agreed</div>` : ''}
+        ${laborPrice && !price ? `<div style="font-size:14px;font-weight:700;color:#e67e22;margin-bottom:8px;">Labor: ₦${laborPrice}</div>` : ''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${j.status==='assigned' ? `<div style="font-size:12px;color:#f4a623;font-weight:700;width:100%;padding:4px 0;">⏳ Waiting for customer payment</div>` : ''}
+          ${j.status==='inspecting' ? `
+            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Chat</button>
+            <button class="btn btn-p btn-sm" style="flex:2;" onclick="sendFinalQuote('${j.id}')">📋 Send Final Quote</button>` : ''}
           ${j.status==='in_progress' ? `
-            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Message</button>
-            <button class="btn btn-w btn-sm" style="flex:1;" onclick="showAdjustmentRequest('${j.id}')">⚡ Extra Cost</button>
-            <button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="markJobDone('${j.id}')">✅ Mark as Done</button>
-          ` : ''}
+            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Chat</button>
+            ${isInspection ? `<button class="btn btn-w btn-sm" style="flex:1;" onclick="sendAdjustmentRequest('${j.id}')">+ Extra Cost</button>` : ''}
+            <button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="markJobDone('${j.id}')">✅ Mark Done</button>` : ''}
+          ${j.status==='adjustment_requested' ? `<div style="font-size:12px;color:#e67e22;font-weight:700;width:100%;padding:4px 0;">⏳ Waiting for customer to approve extra cost...</div>` : ''}
+          ${j.status==='adjustment_approved' ? `<div style="font-size:12px;color:#27ae60;font-weight:700;width:100%;padding:4px 0;">✅ Customer approved extra cost! Waiting for payment...</div>` : ''}
+          ${j.status==='quoted_final' ? `<div style="font-size:12px;color:#e67e22;font-weight:700;width:100%;padding:4px 0;">⏳ Waiting for customer to pay materials & labor...</div>` : ''}
           ${j.status==='assigned' ? `
-            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Message</button>
-            <button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="providerCancelJob('${j.id}')">✕ Cancel</button>
-          ` : ''}
+            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Chat</button>
+            <button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="providerCancelJob('${j.id}')">✕ Cancel</button>` : ''}
         </div>
       </div>`;
     }).join('') || '<div style="color:#999;text-align:center;padding:16px;">No active jobs right now</div>';
@@ -2114,7 +2203,7 @@ async function loadProviderJobs() {
   if(r.jobs && r.jobs.length > 0) {
     el.innerHTML = r.jobs.map(j => {
       const price = j.agreed_price ? (j.agreed_price/100).toLocaleString() : null;
-      const statusColor = {assigned:'#f4a623',in_progress:'#3498db',completed:'#27ae60',disputed:'#e53e3e',inspection_requested:'#9b59b6',inspection_accepted:'#3498db',inspecting:'#2ecc71',final_quote_sent:'#f4a623',adjustment_requested:'#e67e22'}[j.status]||'#999';
+      const statusColor = {assigned:'#f4a623',in_progress:'#3498db',completed:'#27ae60',disputed:'#e53e3e'}[j.status]||'#999';
       return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #ddd;">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
           <div style="font-weight:700;">${j.title||'Service Job'}</div>
@@ -2304,6 +2393,346 @@ async function saveNIN() {
   }
 }
 
+// ─── INSPECTION FLOW — CUSTOMER ACTIONS ─────────────────────
+
+async function acceptInspection(jobId, feeKobo) {
+  const fee = feeKobo ? Math.round(feeKobo / 100) : 0;
+  showConfirm(
+    `Accept inspection? The provider will visit your location to assess the job before giving a final price.\n\nInspection fee: ₦${fee.toLocaleString()}`,
+    async () => {
+      // First find the match_id for this job
+      const r = await api('GET', '/inspection/status/' + jobId);
+      const matches = r.job?.job_matches || [];
+      const activeMatch = matches.find(m => m.status === 'inspection_requested');
+      if (!activeMatch) { showAlert('Could not find inspection request. Please refresh.', 'error'); return; }
+
+      const res = await api('POST', '/inspection/accept-inspection', {
+        match_id: activeMatch.id,
+        agreed_fee: fee
+      });
+      if (res.success) {
+        showToast('Inspection accepted! Pay the fee to unlock the provider\'s contact.', 'success');
+        loadJobs();
+      } else {
+        showAlert(res.error || 'Could not accept inspection', 'error');
+      }
+    },
+    'Accept & Pay Fee'
+  );
+}
+
+async function payInspection(jobId) {
+  const loading = showLoading('Preparing payment...');
+  const r = await api('POST', '/payments/pay-inspection', { job_id: jobId });
+  loading.remove();
+  if (r.payment_url) {
+    localStorage.setItem('pending_payment_ref', r.reference);
+    localStorage.setItem('pending_payment_job', jobId);
+    localStorage.setItem('pending_payment_type', 'inspection');
+    window.location.href = r.payment_url;
+  } else {
+    showAlert(r.error || 'Could not initialize payment', 'error');
+  }
+}
+
+async function payMaterials(jobId) {
+  showConfirm(
+    'Pay material cost now?\n\nThis is released immediately to the provider so they can purchase materials for your job.',
+    async () => {
+      const loading = showLoading('Preparing payment...');
+      const r = await api('POST', '/payments/pay-materials', { job_id: jobId });
+      loading.remove();
+      if (r.payment_url) {
+        localStorage.setItem('pending_payment_ref', r.reference);
+        localStorage.setItem('pending_payment_job', jobId);
+        localStorage.setItem('pending_payment_type', 'materials');
+        window.location.href = r.payment_url;
+      } else {
+        showAlert(r.error || 'Could not initialize payment', 'error');
+      }
+    },
+    'Pay Materials Now'
+  );
+}
+
+async function payLabor(jobId) {
+  showConfirm(
+    'Pay labor cost?\n\nThis is held securely in escrow and only released to the provider once you confirm the job is done.',
+    async () => {
+      const loading = showLoading('Preparing payment...');
+      const r = await api('POST', '/payments/pay-labor', { job_id: jobId });
+      loading.remove();
+      if (r.payment_url) {
+        localStorage.setItem('pending_payment_ref', r.reference);
+        localStorage.setItem('pending_payment_job', jobId);
+        localStorage.setItem('pending_payment_type', 'labor');
+        window.location.href = r.payment_url;
+      } else {
+        showAlert(r.error || 'Could not initialize payment', 'error');
+      }
+    },
+    'Pay Labor (Escrow)'
+  );
+}
+
+async function approveAdjustment(jobId) {
+  showConfirm(
+    'Approve extra cost request?\n\nYou will be taken to pay this additional amount. It will be held in escrow until the job is confirmed done.',
+    async () => {
+      const r = await api('POST', '/inspection/approve-adjustment', { job_id: jobId });
+      if (r.success) {
+        showToast('Approved! Proceeding to payment...');
+        setTimeout(() => payAdjustment(jobId), 1000);
+      } else {
+        showAlert(r.error || 'Could not approve adjustment', 'error');
+      }
+    },
+    'Approve & Pay',
+    '#f39c12'
+  );
+}
+
+async function rejectAdjustment(jobId) {
+  showConfirm(
+    'Reject this extra cost? The job will continue at the original agreed price.',
+    async () => {
+      const r = await api('POST', '/inspection/reject-adjustment', { job_id: jobId });
+      if (r.success) {
+        showToast('Adjustment rejected. Job continues at original price.');
+        loadJobs();
+      } else {
+        showAlert(r.error || 'Could not reject', 'error');
+      }
+    },
+    'Yes, Reject',
+    '#e53e3e'
+  );
+}
+
+async function payAdjustment(jobId) {
+  const loading = showLoading('Preparing payment...');
+  const r = await api('POST', '/payments/pay-adjustment', { job_id: jobId });
+  loading.remove();
+  if (r.payment_url) {
+    localStorage.setItem('pending_payment_ref', r.reference);
+    localStorage.setItem('pending_payment_job', jobId);
+    localStorage.setItem('pending_payment_type', 'adjustment');
+    window.location.href = r.payment_url;
+  } else {
+    showAlert(r.error || 'Could not initialize payment', 'error');
+  }
+}
+
+// ─── PROVIDER CONTACT (call button) ────────────────────────
+
+async function callProvider(jobId, linkEl) {
+  // Fetch phone number from backend (only works if unlocked)
+  const r = await api('GET', '/jobs/' + jobId + '/contact');
+  if (r.phone) {
+    linkEl.href = 'tel:' + r.phone;
+    linkEl.click();
+  } else {
+    showAlert(r.error || 'Contact not available yet.', 'warning');
+  }
+}
+
+// ─── OPEN CHAT — stage-gated ────────────────────────────────
+
+let chatPollTimer = null;
+let currentChatJobId = null;
+
+async function openChat(jobId, partnerName) {
+  // Check if chat is allowed
+  const statusR = await api('GET', '/messages/' + jobId + '/status');
+  if (statusR.chat_locked) {
+    showAlert(statusR.chat_locked_reason || 'Chat is not available yet at this stage.', 'warning');
+    return;
+  }
+  currentChatJobId = jobId;
+  document.getElementById('chat-nm').textContent = partnerName || 'Chat';
+
+  // Update the warning bar
+  const bar = document.getElementById('chat-lock-bar');
+  if (bar) {
+    bar.style.background = '#fffbeb';
+    bar.style.color = '#b45309';
+    bar.textContent = '⚠️ Do not pay outside VeraPro. Payments outside are not protected.';
+  }
+
+  go('s-chat');
+  await loadChatMsgs(jobId);
+  // Poll every 5 seconds
+  if (chatPollTimer) clearInterval(chatPollTimer);
+  chatPollTimer = setInterval(() => loadChatMsgs(jobId), 5000);
+}
+
+async function loadChatMsgs(jobId) {
+  const r = await api('GET', '/messages/' + jobId);
+  if (r.chat_locked) {
+    document.getElementById('chat-msgs').innerHTML = `<div style="text-align:center;padding:32px;color:#b45309;font-size:13px;line-height:1.6;"><div style="font-size:32px;margin-bottom:8px;">🔒</div>${r.chat_locked_reason}</div>`;
+    return;
+  }
+  const msgs = r.messages || [];
+  const el = document.getElementById('chat-msgs');
+  const isBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 50;
+  el.innerHTML = msgs.length
+    ? msgs.map(m => {
+        const mine = m.sender_id === (r.my_id || user?.id);
+        return `<div class="msg ${mine?'sent':'recv'}">${m.content}<div class="msg-time">${ta(m.created_at)}</div></div>`;
+      }).join('')
+    : '<div style="text-align:center;padding:32px;color:#aaa;font-size:13px;">No messages yet. Say hello 👋</div>';
+  if (isBottom) el.scrollTop = el.scrollHeight;
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('c-inp');
+  const msg = inp?.value.trim();
+  if (!msg || !currentChatJobId) return;
+  inp.value = '';
+  const r = await api('POST', '/messages/' + currentChatJobId, { message: msg });
+  if (r.success) {
+    await loadChatMsgs(currentChatJobId);
+  } else {
+    inp.value = msg; // Restore if failed
+    showToast(r.error || 'Could not send message', 'error');
+  }
+}
+
+// ─── PAYMENT RETURN HANDLER (all types) ────────────────────
+
+async function checkPendingPayment() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentStatus = urlParams.get('payment');
+  const ref = localStorage.getItem('pending_payment_ref');
+  const jobId = localStorage.getItem('pending_payment_job');
+  const payType = localStorage.getItem('pending_payment_type') || 'full';
+
+  if (!paymentStatus || !ref || !jobId) return;
+
+  // Clean URL
+  window.history.replaceState({}, '', window.location.pathname);
+
+  let verifyEndpoint, successMsg;
+  switch(payType) {
+    case 'inspection':
+      verifyEndpoint = '/payments/verify-inspection';
+      successMsg = '✅ Inspection fee paid! Provider\'s contact is now unlocked.';
+      break;
+    case 'materials':
+      verifyEndpoint = '/payments/verify-materials';
+      successMsg = '✅ Materials paid! Provider can now buy materials.';
+      break;
+    case 'labor':
+      verifyEndpoint = '/payments/verify-labor';
+      successMsg = '✅ Labor in escrow. Job is in progress!';
+      break;
+    case 'adjustment':
+      verifyEndpoint = '/payments/verify-adjustment';
+      successMsg = '✅ Extra cost paid. Job continues!';
+      break;
+    default:
+      verifyEndpoint = null;
+      successMsg = '✅ Payment confirmed! Money held in escrow.';
+  }
+
+  const loading = showLoading('Verifying payment...');
+  let r;
+  if (verifyEndpoint) {
+    r = await api('POST', verifyEndpoint, { reference: ref, job_id: jobId });
+  } else {
+    r = await api('GET', '/payments/verify/' + ref);
+  }
+  loading.remove();
+
+  localStorage.removeItem('pending_payment_ref');
+  localStorage.removeItem('pending_payment_job');
+  localStorage.removeItem('pending_payment_type');
+
+  if (r.success) {
+    // Show contact if inspection was just paid
+    if (payType === 'inspection' && r.provider_phone) {
+      showAlert(`${successMsg}\n\n📞 Provider: ${r.provider_name || 'Provider'}\n${r.provider_phone}`, 'success');
+    } else {
+      showToast(successMsg);
+    }
+    if (user?.role === 'provider') go('s-provider-home');
+    else { go('s-jobs'); loadJobs(); }
+  } else {
+    showAlert('Payment verification failed. Contact support@verapro.ng with ref: ' + ref, 'error');
+  }
+}
+
+// ─── LOADING OVERLAY HELPER ─────────────────────────────────
+
+function showLoading(msg) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:700;flex-direction:column;gap:12px;';
+  el.innerHTML = `<div style="width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:sp .7s linear infinite;"></div><div>${msg||'Loading...'}</div>`;
+  document.body.appendChild(el);
+  return el;
+}
+
+// ─── PROVIDER: INSPECTION & FINAL QUOTE ACTIONS ─────────────
+
+async function sendInspectionRequest(matchId, jobId) {
+  showInputSheet('Inspection Fee (₦)', 'Enter your inspection fee (e.g. 3000)', 'Send Inspection Request', '#6b21a8', async (fee) => {
+    if (isNaN(fee) || parseInt(fee) < 100) { showToast('Enter a valid inspection fee', 'warning'); return; }
+    const r = await api('POST', '/inspection/request-inspection', {
+      match_id: matchId,
+      job_id: jobId,
+      inspection_fee: parseInt(fee)
+    });
+    if (r.success) {
+      showToast('Inspection request sent to customer! ✅');
+      loadProviderHome();
+    } else {
+      showAlert(r.error || 'Could not send inspection request', 'error');
+    }
+  });
+}
+
+async function sendFinalQuote(jobId) {
+  // Multi-step input
+  showInputSheet('Labor Cost (₦)', 'Enter your labor cost (your fee)', 'Next →', '#1a7a4a', async (labor) => {
+    if (isNaN(labor) || parseInt(labor) < 100) { showToast('Enter a valid labor cost', 'warning'); return; }
+    showInputSheet('Materials Cost (₦)', 'Enter materials cost (0 if no materials needed)', 'Next →', '#1a7a4a', async (materials) => {
+      showInputSheet('Note to Customer (optional)', 'Any additional info for the customer...', 'Send Final Quote', '#1a7a4a', async (note) => {
+        const r = await api('POST', '/inspection/final-quote', {
+          job_id: jobId,
+          labor_cost: parseInt(labor),
+          material_cost: parseInt(materials || 0),
+          note: note || ''
+        });
+        if (r.success) {
+          showToast(`Final quote sent! Total: ₦${(parseInt(labor)+parseInt(materials||0)).toLocaleString()} ✅`);
+          loadProviderHome();
+        } else {
+          showAlert(r.error || 'Could not send final quote', 'error');
+        }
+      });
+    });
+  });
+}
+
+async function sendAdjustmentRequest(jobId) {
+  showInputSheet('Extra Cost Needed (₦)', 'How much extra is needed?', 'Next →', '#f39c12', async (amount) => {
+    if (isNaN(amount) || parseInt(amount) < 100) { showToast('Enter a valid amount', 'warning'); return; }
+    showInputSheet('Reason for Extra Cost', 'Explain why extra funds are needed (e.g. "pipe fittings cost more than expected")', 'Send Request', '#f39c12', async (reason) => {
+      const r = await api('POST', '/inspection/request-adjustment', {
+        job_id: jobId,
+        amount: parseInt(amount),
+        reason
+      });
+      if (r.success) {
+        showToast('Extra cost request sent to customer!');
+        loadProviderHome();
+      } else {
+        showAlert(r.error || 'Could not send adjustment request', 'error');
+      }
+    });
+  });
+}
+
 async function saveBankAccount() {
   const bank = document.getElementById('pp-bank').value;
   const acct = document.getElementById('pp-acct').value.trim();
@@ -2324,442 +2753,8 @@ async function saveBankAccount() {
 }
 
 
-// PATCH: Override loadJobs to handle pending_completion status
-async function loadJobs(){
-  const el=document.getElementById('j-list');
-  if(!user||user.id==='demo'){
-    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><div class="empty-sub">Request a service and get matched with verified professionals in Gwagwalada.</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;" onclick="go('s-postjob')">Request a Service</button></div>`;
-    return;
-  }
-  el.innerHTML='<div class="ld">Loading...</div>';
-  const r=await api('GET','/jobs');
-  if(r.jobs?.length){
-    el.innerHTML=r.jobs.map(j=>{
-      const statusColor={open:'#2a9d5c',assigned:'#f4a623',payment_pending:'#e67e22',in_progress:'#3498db',provider_done:'#9b59b6',pending_completion:'#9b59b6',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#8e44ad',cancelled:'#999'}[j.status]||'#999';
-      const statusLabel={open:'🔍 Searching for providers...',assigned:'Provider found — Pay now',payment_pending:'Payment pending',in_progress:'Work in progress',provider_done:'🎉 Provider marked done!',pending_completion:'Provider says job is done!',completed:'✅ Completed',disputed:'⚠️ Disputed',revision_pending:'New quote received',cancelled:'Cancelled'}[j.status]||j.status;
-      const price=j.agreed_price?(j.agreed_price/100).toLocaleString():null;
-      return`<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:${j.status==='pending_completion'?'2px solid #9b59b6':'1px solid #ddd'};box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
-          <div style="font-weight:700;font-size:15px;flex:1;color:#111;">${j.title||'Service Request'}</div>
-          <span style="background:${statusColor};color:white;font-size:10px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:700;">${j.urgency==='emergency'?'🚨 ':''} ${j.status?.toUpperCase().replace('_',' ')}</span>
-        </div>
-        <div style="font-size:12px;color:#666;margin-bottom:6px;">📍 ${j.city||'Gwagwalada'} · ${ta(j.created_at)}</div>
-        <div style="font-size:13px;color:#444;margin-bottom:10px;">${statusLabel}</div>
-        ${j.status==='pending_completion'?`<div style="background:#f3e8ff;border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px;color:#6b21a8;">🎉 Your provider has marked this job as done! Confirm to release their payment.</div>`:''}
-        ${price?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${price} agreed</div>`:''}
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          ${j.status==='assigned'&&j.agreed_price?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price}')">💳 Pay Now — ₦${price}</button>`:j.status==='assigned'?`<div style="font-size:13px;color:#f4a623;font-weight:700;padding:8px 0;">⏳ Waiting for provider to send a price quote</div>`:''}
-          ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-p btn-sm" style="flex:2;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm & Release Payment</button>`:''}
-          ${(j.status==='in_progress'||j.status==='provider_done'||j.status==='pending_completion')?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
 
-          ${j.status==='revision_pending'?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="loadQuotes('${j.id}')">View Revised Quote</button>`:''}
-          ${j.status==='open'?`<button class="btn btn-w btn-sm" style="flex:1;" onclick="loadQuotes('${j.id}')">👀 View Applicants</button>`:''}
-          ${(j.status==='open'||j.status==='assigned')?`<button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="cancelJob('${j.id}','${j.status}')">✕ Cancel</button>`:''}
-          ${j.status==='in_progress'?`<button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="cancelJob('${j.id}','${j.status}')">✕ Cancel</button>`:''}
-        </div>
-      </div>`;
-    }).join('');
-  }else{
-    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><button class="btn btn-p" style="max-width:220px;margin:0 auto;margin-top:12px;" onclick="go('s-postjob')">Request a Service</button></div>`;
-  }
-}
-
-// ── INSPECTION FLOW FUNCTIONS ─────────────────────────────────
-// Add these functions to verapro.html before the closing </script> tag
-
-// PROVIDER: Show inspection request option on incoming job card
-function showInspectionOption(matchId) {
-  const d = document.createElement('div');
-  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
-  d.innerHTML = `
-    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;">
-      <div style="font-weight:800;font-size:17px;margin-bottom:6px;color:#111;">🔍 Request Inspection</div>
-      <div style="font-size:13px;color:#666;margin-bottom:16px;">Tell the customer you need to inspect before giving a final quote.</div>
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <div style="flex:1;">
-          <label style="font-size:12px;font-weight:700;color:#444;display:block;margin-bottom:4px;">Min Fee (₦)</label>
-          <input type="number" id="insp-fee-min" placeholder="e.g. 1000" inputmode="numeric"
-            style="width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-weight:700;">
-        </div>
-        <div style="flex:1;">
-          <label style="font-size:12px;font-weight:700;color:#444;display:block;margin-bottom:4px;">Max Fee (₦)</label>
-          <input type="number" id="insp-fee-max" placeholder="e.g. 3000" inputmode="numeric"
-            style="width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-weight:700;">
-        </div>
-      </div>
-      <textarea id="insp-note" placeholder="Why do you need to inspect? (e.g. Need to assess extent of damage first)"
-        style="width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;resize:none;height:70px;margin-bottom:12px;"></textarea>
-      <div style="background:#fff3cd;border-radius:8px;padding:10px;font-size:12px;color:#856404;margin-bottom:14px;">
-        ⚠️ The inspection fee range will be shown to the customer. They will choose an amount within this range.
-      </div>
-      <button onclick="submitInspectionRequest('${matchId}')" style="width:100%;background:#1a7a4a;color:white;border:none;border-radius:12px;padding:16px;font-size:15px;font-weight:700;margin-bottom:10px;cursor:pointer;">Send Inspection Request</button>
-      <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:14px;font-size:14px;cursor:pointer;">Cancel</button>
-    </div>`;
-  document.body.appendChild(d);
-}
-
-async function submitInspectionRequest(matchId) {
-  const min = document.getElementById('insp-fee-min')?.value;
-  const max = document.getElementById('insp-fee-max')?.value;
-  const note = document.getElementById('insp-note')?.value;
-  if (!min || parseInt(min) < 500) return showToast('Enter a minimum fee (at least ₦500)', 'warning');
-  if (!max || parseInt(max) < parseInt(min)) return showToast('Max fee must be greater than min', 'warning');
-
-  const r = await api('POST', '/inspection/request-inspection', {
-    match_id: matchId,
-    inspection_fee_min: parseInt(min),
-    inspection_fee_max: parseInt(max),
-    note: note || ''
-  });
-
-  document.querySelector('[style*="rgba(0,0,0,.55)"]')?.remove();
-  if (r.success) {
-    showToast('Inspection request sent to customer ✅');
-    setTimeout(() => loadProviderHome(), 1500);
-  } else {
-    showAlert(r.error || 'Could not send inspection request', 'error');
-  }
-}
-
-// CUSTOMER: Show inspection request from provider on job card
-function showInspectionAccept(matchId, minFee, maxFee, note) {
-  const d = document.createElement('div');
-  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
-  d.innerHTML = `
-    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;">
-      <div style="font-weight:800;font-size:17px;margin-bottom:6px;color:#111;">🔍 Provider Wants to Inspect First</div>
-      ${note ? `<div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:13px;color:#444;margin-bottom:12px;">"${note}"</div>` : ''}
-      <div style="background:#e8f5ee;border-radius:10px;padding:14px;margin-bottom:16px;">
-        <div style="font-size:12px;font-weight:700;color:#1a7a4a;margin-bottom:4px;">INSPECTION FEE RANGE</div>
-        <div style="font-size:22px;font-weight:900;color:#1a7a4a;">₦${parseInt(minFee).toLocaleString()} — ₦${parseInt(maxFee).toLocaleString()}</div>
-        <div style="font-size:12px;color:#666;margin-top:4px;">Choose how much to pay for the inspection visit</div>
-      </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:12px;font-weight:700;color:#444;display:block;margin-bottom:6px;">Your Offer (₦)</label>
-        <input type="number" id="cust-insp-fee" value="${minFee}" inputmode="numeric"
-          style="width:100%;padding:12px;border:1.5px solid #1a7a4a;border-radius:8px;font-size:18px;font-weight:800;color:#1a7a4a;">
-        <div style="font-size:11px;color:#999;margin-top:4px;">Must be between ₦${parseInt(minFee).toLocaleString()} and ₦${parseInt(maxFee).toLocaleString()}</div>
-      </div>
-      <div style="background:#fff3cd;border-radius:8px;padding:10px;font-size:12px;color:#856404;margin-bottom:16px;">
-        🛡️ After accepting, you'll pay this fee and the provider's contact details will be shared. The final quote comes after inspection.
-      </div>
-      <button onclick="acceptInspection('${matchId}')" style="width:100%;background:#1a7a4a;color:white;border:none;border-radius:12px;padding:16px;font-size:15px;font-weight:700;margin-bottom:10px;cursor:pointer;">✅ Accept & Pay Inspection Fee</button>
-      <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:14px;font-size:14px;cursor:pointer;">Decline</button>
-    </div>`;
-  document.body.appendChild(d);
-}
-
-async function acceptInspection(matchId) {
-  const fee = document.getElementById('cust-insp-fee')?.value;
-  if (!fee || parseInt(fee) < 500) return showToast('Enter a valid inspection fee', 'warning');
-
-  const r = await api('POST', '/inspection/accept-inspection', {
-    match_id: matchId,
-    agreed_fee: parseInt(fee)
-  });
-
-  document.querySelector('[style*="rgba(0,0,0,.55)"]')?.remove();
-
-  if (r.success) {
-    // Now pay the inspection fee
-    showToast('Inspection accepted! Proceeding to payment...');
-    setTimeout(async () => {
-      const payR = await api('POST', '/payments/pay-inspection', {
-        job_id: r.job_id,
-        match_id: matchId
-      });
-      if (payR.payment_url) {
-        localStorage.setItem('pending_payment_ref', payR.reference);
-        localStorage.setItem('pending_payment_job', r.job_id);
-        localStorage.setItem('pending_payment_type', 'inspection');
-        window.location.href = payR.payment_url;
-      } else {
-        showAlert(payR.error || 'Could not initialize payment', 'error');
-      }
-    }, 800);
-  } else {
-    showAlert(r.error || 'Could not accept inspection', 'error');
-  }
-}
-
-// PROVIDER: Send final quote after inspection
-function showFinalQuoteForm(jobId) {
-  const d = document.createElement('div');
-  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
-  d.innerHTML = `
-    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;">
-      <div style="font-weight:800;font-size:17px;margin-bottom:16px;color:#111;">📋 Send Final Quote</div>
-      <div style="background:#e8f5ee;border-radius:8px;padding:10px;font-size:12px;color:#1a7a4a;font-weight:700;margin-bottom:14px;">
-        Break down the cost clearly — materials are paid first and released to you immediately. Labor is held in escrow until job is complete.
-      </div>
-      <div class="fg" style="margin-bottom:12px;">
-        <label style="font-size:12px;font-weight:700;color:#444;display:block;margin-bottom:6px;">Labor Cost (₦) <span style="color:#e53e3e;">*</span></label>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span style="font-weight:700;color:#1a7a4a;font-size:16px;">₦</span>
-          <input type="number" id="fq-labor" placeholder="e.g. 15000" inputmode="numeric"
-            style="flex:1;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-weight:700;">
-        </div>
-        <div style="font-size:11px;color:#999;margin-top:3px;">🔒 Held in escrow until job is confirmed complete</div>
-      </div>
-      <div class="fg" style="margin-bottom:12px;">
-        <label style="font-size:12px;font-weight:700;color:#444;display:block;margin-bottom:6px;">Material Cost (₦)</label>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span style="font-weight:700;color:#1a7a4a;font-size:16px;">₦</span>
-          <input type="number" id="fq-materials" placeholder="e.g. 8000 (optional)" inputmode="numeric"
-            style="flex:1;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-weight:700;">
-        </div>
-        <div style="font-size:11px;color:#999;margin-top:3px;">💸 Released to you immediately when customer pays</div>
-      </div>
-      <div class="fg" style="margin-bottom:16px;">
-        <label style="font-size:12px;font-weight:700;color:#444;display:block;margin-bottom:6px;">Description / Notes</label>
-        <textarea id="fq-note" placeholder="Describe what you found and what needs to be done..."
-          style="width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;resize:none;height:80px;"></textarea>
-      </div>
-      <div id="fq-total" style="background:#f9f9f9;border-radius:8px;padding:12px;margin-bottom:16px;display:none;">
-        <div style="font-size:12px;color:#666;">Total quote</div>
-        <div style="font-size:22px;font-weight:900;color:#1a7a4a;" id="fq-total-amount">₦0</div>
-      </div>
-      <button onclick="submitFinalQuote('${jobId}')" style="width:100%;background:#1a7a4a;color:white;border:none;border-radius:12px;padding:16px;font-size:15px;font-weight:700;margin-bottom:10px;cursor:pointer;">Send Final Quote to Customer</button>
-      <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:14px;font-size:14px;cursor:pointer;">Cancel</button>
-    </div>`;
-  document.body.appendChild(d);
-
-  // Live total calculation
-  ['fq-labor', 'fq-materials'].forEach(id => {
-    document.getElementById(id)?.addEventListener('input', () => {
-      const labor = parseInt(document.getElementById('fq-labor')?.value || 0);
-      const mats = parseInt(document.getElementById('fq-materials')?.value || 0);
-      const total = labor + mats;
-      const totalEl = document.getElementById('fq-total');
-      const amtEl = document.getElementById('fq-total-amount');
-      if (total > 0 && totalEl && amtEl) {
-        totalEl.style.display = 'block';
-        amtEl.textContent = '₦' + total.toLocaleString();
-      }
-    });
-  });
-}
-
-async function submitFinalQuote(jobId) {
-  const labor = document.getElementById('fq-labor')?.value;
-  const materials = document.getElementById('fq-materials')?.value;
-  const note = document.getElementById('fq-note')?.value;
-
-  if (!labor || parseInt(labor) < 100) return showToast('Enter a valid labor cost', 'warning');
-
-  const r = await api('POST', '/inspection/final-quote', {
-    job_id: jobId,
-    labor_cost: parseInt(labor),
-    material_cost: parseInt(materials || 0),
-    note: note || ''
-  });
-
-  document.querySelector('[style*="rgba(0,0,0,.55)"]')?.remove();
-  if (r.success) {
-    showToast('Final quote sent to customer! ✅');
-    setTimeout(() => loadProviderHome(), 1500);
-  } else {
-    showAlert(r.error || 'Could not send quote', 'error');
-  }
-}
-
-// CUSTOMER: Pay material + labor separately after final quote
-function showFinalQuotePayment(jobId, laborCost, materialCost, note) {
-  const labor = parseInt(laborCost) / 100;
-  const materials = parseInt(materialCost) / 100;
-  const d = document.createElement('div');
-  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
-  d.innerHTML = `
-    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;">
-      <div style="font-weight:800;font-size:17px;margin-bottom:14px;color:#111;">📋 Final Quote Received</div>
-      ${note ? `<div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:13px;color:#444;margin-bottom:12px;">💬 "${note}"</div>` : ''}
-      <div style="background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:16px;">
-        ${materials > 0 ? `
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">
-          <div>
-            <div style="font-weight:700;font-size:14px;">Materials</div>
-            <div style="font-size:11px;color:#1a7a4a;">💸 Released immediately to provider</div>
-          </div>
-          <div style="font-size:16px;font-weight:800;color:#111;">₦${materials.toLocaleString()}</div>
-        </div>` : ''}
-        <div style="display:flex;justify-content:space-between;padding:8px 0;">
-          <div>
-            <div style="font-weight:700;font-size:14px;">Labor</div>
-            <div style="font-size:11px;color:#1a7a4a;">🔒 Held in escrow until job complete</div>
-          </div>
-          <div style="font-size:16px;font-weight:800;color:#111;">₦${labor.toLocaleString()}</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:10px 0 0;border-top:2px solid #111;margin-top:4px;">
-          <div style="font-weight:800;font-size:15px;">Total</div>
-          <div style="font-size:20px;font-weight:900;color:#1a7a4a;">₦${(labor + materials).toLocaleString()}</div>
-        </div>
-      </div>
-      <div style="background:#fff3cd;border-radius:8px;padding:10px;font-size:12px;color:#856404;margin-bottom:16px;">
-        ⚠️ Do not pay outside VeraPro. Only in-app payments are protected by the VeraPro Guarantee.
-      </div>
-      ${materials > 0 ? `
-      <button onclick="payMaterials('${jobId}')" style="width:100%;background:#f4a623;color:white;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;margin-bottom:8px;cursor:pointer;">
-        💸 Pay Materials First — ₦${materials.toLocaleString()}
-      </button>` : ''}
-      <button onclick="payLabor('${jobId}')" style="width:100%;background:#1a7a4a;color:white;border:none;border-radius:12px;padding:16px;font-size:15px;font-weight:700;margin-bottom:10px;cursor:pointer;">
-        🔒 Pay Labor (Escrow) — ₦${labor.toLocaleString()}
-      </button>
-      <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:14px;font-size:14px;cursor:pointer;">Cancel</button>
-    </div>`;
-  document.body.appendChild(d);
-}
-
-async function payMaterials(jobId) {
-  document.querySelector('[style*="rgba(0,0,0,.55)"]')?.remove();
-  const r = await api('POST', '/payments/pay-materials', { job_id: jobId });
-  if (r.payment_url) {
-    localStorage.setItem('pending_payment_ref', r.reference);
-    localStorage.setItem('pending_payment_job', jobId);
-    localStorage.setItem('pending_payment_type', 'materials');
-    window.location.href = r.payment_url;
-  } else {
-    showAlert(r.error || 'Could not initialize payment', 'error');
-  }
-}
-
-async function payLabor(jobId) {
-  document.querySelector('[style*="rgba(0,0,0,.55)"]')?.remove();
-  const r = await api('POST', '/payments/pay-labor', { job_id: jobId });
-  if (r.payment_url) {
-    localStorage.setItem('pending_payment_ref', r.reference);
-    localStorage.setItem('pending_payment_job', jobId);
-    localStorage.setItem('pending_payment_type', 'labor');
-    window.location.href = r.payment_url;
-  } else {
-    showAlert(r.error || 'Could not initialize payment', 'error');
-  }
-}
-
-// PROVIDER: Request cost adjustment during job
-function showAdjustmentRequest(jobId) {
-  const d = document.createElement('div');
-  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
-  d.innerHTML = `
-    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;">
-      <div style="font-weight:800;font-size:17px;margin-bottom:6px;color:#111;">⚡ Request Cost Adjustment</div>
-      <div style="font-size:13px;color:#666;margin-bottom:16px;">Found something unexpected? Request additional cost from customer.</div>
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
-        <span style="font-weight:700;color:#1a7a4a;font-size:16px;">₦</span>
-        <input type="number" id="adj-amount" placeholder="Additional amount needed" inputmode="numeric"
-          style="flex:1;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-weight:700;">
-      </div>
-      <textarea id="adj-reason" placeholder="Explain why (e.g. Found corroded pipes that need replacement)"
-        style="width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;resize:none;height:80px;margin-bottom:14px;"></textarea>
-      <div style="background:#fff3cd;border-radius:8px;padding:10px;font-size:12px;color:#856404;margin-bottom:14px;">
-        ⚠️ Customer must approve and pay this before you can continue.
-      </div>
-      <button onclick="submitAdjustment('${jobId}')" style="width:100%;background:#f4a623;color:white;border:none;border-radius:12px;padding:16px;font-size:15px;font-weight:700;margin-bottom:10px;cursor:pointer;">Send Adjustment Request</button>
-      <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:14px;font-size:14px;cursor:pointer;">Cancel</button>
-    </div>`;
-  document.body.appendChild(d);
-}
-
-async function submitAdjustment(jobId) {
-  const amount = document.getElementById('adj-amount')?.value;
-  const reason = document.getElementById('adj-reason')?.value;
-  if (!amount || parseInt(amount) < 100) return showToast('Enter a valid amount', 'warning');
-  if (!reason) return showToast('Please explain the reason', 'warning');
-
-  const r = await api('POST', '/inspection/request-adjustment', {
-    job_id: jobId,
-    amount: parseInt(amount),
-    reason
-  });
-
-  document.querySelector('[style*="rgba(0,0,0,.55)"]')?.remove();
-  if (r.success) {
-    showToast('Adjustment request sent to customer ✅');
-    loadProviderHome();
-  } else {
-    showAlert(r.error || 'Could not send adjustment', 'error');
-  }
-}
-
-// CUSTOMER: Approve and pay adjustment
-async function approveAdjustment(jobId, amount, reason) {
-  showConfirm(
-    `Provider needs ₦${parseInt(amount).toLocaleString()} extra for: "${reason}"\n\nApprove and pay?`,
-    async () => {
-      const r = await api('POST', '/inspection/approve-adjustment', { job_id: jobId });
-      if (r.success) {
-        // Pay the adjustment
-        const payR = await api('POST', '/payments/pay-adjustment', { job_id: jobId });
-        if (payR.payment_url) {
-          localStorage.setItem('pending_payment_ref', payR.reference);
-          localStorage.setItem('pending_payment_job', jobId);
-          localStorage.setItem('pending_payment_type', 'adjustment');
-          window.location.href = payR.payment_url;
-        } else {
-          showAlert(payR.error || 'Could not initialize payment', 'error');
-        }
-      } else {
-        showAlert(r.error || 'Could not approve', 'error');
-      }
-    },
-    `Approve & Pay ₦${parseInt(amount).toLocaleString()}`,
-    '#f4a623'
-  );
-}
-
-async function loadInspectionQuotes(jobId) {
-  currentJobId = jobId;
-  go('s-quotes');
-  const el = document.getElementById('q-list');
-  el.innerHTML = '<div class="ld">Loading...</div>';
-  const r = await api('GET', '/matching/quotes/' + jobId);
-  if (r.quotes && r.quotes.length > 0) {
-    el.innerHTML = r.quotes.map(q => {
-      const isInspection = q.match_type === 'inspection';
-      const fee = q.inspection_fee ? (q.inspection_fee/100).toLocaleString() : null;
-      const amt = q.quote_amount ? (q.quote_amount/100).toLocaleString() : null;
-      return `<div style="background:white;border-radius:14px;padding:16px;margin-bottom:12px;border:2px solid ${isInspection?'#3498db':'#1a7a4a'};">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-          <div>
-            <div style="font-weight:700;font-size:15px;color:#111;">${isInspection?'🔍 Inspection Request':'💰 Direct Quote'}</div>
-            <div style="font-size:12px;color:#666;margin-top:2px;">★ ${q.provider_profiles?.average_rating||'New'} · ${q.provider_profiles?.total_jobs_completed||0} jobs</div>
-          </div>
-          ${isInspection && fee ? `<div style="font-size:16px;font-weight:800;color:#3498db;">₦${fee}</div>` : ''}
-          ${!isInspection && amt ? `<div style="font-size:20px;font-weight:900;color:#1a7a4a;">₦${amt}</div>` : ''}
-        </div>
-        ${q.quote_note ? `<div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:13px;color:#444;margin-bottom:12px;">💬 "${q.quote_note}"</div>` : ''}
-        ${isInspection ? `
-          <div style="background:#e8f0fe;border-radius:8px;padding:10px;font-size:12px;color:#3498db;font-weight:700;margin-bottom:12px;">
-            Provider wants to visit and inspect before giving final price. Inspection fee: ₦${fee}
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${currentJobId}','Provider')">💬 Message</button>
-            <button class="btn btn-p btn-sm" style="flex:2;background:#3498db;" onclick="showInspectionAccept('${q.id}','${q.inspection_fee/100}','${q.inspection_fee/100*1.5}','${q.quote_note||''}')">Accept Inspection</button>
-          </div>` : `
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${currentJobId}','Provider')">💬 Message</button>
-            <button class="btn btn-w btn-sm" style="flex:1;" onclick="showCounterOffer('${q.id}','${q.quote_amount}')">🔄 Counter</button>
-            <button class="btn btn-p btn-sm" style="flex:2;" onclick="acceptQuote('${q.id}')">✅ Accept — Pay ₦${amt}</button>
-          </div>`}
-      </div>`;
-    }).join('');
-  } else {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">⏳</div><div class="empty-title">No quotes yet</div><button class="btn btn-p" style="max-width:200px;margin:0 auto;" onclick="loadInspectionQuotes('${jobId}')">↺ Refresh</button></div>`;
-  }
-}
-
-async function payInspectionFee(jobId, feeKobo) {
-  const r = await api('POST', '/payments/pay-inspection', { job_id: jobId });
-  if (r.payment_url) {
-    localStorage.setItem('pending_payment_ref', r.reference);
-    localStorage.setItem('pending_payment_job', jobId);
-    localStorage.setItem('pending_payment_type', 'inspection');
-    window.location.href = r.payment_url;
-  } else {
-    showAlert(r.error || 'Could not initialize payment', 'error');
-  }
-}
-===
-
+// END OF FILE
 </script>
 </body>
 </html>
