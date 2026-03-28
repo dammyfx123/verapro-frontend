@@ -7,6 +7,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>VeraPro — Verified Pros. Trusted Results.</title>
+<meta name="description" content="Find trusted plumbers, electricians, cleaners and more in Gwagwalada & Abuja. Pay safely. VeraPro Guarantee.">
+<meta property="og:title" content="VeraPro — Verified Pros. Trusted Results.">
+<meta property="og:description" content="Find trusted artisans in Gwagwalada & Abuja. Plumbers, electricians, cleaners and more. Pay safely with escrow.">
+<meta property="og:image" content="https://verapro.name.ng/logo.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:url" content="https://verapro.name.ng">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://verapro.name.ng/logo.png">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -110,6 +122,12 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 @keyframes sp{to{transform:rotate(360deg)}}
 .ld{text-align:center;padding:40px;color:var(--text-3);font-size:14px}
 .empty{text-align:center;padding:48px 24px;color:var(--text-3)}
+/* Fix toast overflow */
+#vp-toast{box-sizing:border-box;width:90vw;max-width:380px;white-space:normal!important;word-break:break-word;text-align:center;line-height:1.4}
+/* Number-only inputs */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
 .empty-icon{font-size:44px;margin-bottom:12px}
 .empty-title{font-size:16px;font-weight:700;color:var(--text-2);margin-bottom:6px}
 .empty-sub{font-size:13px;color:var(--text-3);margin-bottom:20px;line-height:1.5}
@@ -444,10 +462,24 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
         <div style="font-size:12px;color:#666;margin-top:4px;">Jobs Completed</div>
       </div>
       <div style="background:white;border-radius:12px;padding:14px;border:1px solid #ddd;text-align:center;">
-        <div style="font-size:20px;font-weight:800;color:#1a7a4a;" id="pe-pending">&#8358;0</div>
-        <div style="font-size:12px;color:#666;margin-top:4px;">Pending Release</div>
+        <div style="font-size:20px;font-weight:800;color:#f39c12;" id="pe-pending">&#8358;0</div>
+        <div style="font-size:12px;color:#666;margin-top:4px;">In Escrow</div>
       </div>
     </div>
+
+    <!-- HOW WITHDRAWALS WORK -->
+    <div style="background:#e8f5ee;border-radius:12px;padding:14px;margin-bottom:16px;border:1px solid #a8d5b5;">
+      <div style="font-size:13px;font-weight:700;color:#1a7a4a;margin-bottom:6px;">💳 How Payments Work</div>
+      <div style="font-size:12px;color:#444;line-height:1.6;">
+        <strong>Materials:</strong> Paid directly to your account as soon as the customer pays.<br>
+        <strong>Labor:</strong> Held in escrow and transferred automatically when the customer confirms the job is done.<br>
+        <strong>Bank account:</strong> Payments go directly to your registered bank account via Paystack. Allow 1–3 business days.
+      </div>
+    </div>
+
+    <!-- BANK ACCOUNT STATUS -->
+    <div id="pe-bank-status" style="margin-bottom:16px;"></div>
+
     <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:10px;">Payment History</div>
     <div id="pe-history"><div class="ld">Loading...</div></div>
   </div>
@@ -833,7 +865,6 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
         <div class="stat-box"><div class="stat-val" id="st-rating">—</div><div class="stat-lbl">Rating</div></div>
         <div class="stat-box"><div class="stat-val" id="st-free">3</div><div class="stat-lbl">Free Jobs</div></div>
       </div>
-      <div class="launch-bar" style="margin-bottom:16px;">🎉 You have <strong id="free-jobs-count">3</strong> free jobs remaining at 0% commission</div>
       <div class="menu-row" onclick="go('s-jobs')">
         <div class="menu-row-icon" style="background:var(--green-light);">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -874,6 +905,13 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 
 <script>
 const API='https://verapro-backend-production.up.railway.app/api';
+// ⚠️ PRE-LAUNCH CHECKLIST (remove before going live):
+// 1. Delete all test users, jobs, payments from Supabase
+// 2. Remove OTP bypass (token === '123456') from auth.js
+// 3. Set real RESEND_API_KEY in Railway env vars
+// 4. Verify PAYSTACK_SECRET_KEY is live key (not test)
+// 5. Remove demoLogin() function or hide demo button
+// 6. Set FRONTEND_URL env var on Railway to https://verapro.name.ng
 let user=null,token=null,prev='s-home',chatMsgs=[],curProvider=null;
 let reviewJobId=null,reviewProviderId=null,currentRating=0;
 
@@ -958,7 +996,7 @@ function showToast(msg, type='success'){
   if(!t){
     t = document.createElement('div');
     t.id = 'vp-toast';
-    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:white;padding:12px 20px;border-radius:30px;font-size:14px;font-weight:600;z-index:99999;opacity:0;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center;pointer-events:none;';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:white;padding:12px 18px;border-radius:16px;font-size:13px;font-weight:600;z-index:99999;opacity:0;transition:all .3s;max-width:88vw;width:auto;text-align:center;pointer-events:none;line-height:1.4;word-break:break-word;box-sizing:border-box;';
     document.body.appendChild(t);
   }
   t.textContent = msg;
@@ -966,7 +1004,7 @@ function showToast(msg, type='success'){
   t.style.opacity = '1';
   t.style.transform = 'translateX(-50%) translateY(0)';
   clearTimeout(t._timer);
-  t._timer = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, 3000);
+  t._timer = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, 4000);
 }
 
 function showAlert(msg, type='info', onOk){
@@ -2011,14 +2049,30 @@ async function loadIncomingJobs() {
           <div style="font-size:11px;color:#999;text-align:center;margin-top:4px;">Tap photo to expand</div>
         </div>` : '<div style="background:#fff3cd;border-radius:8px;padding:8px 10px;font-size:12px;color:#856404;margin-bottom:8px;">📷 No photo provided by customer</div>'}
         ${j.budget_from ? `<div style="font-size:13px;color:#1a7a4a;font-weight:700;margin-bottom:10px;">Budget: \u20a6${(j.budget_from/100).toLocaleString()} &#8212; \u20a6${(j.budget_to/100).toLocaleString()}</div>` : ''}
-        <div style="font-size:11px;color:#e53e3e;font-weight:700;margin-bottom:10px;">\u23f3 ${timeLeft} min left to respond</div>
+        <div style="font-size:11px;color:#e53e3e;font-weight:700;margin-bottom:10px;">⏳ ${timeLeft} min left to respond</div>
+
+        ${m.status === 'pending' || m.status === 'direct' ? `
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-o btn-sm" style="flex:1;" onclick="respondToJob('${m.id}','decline')">❌ Decline</button>
-          <button class="btn btn-w btn-sm" style="flex:1;" onclick="openChat('${m.jobs?.id||m.job_id}','Customer')">💬 Message</button>
+          <button class="btn btn-w btn-sm" style="flex:1;" onclick="openChat('${m.jobs?.id||m.job_id}','Customer')">💬 Chat</button>
           <button class="btn btn-p btn-sm" style="width:100%;margin-top:6px;" onclick="showQuoteInput('${m.id}')">💰 Send Direct Quote</button>
           <button class="btn btn-w btn-sm" style="width:100%;margin-top:4px;" onclick="sendInspectionRequest('${m.id}','${m.jobs?.id||m.job_id}')">🔍 Request Inspection Instead</button>
-        </div>
-        ${hasCounter ? `<div style="background:#fff3cd;border:2px solid #f4a623;border-radius:8px;padding:10px;margin-top:8px;margin-bottom:8px;">
+        </div>` : ''}
+
+        ${m.status === 'quoted' ? `
+        <div style="background:#e8f5ee;border-radius:10px;padding:12px;margin-top:8px;">
+          <div style="font-size:13px;font-weight:700;color:#1a7a4a;">✅ Quote sent — ₦${m.quote_amount?(m.quote_amount/100).toLocaleString():'—'}</div>
+          <div style="font-size:12px;color:#555;margin-top:4px;">Waiting for customer to accept or counter.</div>
+        </div>` : ''}
+
+        ${m.status === 'inspection_requested' ? `
+        <div style="background:#f3e8ff;border-radius:10px;padding:12px;margin-top:8px;">
+          <div style="font-size:13px;font-weight:700;color:#6b21a8;">🔍 Inspection request sent</div>
+          <div style="font-size:12px;color:#555;margin-top:4px;">Fee: ₦${m.inspection_fee?(m.inspection_fee/100).toLocaleString():'—'} — Waiting for customer to accept.</div>
+        </div>` : ''}
+
+        ${hasCounter ? `
+        <div style="background:#fff3cd;border:2px solid #f4a623;border-radius:8px;padding:10px;margin-top:8px;">
           <div style="font-size:12px;font-weight:700;color:#856404;">💬 Customer Counter Offer: ₦${(m.counter_amount/100).toLocaleString()}</div>
           ${m.counter_note ? `<div style="font-size:12px;color:#666;margin-top:2px;">"${m.counter_note}"</div>` : ''}
           <div style="display:flex;gap:6px;margin-top:8px;">
@@ -2026,11 +2080,12 @@ async function loadIncomingJobs() {
             <button class="btn btn-o btn-sm" style="flex:1;font-size:11px;" onclick="showQuoteInput('${m.id}')">Send New Quote</button>
           </div>
         </div>` : ''}
+
         <div id="quote-input-${m.id}" style="display:none;margin-top:12px;background:#f9f9f9;border-radius:10px;padding:12px;">
           <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:8px;">Your Quote</div>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-            <span style="font-weight:700;color:#1a7a4a;">₦</span>
-            <input type="number" placeholder="Enter your price" style="flex:1;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-weight:700;" id="quote-amt-${m.id}" inputmode="numeric">
+            <span style="font-weight:700;color:#1a7a4a;font-size:16px;">₦</span>
+            <input type="number" inputmode="numeric" placeholder="Enter your price" style="flex:1;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:18px;font-weight:700;" id="quote-amt-${m.id}">
           </div>
           <textarea placeholder="Tell the customer what you will do (optional)" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:8px;resize:none;height:70px;" id="quote-note-${m.id}"></textarea>
           <button class="btn btn-p btn-sm" style="width:100%;" onclick="submitQuote('${m.id}')">Send Quote to Customer →</button>
@@ -2212,21 +2267,48 @@ async function loadProviderJobs() {
 async function loadProviderEarnings() {
   const r = await api('GET', '/providers/earnings');
   if(r.earnings) {
-    document.getElementById('pe-total').textContent = '\u20a6' + (r.earnings.total/100).toLocaleString();
+    document.getElementById('pe-total').textContent = '₦' + (r.earnings.total/100).toLocaleString();
     document.getElementById('pe-jobs').textContent = r.earnings.completed_jobs || 0;
-    document.getElementById('pe-pending').textContent = '\u20a6' + ((r.earnings.pending||0)/100).toLocaleString();
+    document.getElementById('pe-pending').textContent = '₦' + ((r.earnings.pending||0)/100).toLocaleString();
+
+    // Show bank account status
+    const bankEl = document.getElementById('pe-bank-status');
+    if(bankEl) {
+      const pr = await api('GET', '/providers/profile');
+      const p = pr.profile;
+      if(p?.account_number) {
+        bankEl.innerHTML = `<div style="background:#e8f5ee;border-radius:10px;padding:12px;border:1px solid #a8d5b5;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1a7a4a;">✅ Bank Account Connected</div>
+            <div style="font-size:12px;color:#555;margin-top:2px;">${p.bank_name||''} · ****${(p.account_number||'').slice(-4)}</div>
+            <div style="font-size:12px;color:#777;">${p.account_name||''}</div>
+          </div>
+          <button onclick="go('s-provider-profile')" style="font-size:11px;color:#1a7a4a;background:none;border:1px solid #1a7a4a;border-radius:6px;padding:4px 10px;cursor:pointer;">Update</button>
+        </div>`;
+      } else {
+        bankEl.innerHTML = `<div style="background:#fef3c7;border-radius:10px;padding:12px;border:1px solid #fde68a;">
+          <div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:4px;">⚠️ No Bank Account Added</div>
+          <div style="font-size:12px;color:#555;margin-bottom:10px;">You must add your bank account to receive payments.</div>
+          <button class="btn btn-p btn-sm" onclick="go('s-provider-profile')" style="width:100%;">Add Bank Account →</button>
+        </div>`;
+      }
+    }
+
     const el = document.getElementById('pe-history');
     if(r.earnings.payments && r.earnings.payments.length > 0) {
-      el.innerHTML = r.earnings.payments.map(p => `
-        <div style="background:white;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;">
+      el.innerHTML = r.earnings.payments.map(p => {
+        const typeLabel = p.payment_type === 'material_cost' ? '🧱 Materials' : p.payment_type === 'labor_cost' ? '🔧 Labor' : p.payment_type === 'inspection_fee' ? '🔍 Inspection' : '💳 Payment';
+        return `<div style="background:white;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;">
           <div>
             <div style="font-weight:700;font-size:14px;">${p.jobs?.title||'Job Payment'}</div>
-            <div style="font-size:12px;color:#666;">${ta(p.released_at||p.paid_at)}</div>
+            <div style="font-size:12px;color:#666;margin-top:2px;">${typeLabel} · ${ta(p.released_at||p.paid_at)}</div>
+            <div style="font-size:11px;color:${p.status==='released'?'#1a7a4a':p.status==='escrow'?'#f39c12':'#999'};font-weight:700;margin-top:2px;">${p.status==='released'?'✅ Paid to account':p.status==='escrow'?'⏳ In Escrow':'Pending'}</div>
           </div>
-          <div style="font-size:16px;font-weight:800;color:#1a7a4a;">+\u20a6${(p.provider_amount/100).toLocaleString()}</div>
-        </div>`).join('');
+          <div style="font-size:16px;font-weight:800;color:#1a7a4a;">+₦${((p.provider_amount||p.net_amount||0)/100).toLocaleString()}</div>
+        </div>`;
+      }).join('');
     } else {
-      el.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">No payments yet</div>';
+      el.innerHTML = '<div style="text-align:center;padding:24px;color:#999;font-size:13px;">No payments yet. Complete your first job to start earning!</div>';
     }
   }
 }
@@ -2400,7 +2482,7 @@ function negotiateInspection(jobId, providerFeeKobo) {
       <div style="display:flex;align-items:center;border:2px solid #1a7a4a;border-radius:10px;padding:4px 12px;margin-bottom:16px;background:white;">
         <span style="font-size:18px;font-weight:800;color:#1a7a4a;margin-right:6px;">₦</span>
         <input id="insp-fee-input" type="number" inputmode="numeric" placeholder="${suggested || '2000'}"
-          style="flex:1;border:none;outline:none;font-size:22px;font-weight:800;color:#111;font-family:inherit;padding:8px 0;"
+          style="flex:1;border:none;outline:none;font-size:22px;font-weight:800;color:#111;font-family:inherit;padding:8px 0;width:100%;"
           value="${suggested || ''}">
       </div>
       <div style="font-size:12px;color:#999;margin-bottom:20px;">This fee goes directly to the provider for their time and transport.</div>
@@ -2443,16 +2525,18 @@ function negotiateInspection(jobId, providerFeeKobo) {
 }
 
 async function payInspection(jobId) {
-  const loading = showLoading('Preparing payment...');
+  const loading = showLoading('Initializing payment...');
   const r = await api('POST', '/payments/pay-inspection', { job_id: jobId });
   loading.remove();
   if (r.payment_url) {
     localStorage.setItem('pending_payment_ref', r.reference);
     localStorage.setItem('pending_payment_job', jobId);
     localStorage.setItem('pending_payment_type', 'inspection');
-    window.location.href = r.payment_url;
+    // Show brief message then redirect
+    showToast('Redirecting to payment...', 'success');
+    setTimeout(() => { window.location.href = r.payment_url; }, 600);
   } else {
-    showAlert(r.error || 'Could not initialize payment', 'error');
+    showAlert(r.error || 'Could not initialize payment. Please try again.', 'error');
   }
 }
 
@@ -2546,14 +2630,26 @@ async function payAdjustment(jobId) {
 
 // ─── PROVIDER CONTACT (call button) ────────────────────────
 
-async function callProvider(jobId, linkEl) {
-  // Fetch phone number from backend (only works if unlocked)
+async function callProvider(jobId, btn) {
+  if(btn){ btn.textContent = '⏳ Getting...'; btn.disabled = true; }
   const r = await api('GET', '/jobs/' + jobId + '/contact');
+  if(btn){ btn.textContent = '📞 Call'; btn.disabled = false; }
   if (r.phone) {
-    linkEl.href = 'tel:' + r.phone;
-    linkEl.click();
+    // Show contact card then dial
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
+    d.innerHTML = `
+      <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:8px;">📞</div>
+        <div style="font-weight:800;font-size:17px;margin-bottom:4px;">${r.name||'Provider'}</div>
+        <div style="font-size:20px;font-weight:700;color:#1a7a4a;margin-bottom:6px;letter-spacing:1px;">${r.phone}</div>
+        <div style="font-size:12px;color:#999;margin-bottom:20px;">⚠️ Always pay through VeraPro. Payments outside are not protected.</div>
+        <a href="tel:${r.phone}" style="display:block;background:#1a7a4a;color:white;border-radius:12px;padding:16px;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:10px;">📞 Call Now</a>
+        <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:13px;font-size:14px;cursor:pointer;">Close</button>
+      </div>`;
+    document.body.appendChild(d);
   } else {
-    showAlert(r.error || 'Contact not available yet.', 'warning');
+    showAlert(r.error || 'Contact not available yet. Pay the inspection fee first.', 'warning');
   }
 }
 
