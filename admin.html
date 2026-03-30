@@ -678,7 +678,7 @@ async function loadProviders() {
         </td>
         <td style="font-size:12px;">${p.service_category || '—'}</td>
         <td style="font-size:12px;font-family:'JetBrains Mono',monospace;color:${p.nin ? 'var(--green)' : 'var(--red)'};">${p.nin || '✗ None'}</td>
-        <td>${p.average_rating ? '⭐ ' + p.average_rating.toFixed(1) : 'New'}</td>
+        <td>${p.average_rating ? '⭐ ' + parseFloat(p.average_rating).toFixed(1) : 'New'}</td>
         <td>
           ${p.verification_status === 'verified' ? '<span class="badge badge-green">✓ Verified</span>' : '<span class="badge badge-yellow">Pending</span>'}
           ${p.is_available ? '<span class="badge badge-blue" style="margin-left:4px;">Online</span>' : ''}
@@ -937,7 +937,7 @@ async function viewProvider(providerId) {
     <div class="modal-field"><div class="modal-label">Category</div><div class="modal-value">${p.service_category || '—'}</div></div>
     <div class="modal-field"><div class="modal-label">Location</div><div class="modal-value">${p.location || '—'}</div></div>
     <div class="modal-field"><div class="modal-label">NIN</div><div class="modal-value" style="font-family:'JetBrains Mono',monospace;">${p.nin || 'Not provided'}</div></div>
-    <div class="modal-field"><div class="modal-label">Rating</div><div class="modal-value">⭐ ${p.average_rating || 'New'} (${p.total_reviews || 0} reviews)</div></div>
+    <div class="modal-field"><div class="modal-label">Rating</div><div class="modal-value">⭐ ${parseFloat(p.average_rating||0)||'New'} (${parseInt(p.total_reviews)||0} reviews)</div></div>
     <div class="modal-field"><div class="modal-label">Jobs Done</div><div class="modal-value">${p.total_jobs_completed || 0}</div></div>
     <div style="border-top:1px solid var(--border);margin:16px 0;padding-top:16px;">
       <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:12px;">🪪 Identity Verification</div>
