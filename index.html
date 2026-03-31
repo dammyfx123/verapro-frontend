@@ -2417,9 +2417,12 @@ async function loadProviderProfilePage() {
     }
     if(document.getElementById('pp-bio-disp')) document.getElementById('pp-bio-disp').textContent = p.bio || 'No bio yet. Update your profile below.';
     document.getElementById('pp-bio-edit').value = p.bio || '';
+<<<<<<< HEAD
     // Show current bio above textarea
     const bioPreview = document.getElementById('pp-bio-preview');
     if(bioPreview && p.bio) { bioPreview.textContent = '📝 Current: ' + p.bio; bioPreview.style.display='block'; }
+=======
+>>>>>>> 8a76286f17e9a50ec15e7a404ce875e50cccaa91
     document.getElementById('pp-rate').value = p.hourly_rate ? Math.round(n(p.hourly_rate)/100) : '';
     document.getElementById('pp-cat-display').textContent = p.service_category || 'Service Provider';
     document.getElementById('pp-rating-disp').textContent = n(p.average_rating) > 0 ? '⭐ ' + n(p.average_rating).toFixed(1) : 'New';
