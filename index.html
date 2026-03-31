@@ -480,6 +480,18 @@ input[type=number]{-moz-appearance:textfield}
     <!-- BANK ACCOUNT STATUS -->
     <div id="pe-bank-status" style="margin-bottom:16px;"></div>
 
+    <!-- WITHDRAWAL INFO -->
+    <div style="background:#fff8ec;border-radius:12px;padding:14px;margin-bottom:16px;border:1px solid #fde68a;">
+      <div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:6px;">💸 How to Withdraw</div>
+      <div style="font-size:12px;color:#555;line-height:1.7;">
+        Withdrawals are <strong>automatic</strong> — no button needed.<br>
+        • <strong>Materials</strong> → sent to your bank immediately after customer pays<br>
+        • <strong>Labor</strong> → sent to your bank when customer confirms job done<br>
+        • <strong>No bank account?</strong> Add one in Profile to receive payments<br>
+        • Allow <strong>1–3 business days</strong> for funds to reflect
+      </div>
+    </div>
+
     <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:10px;">Payment History</div>
     <div id="pe-history"><div class="ld">Loading...</div></div>
   </div>
@@ -567,7 +579,7 @@ input[type=number]{-moz-appearance:textfield}
           </optgroup>
         </select>
       </div>
-      <div class="fg"><label>Bio / Description</label><textarea id="pp-bio-edit" placeholder="Describe your skills, experience and what makes you the best choice..." style="height:80px;"></textarea></div>
+      <div class="fg"><label>Bio / Description</label><div id="pp-bio-preview" style="font-size:13px;color:#555;background:#f9f9f9;border-radius:8px;padding:10px;margin-bottom:6px;display:none;"></div><textarea id="pp-bio-edit" placeholder="Describe your skills, experience and what makes you the best choice..." style="height:80px;"></textarea></div>
       <div class="fg"><label>Starting Price (₦)</label><input type="number" id="pp-rate" placeholder="e.g. 5000" inputmode="numeric"></div>
       <div class="fg"><label>Your Location / Area</label><select id="pp-location-edit"><option value="Gwagwalada">Gwagwalada, Abuja</option><option value="Abuja">Abuja (Central)</option><option value="Kubwa">Kubwa, Abuja</option><option value="Lugbe">Lugbe, Abuja</option><option value="Kuje">Kuje, Abuja</option><option value="Zuba">Zuba, Abuja</option><option value="Bwari">Bwari, Abuja</option><option value="Kwali">Kwali, Abuja</option><option value="Lagos">Lagos</option></select></div>
       <button class="btn btn-p" onclick="updateProviderProfile()" style="width:100%;">Save Changes</button>
@@ -905,6 +917,15 @@ input[type=number]{-moz-appearance:textfield}
 
 <script>
 const API='https://verapro-backend-production.up.railway.app/api';
+
+// ── NUMERIC SAFETY ───────────────────────────────────────────
+// Neon returns ALL numeric columns as strings.
+// n() safely converts any value to a JS number.
+// fmt() formats kobo (integer) to ₦ string.
+// rating() safely calls toFixed on a numeric rating.
+function n(val) { return val == null ? 0 : parseFloat(val) || 0; }
+function kobo(val) { return (n(val) / 100).toLocaleString(); }
+function rating(val) { const r = n(val); return r > 0 ? r.toFixed(1) : 'New'; }
 // ⚠️ PRE-LAUNCH CHECKLIST (remove before going live):
 // 1. Delete all test users, jobs, payments from Supabase
 // 2. Remove OTP bypass (token === '123456') from auth.js
@@ -1035,18 +1056,30 @@ function showConfirm(msg, onYes, yesLabel='Confirm', yesColor='#1a7a4a'){
   d.querySelector('#vp-confirm-no').onclick = () => d.remove();
 }
 
-async function api(method,path,data){
-  const h={'Content-Type':'application/json'};
-  if(token&&token!=='demo')h['Authorization']=`Bearer ${token}`;
-  try{
-    const controller=new AbortController();
-    const tid=setTimeout(()=>controller.abort(),20000);
-    const r=await fetch(API+path,{method,headers:h,body:data?JSON.stringify(data):undefined,signal:controller.signal});
+async function api(method, path, data, _retry = 0) {
+  const h = {'Content-Type': 'application/json'};
+  if(token && token !== 'demo') h['Authorization'] = `Bearer ${token}`;
+  try {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 25000);
+    const r = await fetch(API + path, {method, headers: h, body: data ? JSON.stringify(data) : undefined, signal: controller.signal});
     clearTimeout(tid);
+    // Auto-retry once on 502/503 (Railway cold start)
+    if ((r.status === 502 || r.status === 503) && _retry < 1) {
+      await new Promise(res => setTimeout(res, 3000));
+      return api(method, path, data, _retry + 1);
+    }
     return r.json();
-  }catch(e){
-    if(e.name==='AbortError')return{error:'Server is starting up — please wait a moment and try again.'};
-    return{error:'Network error — check your connection'};
+  } catch(e) {
+    if (e.name === 'AbortError') {
+      // Auto-retry once on timeout
+      if (_retry < 1) {
+        await new Promise(res => setTimeout(res, 2000));
+        return api(method, path, data, _retry + 1);
+      }
+      return {error: 'Server is taking too long. Please try again.'};
+    }
+    return {error: 'Network error — check your connection'};
   }
 }
 
@@ -1222,8 +1255,8 @@ function pCard(p){
         <div class="p-name">${nm}</div>
         <div class="p-job">${p.bio||'Professional'}</div>
         <div class="p-meta">
-          <span class="chip chip-y">★ ${p.average_rating?.toFixed(1)||'New'}</span>
-          <span class="chip">${p.total_jobs_completed||0} jobs</span>
+          <span class="chip chip-y">★ ${rating(p.average_rating)}</span>
+          <span class="chip">${n(p.total_jobs_completed)} jobs</span>
           <span class="chip chip-g">✓ Verified</span>
         </div>
         <div class="p-location">📍 ${p.location||p.users?.city||'Gwagwalada'}</div>
@@ -1301,7 +1334,7 @@ async function loadProvider(id){
     const nm=p.users?.full_name||'Provider';
     const init=nm.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
     const loc=p.location||p.users?.city||'Gwagwalada';
-    el.innerHTML=providerHTML(init,nm,p.bio||'Professional service provider',p.average_rating?.toFixed(1)||'New',p.total_jobs_completed||0,p.years_experience||'—',loc,[],p.hourly_rate?(p.hourly_rate/100).toLocaleString():null,p.service_category);
+    el.innerHTML=providerHTML(init,nm,p.bio||'Professional service provider',rating(p.average_rating),n(p.total_jobs_completed),p.years_experience||'—',loc,[],p.hourly_rate?kobo(p.hourly_rate):null,p.service_category);
   } else {
     el.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load provider</div><div class="empty-sub">Please try again</div></div>';
   }
@@ -1385,11 +1418,11 @@ async function loadJobs(){
     el.innerHTML=r.jobs.map(j=>{
       const statusColor={open:'#f4a623',inspection_requested:'#9b59b6',inspection_accepted:'#8e44ad',inspecting:'#2980b9',quoted_final:'#e67e22',assigned:'#3498db',payment_pending:'#e67e22',in_progress:'#27ae60',adjustment_requested:'#e67e22',adjustment_approved:'#f39c12',provider_done:'#9b59b6',completed:'#27ae60',disputed:'#e53e3e',revision_pending:'#9b59b6',cancelled:'#999'}[j.status]||'#999';
       const statusLabel={open:'🔍 Finding providers...',inspection_requested:'🔍 Provider wants to inspect first',inspection_accepted:'✅ Accepted — Pay inspection fee to unlock contact',inspecting:'🔧 Provider is inspecting your job',quoted_final:'📋 Final quote received — Pay to start',assigned:'✅ Provider found — Pay to confirm',payment_pending:'⏳ Payment pending...',in_progress:'🔧 Work in progress',adjustment_requested:'⚠️ Provider requesting extra cost',adjustment_approved:'💳 Approved — Pay to continue',provider_done:'🎉 Provider marked done — Confirm & Release',completed:'✅ Completed',disputed:'⚠️ Under Dispute',revision_pending:'📝 Revised quote received',cancelled:'❌ Cancelled'}[j.status]||j.status;
-      const laborPrice=j.labor_cost?(j.labor_cost/100).toLocaleString():null;
-      const materialPrice=j.material_cost?(j.material_cost/100).toLocaleString():null;
-      const inspFee=j.inspection_fee?(j.inspection_fee/100).toLocaleString():null;
-      const adjAmt=j.adjustment_amount?(j.adjustment_amount/100).toLocaleString():null;
-      const agreedPrice=j.agreed_price?(j.agreed_price/100).toLocaleString():null;
+      const laborPrice=j.labor_cost?kobo(j.labor_cost):null;
+      const materialPrice=j.material_cost?kobo(j.material_cost):null;
+      const inspFee=j.inspection_fee?kobo(j.inspection_fee):null;
+      const adjAmt=j.adjustment_amount?kobo(j.adjustment_amount):null;
+      const agreedPrice=j.agreed_price?kobo(j.agreed_price):null;
       const isInspection=j.flow_type==='inspection';
       const border=j.status==='provider_done'?'2px solid #9b59b6':j.status==='adjustment_requested'?'2px solid #e67e22':j.status==='quoted_final'?'2px solid #e67e22':j.status==='inspection_requested'||j.status==='inspection_accepted'?'2px solid #9b59b6':'1px solid #eee';
       return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:${border};box-shadow:0 2px 8px rgba(0,0,0,.06);">
@@ -1728,9 +1761,9 @@ async function loadQuotes(jobId){
   const r=await api('GET','/matching/quotes/'+(jobId||currentJobId));
   if(r.quotes&&r.quotes.length>0){
     el.innerHTML=r.quotes.map(q=>{
-      const amt=q.quote_amount?(q.quote_amount/100).toLocaleString():null;
-      const rating=q.provider_profiles?.average_rating||0;
-      const jobs=q.provider_profiles?.total_jobs_completed||0;
+      const amt=q.quote_amount?kobo(q.quote_amount):null;
+      const rating=n(q.provider_profiles?.average_rating);
+      const jobs=n(q.provider_profiles?.total_jobs_completed);
       return`<div style="background:white;border-radius:14px;padding:16px;margin-bottom:12px;border:2px solid #1a7a4a;box-shadow:0 2px 12px rgba(0,0,0,.08);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
           <div>
@@ -1774,7 +1807,7 @@ function showCounterOffer(matchId, currentAmt) {
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
     if(el.style.display === 'block') {
       const input = document.getElementById('counter-amt-' + matchId);
-      if(input && currentAmt) input.placeholder = 'Provider asked ₦' + (currentAmt/100).toLocaleString();
+      if(input && currentAmt) input.placeholder = 'Provider asked ₦' + kobo(currentAmt);
       input?.focus();
     }
   }
@@ -1999,8 +2032,8 @@ async function loadProviderStats() {
   const r = await api('GET', '/providers/my-stats');
   if(r.stats) {
     document.getElementById('ph-jobs').textContent = r.stats.total_jobs || 0;
-    document.getElementById('ph-rating').textContent = r.stats.rating ? r.stats.rating.toFixed(1) : 'New';
-    document.getElementById('ph-earnings').textContent = '\u20a6' + ((r.stats.total_earned||0)/100).toLocaleString();
+    document.getElementById('ph-rating').textContent = rating(r.stats.rating);
+    document.getElementById('ph-earnings').textContent = '\u20a6' + (n(r.stats.total_earned)/100).toLocaleString();
   }
 }
 
@@ -2048,7 +2081,7 @@ async function loadIncomingJobs() {
             onclick="this.style.maxHeight=this.style.maxHeight==='none'?'220px':'none'" />
           <div style="font-size:11px;color:#999;text-align:center;margin-top:4px;">Tap photo to expand</div>
         </div>` : '<div style="background:#fff3cd;border-radius:8px;padding:8px 10px;font-size:12px;color:#856404;margin-bottom:8px;">📷 No photo provided by customer</div>'}
-        ${j.budget_from ? `<div style="font-size:13px;color:#1a7a4a;font-weight:700;margin-bottom:10px;">Budget: \u20a6${(j.budget_from/100).toLocaleString()} &#8212; \u20a6${(j.budget_to/100).toLocaleString()}</div>` : ''}
+        ${j.budget_from ? `<div style="font-size:13px;color:#1a7a4a;font-weight:700;margin-bottom:10px;">Budget: \u20a6${kobo(j.budget_from)} &#8212; \u20a6${kobo(j.budget_to)}</div>` : ''}
         <div style="font-size:11px;color:#e53e3e;font-weight:700;margin-bottom:10px;">⏳ ${timeLeft} min left to respond</div>
 
         ${m.status === 'pending' || m.status === 'direct' ? `
@@ -2061,22 +2094,22 @@ async function loadIncomingJobs() {
 
         ${m.status === 'quoted' ? `
         <div style="background:#e8f5ee;border-radius:10px;padding:12px;margin-top:8px;">
-          <div style="font-size:13px;font-weight:700;color:#1a7a4a;">✅ Quote sent — ₦${m.quote_amount?(m.quote_amount/100).toLocaleString():'—'}</div>
+          <div style="font-size:13px;font-weight:700;color:#1a7a4a;">✅ Quote sent — ₦${m.quote_amount?kobo(m.quote_amount):'—'}</div>
           <div style="font-size:12px;color:#555;margin-top:4px;">Waiting for customer to accept or counter.</div>
         </div>` : ''}
 
         ${m.status === 'inspection_requested' ? `
         <div style="background:#f3e8ff;border-radius:10px;padding:12px;margin-top:8px;">
           <div style="font-size:13px;font-weight:700;color:#6b21a8;">🔍 Inspection request sent</div>
-          <div style="font-size:12px;color:#555;margin-top:4px;">Fee: ₦${m.inspection_fee?(m.inspection_fee/100).toLocaleString():'—'} — Waiting for customer to accept.</div>
+          <div style="font-size:12px;color:#555;margin-top:4px;">Fee: ₦${m.inspection_fee?kobo(m.inspection_fee):'—'} — Waiting for customer to accept.</div>
         </div>` : ''}
 
         ${hasCounter ? `
         <div style="background:#fff3cd;border:2px solid #f4a623;border-radius:8px;padding:10px;margin-top:8px;">
-          <div style="font-size:12px;font-weight:700;color:#856404;">💬 Customer Counter Offer: ₦${(m.counter_amount/100).toLocaleString()}</div>
+          <div style="font-size:12px;font-weight:700;color:#856404;">💬 Customer Counter Offer: ₦${kobo(m.counter_amount)}</div>
           ${m.counter_note ? `<div style="font-size:12px;color:#666;margin-top:2px;">"${m.counter_note}"</div>` : ''}
           <div style="display:flex;gap:6px;margin-top:8px;">
-            <button class="btn btn-p btn-sm" style="flex:1;font-size:11px;" onclick="acceptCounter('${m.id}','${m.counter_amount}')">Accept ₦${(m.counter_amount/100).toLocaleString()}</button>
+            <button class="btn btn-p btn-sm" style="flex:1;font-size:11px;" onclick="acceptCounter('${m.id}','${m.counter_amount}')">Accept ₦${kobo(m.counter_amount)}</button>
             <button class="btn btn-o btn-sm" style="flex:1;font-size:11px;" onclick="showQuoteInput('${m.id}')">Send New Quote</button>
           </div>
         </div>` : ''}
@@ -2157,13 +2190,13 @@ async function submitQuote(matchId) {
 async function loadProviderActiveJobs() {
   const el = document.getElementById('ph-active');
   const r = await api('GET', '/providers/my-jobs');
-  const activeStatuses = ['assigned','in_progress','inspecting','inspection_accepted','quoted_final','adjustment_requested','adjustment_approved','revision_pending'];
+  const activeStatuses = ['assigned','in_progress','inspecting','inspection_accepted','quoted_final','adjustment_requested','adjustment_approved','revision_pending','provider_done'];
   if(r.jobs && r.jobs.length > 0) {
     const active = r.jobs.filter(j => activeStatuses.includes(j.status));
     if (!active.length) { el.innerHTML = '<div style="color:#999;text-align:center;padding:16px;">No active jobs right now</div>'; return; }
     el.innerHTML = active.map(j => {
-      const price = j.agreed_price ? (j.agreed_price/100).toLocaleString() : null;
-      const laborPrice = j.labor_cost ? (j.labor_cost/100).toLocaleString() : null;
+      const price = j.agreed_price ? kobo(j.agreed_price) : null;
+      const laborPrice = j.labor_cost ? kobo(j.labor_cost) : null;
       const isInspection = j.flow_type === 'inspection';
       const statusColor = {assigned:'#f4a623',in_progress:'#27ae60',inspecting:'#2980b9',quoted_final:'#e67e22',adjustment_requested:'#e67e22',adjustment_approved:'#f39c12'}[j.status]||'#999';
       return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #ddd;">
@@ -2176,9 +2209,11 @@ async function loadProviderActiveJobs() {
         ${laborPrice && !price ? `<div style="font-size:14px;font-weight:700;color:#e67e22;margin-bottom:8px;">Labor: ₦${laborPrice}</div>` : ''}
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           ${j.status==='assigned' ? `<div style="font-size:12px;color:#f4a623;font-weight:700;width:100%;padding:4px 0;">⏳ Waiting for customer payment</div>` : ''}
+          ${j.status==='inspection_accepted' ? `<div style="background:#fff3cd;border-radius:8px;padding:10px;font-size:12px;color:#856404;font-weight:700;width:100%;">⏳ Customer accepted inspection — waiting for them to pay the inspection fee before you visit.</div>` : ''}
           ${j.status==='inspecting' ? `
             <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Chat</button>
-            <button class="btn btn-p btn-sm" style="flex:2;" onclick="sendFinalQuote('${j.id}')">📋 Send Final Quote</button>` : ''}
+            <a class="btn btn-w btn-sm" style="flex:1;text-decoration:none;text-align:center;line-height:2;" onclick="callCustomer('${j.id}',this)">📞 Call</a>
+            <button class="btn btn-p btn-sm" style="width:100%;margin-top:6px;" onclick="sendFinalQuote('${j.id}')">📋 Send Final Quote</button>` : ''}
           ${j.status==='in_progress' ? `
             <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Chat</button>
             ${isInspection ? `<button class="btn btn-w btn-sm" style="flex:1;" onclick="sendAdjustmentRequest('${j.id}')">+ Extra Cost</button>` : ''}
@@ -2186,6 +2221,7 @@ async function loadProviderActiveJobs() {
           ${j.status==='adjustment_requested' ? `<div style="font-size:12px;color:#e67e22;font-weight:700;width:100%;padding:4px 0;">⏳ Waiting for customer to approve extra cost...</div>` : ''}
           ${j.status==='adjustment_approved' ? `<div style="font-size:12px;color:#27ae60;font-weight:700;width:100%;padding:4px 0;">✅ Customer approved extra cost! Waiting for payment...</div>` : ''}
           ${j.status==='quoted_final' ? `<div style="font-size:12px;color:#e67e22;font-weight:700;width:100%;padding:4px 0;">⏳ Waiting for customer to pay materials & labor...</div>` : ''}
+          ${j.status==='provider_done' ? `<div style="background:#f3e8ff;border-radius:8px;padding:10px;font-size:13px;color:#6b21a8;font-weight:700;width:100%;">🎉 Job marked done! Waiting for customer to confirm and release payment.<br><span style="font-size:11px;font-weight:500;color:#555;">Money is held safely in escrow.</span></div>` : ''}
           ${j.status==='assigned' ? `
             <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Chat</button>
             <button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="providerCancelJob('${j.id}')">✕ Cancel</button>` : ''}
@@ -2248,7 +2284,7 @@ async function loadProviderJobs() {
   const r = await api('GET', '/providers/my-jobs');
   if(r.jobs && r.jobs.length > 0) {
     el.innerHTML = r.jobs.map(j => {
-      const price = j.agreed_price ? (j.agreed_price/100).toLocaleString() : null;
+      const price = j.agreed_price ? kobo(j.agreed_price) : null;
       const statusColor = {assigned:'#f4a623',in_progress:'#3498db',completed:'#27ae60',disputed:'#e53e3e'}[j.status]||'#999';
       return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #ddd;">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
@@ -2267,9 +2303,9 @@ async function loadProviderJobs() {
 async function loadProviderEarnings() {
   const r = await api('GET', '/providers/earnings');
   if(r.earnings) {
-    document.getElementById('pe-total').textContent = '₦' + (r.earnings.total/100).toLocaleString();
+    document.getElementById('pe-total').textContent = '₦' + (n(r.earnings.total)/100).toLocaleString();
     document.getElementById('pe-jobs').textContent = r.earnings.completed_jobs || 0;
-    document.getElementById('pe-pending').textContent = '₦' + ((r.earnings.pending||0)/100).toLocaleString();
+    document.getElementById('pe-pending').textContent = '₦' + (n(r.earnings.pending)/100).toLocaleString();
 
     // Show bank account status
     const bankEl = document.getElementById('pe-bank-status');
@@ -2304,7 +2340,7 @@ async function loadProviderEarnings() {
             <div style="font-size:12px;color:#666;margin-top:2px;">${typeLabel} · ${ta(p.released_at||p.paid_at)}</div>
             <div style="font-size:11px;color:${p.status==='released'?'#1a7a4a':p.status==='escrow'?'#f39c12':'#999'};font-weight:700;margin-top:2px;">${p.status==='released'?'✅ Paid to account':p.status==='escrow'?'⏳ In Escrow':'Pending'}</div>
           </div>
-          <div style="font-size:16px;font-weight:800;color:#1a7a4a;">+₦${((p.provider_amount||p.net_amount||0)/100).toLocaleString()}</div>
+          <div style="font-size:16px;font-weight:800;color:#1a7a4a;">+₦${(n(p.provider_amount||p.net_amount)/100).toLocaleString()}</div>
         </div>`;
       }).join('');
     } else {
@@ -2381,11 +2417,14 @@ async function loadProviderProfilePage() {
     }
     if(document.getElementById('pp-bio-disp')) document.getElementById('pp-bio-disp').textContent = p.bio || 'No bio yet. Update your profile below.';
     document.getElementById('pp-bio-edit').value = p.bio || '';
-    document.getElementById('pp-rate').value = p.hourly_rate ? Math.round(p.hourly_rate/100) : '';
+    // Show current bio above textarea
+    const bioPreview = document.getElementById('pp-bio-preview');
+    if(bioPreview && p.bio) { bioPreview.textContent = '📝 Current: ' + p.bio; bioPreview.style.display='block'; }
+    document.getElementById('pp-rate').value = p.hourly_rate ? Math.round(n(p.hourly_rate)/100) : '';
     document.getElementById('pp-cat-display').textContent = p.service_category || 'Service Provider';
-    document.getElementById('pp-rating-disp').textContent = p.average_rating ? '⭐ ' + p.average_rating.toFixed(1) : 'New';
-    document.getElementById('pp-jobs-disp').textContent = p.total_jobs_completed || 0;
-    document.getElementById('pp-rate-disp').textContent = p.hourly_rate ? '₦' + Math.round(p.hourly_rate/100).toLocaleString() : 'Not set';
+    document.getElementById('pp-rating-disp').textContent = n(p.average_rating) > 0 ? '⭐ ' + n(p.average_rating).toFixed(1) : 'New';
+    document.getElementById('pp-jobs-disp').textContent = n(p.total_jobs_completed);
+    document.getElementById('pp-rate-disp').textContent = n(p.hourly_rate) ? '₦' + Math.round(n(p.hourly_rate)/100).toLocaleString() : 'Not set';
     // Set category dropdown to current value
     const catSelect = document.getElementById('pp-cat-edit');
     if(p.service_category) {
@@ -2630,6 +2669,26 @@ async function payAdjustment(jobId) {
 
 // ─── PROVIDER CONTACT (call button) ────────────────────────
 
+async function callCustomer(jobId, btn) {
+  if(btn){ btn.textContent = '⏳...'; btn.disabled = true; }
+  const r = await api('GET', '/jobs/' + jobId + '/contact');
+  if(btn){ btn.textContent = '📞 Call'; btn.disabled = false; }
+  if (r.phone) {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
+    d.innerHTML = `<div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">📞</div>
+      <div style="font-weight:800;font-size:17px;margin-bottom:4px;">${r.name||'Customer'}</div>
+      <div style="font-size:20px;font-weight:700;color:#1a7a4a;margin-bottom:20px;">${r.phone}</div>
+      <a href="tel:${r.phone}" style="display:block;background:#1a7a4a;color:white;border-radius:12px;padding:16px;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:10px;">📞 Call Now</a>
+      <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:13px;font-size:14px;cursor:pointer;">Close</button>
+    </div>`;
+    document.body.appendChild(d);
+  } else {
+    showAlert(r.error || 'Contact not available yet.', 'warning');
+  }
+}
+
 async function callProvider(jobId, btn) {
   if(btn){ btn.textContent = '⏳ Getting...'; btn.disabled = true; }
   const r = await api('GET', '/jobs/' + jobId + '/contact');
@@ -2659,6 +2718,11 @@ async function callProvider(jobId, btn) {
 const _origOpenChat = openChat;
 openChat = async function(jobId, partnerName) {
   if(!jobId || jobId === 'undefined') return showToast('Cannot open chat — job not found','error');
+  // Always clear previous chat state before opening new one
+  if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
+  currentChatJobId = null;
+  document.getElementById('chat-msgs').innerHTML = '<div style="text-align:center;padding:20px;color:#999;">Loading...</div>';
+
   const statusR = await api('GET', '/messages/' + jobId + '/status');
   if (statusR.chat_locked) {
     showAlert(statusR.chat_locked_reason || 'Chat is not available at this stage yet.', 'warning');
