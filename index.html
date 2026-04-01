@@ -629,6 +629,19 @@ input[type=number]{-moz-appearance:textfield}
         <span style="color:#999;font-size:18px;margin-left:auto;">›</span>
       </div>
     </div>
+    <!-- Customer Support -->
+    <div style="background:white;border-radius:14px;padding:16px;border:1px solid #eee;margin-bottom:14px;" onclick="contactSupport()">
+      <div style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+        <div style="width:38px;height:38px;background:#e8f5ee;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:14px;">Customer Support</div>
+          <div style="font-size:12px;color:#999;">Get help from the VeraPro team</div>
+        </div>
+        <span style="margin-left:auto;color:#999;font-size:18px;">›</span>
+      </div>
+    </div>
     <!-- Sign Out -->
     <button class="btn btn-w" onclick="logout()" style="width:100%;color:#e53e3e;border-color:#e53e3e;margin-top:8px;">Sign Out</button>
   </div>
@@ -886,7 +899,7 @@ input[type=number]{-moz-appearance:textfield}
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
         <div class="stat-box"><div class="stat-val" id="st-jobs">0</div><div class="stat-lbl">Jobs</div></div>
         <div class="stat-box"><div class="stat-val" id="st-rating">—</div><div class="stat-lbl">Rating</div></div>
-        <div class="stat-box"><div class="stat-val" id="st-free">3</div><div class="stat-lbl">Free Jobs</div></div>
+        
       </div>
       <div class="menu-row" onclick="go('s-jobs')">
         <div class="menu-row-icon" style="background:var(--green-light);">
@@ -921,6 +934,13 @@ input[type=number]{-moz-appearance:textfield}
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
         <div class="menu-row-text"><div class="menu-row-label">My Reviews</div><div class="menu-row-sub">Only from completed in-app jobs</div></div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="menu-row" onclick="contactSupport()">
+        <div class="menu-row-icon" style="background:#e8f5ee;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="menu-row-text"><div class="menu-row-label">Customer Support</div><div class="menu-row-sub">Get help from VeraPro team</div></div>
         <span class="chevron">›</span>
       </div>
     </div>
@@ -1457,10 +1477,10 @@ async function loadJobs(){
 
         ${j.status==='quoted_final'?`<div style="background:#fff8ec;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #fde68a;"><div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:6px;">📋 Final Quote</div>${laborPrice?`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#555;">Labor</span><span style="font-weight:700;">₦${laborPrice}</span></div>`:''}${materialPrice?`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#555;">Materials</span><span style="font-weight:700;">₦${materialPrice}</span></div>`:''}${agreedPrice?`<div style="display:flex;justify-content:space-between;font-size:14px;border-top:1px solid #fde68a;padding-top:6px;margin-top:4px;"><span style="font-weight:700;color:#b45309;">Total</span><span style="font-weight:800;color:#b45309;">₦${agreedPrice}</span></div>`:''}</div>`:''}
 
-        ${j.sj.status==='adjustment_requested'&&adjAmt?`<div style="background:#fef3c7;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #fde68a;"><div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:4px;">⚠️ Extra Cost Requested</div><div style="font-size:13px;color:#444;margin-bottom:6px;">${j.adjustment_reason||'Provider needs additional funds.'}</div><div style="font-size:16px;font-weight:800;color:#b45309;">₦${adjAmt}</div></div>`:''}
+        ${j.status==='adjustment_requested'&&adjAmt?`<div style="background:#fef3c7;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #fde68a;"><div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:4px;">⚠️ Extra Cost Requested</div><div style="font-size:13px;color:#444;margin-bottom:6px;">${j.adjustment_reason||'Provider needs additional funds.'}</div><div style="font-size:16px;font-weight:800;color:#b45309;">₦${adjAmt}</div></div>`:''}
 
         ${(j.status==="in_progress"||j.status==="provider_done"||j.status==="adjustment_approved")&&j.adjustment_amount?`<div style="background:#e8f5ee;border-radius:10px;padding:10px;margin-bottom:10px;"><div style="font-size:12px;font-weight:700;color:#1a7a4a;">💰 Extra cost added: +₦${adjAmt} · New total: ₦${agreedPrice}</div></div>`:""}
-        ${agreedPrice&&!['inspection_requested','inspection_accepted','quoted_final'].includes(j.status)?`<div style="font-size:16px;font-weight:800;color:#1a7a4a;margin-bottom:10px;">₦${agreedPrice} agreed</div>`:''}
+        ${agreedPrice&&!['inspection_requested','inspection_accepted','quoted_final'].includes(j.status)?`<div style="font-size:15px;font-weight:800;color:#1a7a4a;margin-bottom:4px;">₦${agreedPrice} agreed${j.adjustment_amount&&j.adjustment_approved?' <span style=\'font-size:12px;color:#e67e22;font-weight:600;\'>(+₦'+adjAmt+' extra)</span>':''}</div>`:''}
 
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           ${j.status==='open'?`<button class="btn btn-p btn-sm" style="flex:2;background:#f4a623;" onclick="loadQuotes('${j.id}')">👀 View Quotes</button><button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="cancelJob('${j.id}','${j.status}')">✕ Cancel</button>`:''}
@@ -1475,7 +1495,7 @@ async function loadJobs(){
 
           ${j.status==='assigned'&&j.agreed_price?`<button class="btn btn-p btn-sm" style="flex:2;" onclick="initPayment('${j.id}','${j.agreed_price}')">💳 Pay Now — ₦${agreedPrice}</button><button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Provider')">💬</button>`:j.status==='assigned'?`<div style="font-size:13px;color:#f4a623;font-weight:700;padding:8px 0;width:100%;">⏳ Waiting for provider to send a quote</div>`:''}
 
-          ${j.status==='in_progress'?`<button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Provider')">💬 Message</button><button class="btn btn-w btn-sm" style="flex:1;" onclick="callProvider('${j.id}',this)">📞 Call</button><button class="btn btn-p btn-sm" style="width:100%;margin-top:6px;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm Done & Release</button><button class="btn btn-o btn-sm" style="width:100%;margin-top:4px;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
+          ${j.status==='in_progress'?`<div>${j.adjustment_amount && j.adjustment_approved ? '<div style=\'background:#fff8ec;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #fde68a;\'><div style=\'font-size:12px;font-weight:700;color:#b45309;margin-bottom:4px;\'>📋 Cost Breakdown (Extra cost included)</div></div>' : ''}</div><button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Provider')">💬 Message</button><button class="btn btn-w btn-sm" style="flex:1;" onclick="callProvider('${j.id}',this)">📞 Call</button><button class="btn btn-p btn-sm" style="width:100%;margin-top:6px;background:#27ae60;" onclick="confirmComplete('${j.id}')">✅ Confirm Done & Release</button><button class="btn btn-o btn-sm" style="width:100%;margin-top:4px;" onclick="raiseDispute('${j.id}')">⚠️ Dispute</button>`:''}
 
           ${j.status==='adjustment_requested'?`<button class="btn btn-p btn-sm" style="flex:2;background:#f39c12;" onclick="approveAdjustment('${j.id}')">✅ Approve Extra Cost</button><button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="rejectAdjustment('${j.id}')">✕ Reject</button>`:''}
 
@@ -2241,6 +2261,7 @@ async function loadProviderActiveJobs() {
           ${j.status==='quoted_final' ? `<div style="font-size:12px;color:#e67e22;font-weight:700;width:100%;padding:4px 0;">⏳ Waiting for customer to pay materials & labor...</div>` : ''}
           ${j.adjustment_amount&&(j.status==='in_progress'||j.status==='provider_done')?`<div style="background:#e8f5ee;border-radius:8px;padding:8px 10px;font-size:12px;color:#1a7a4a;margin-bottom:6px;">💰 Extra cost of ₦${kobo(j.adjustment_amount)} added · Total: ₦${price||laborPrice||'—'}</div>`:'' }
           ${j.status==='provider_done' ? `<div style="background:#f3e8ff;border-radius:8px;padding:10px;font-size:13px;color:#6b21a8;font-weight:700;width:100%;">🎉 Job marked done! Waiting for customer to confirm and release payment.<br><span style="font-size:11px;font-weight:500;color:#555;">Money is held safely in escrow.</span></div>` : ''}
+          ${j.adjustment_amount && j.adjustment_approved && ['in_progress','provider_done'].includes(j.status) ? `<div style="background:#fff8ec;border-radius:8px;padding:8px 10px;margin-bottom:6px;border:1px solid #fde68a;font-size:12px;color:#b45309;">📋 Includes extra cost of ₦${adjAmt} approved by customer</div>` : ''}
           ${j.status==='assigned' ? `
             <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Chat</button>
             <button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="providerCancelJob('${j.id}')">✕ Cancel</button>` : ''}
@@ -2927,6 +2948,27 @@ async function sendAdjustmentRequest(jobId) {
       }
     });
   });
+}
+
+function contactSupport() {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
+  d.innerHTML = `
+    <div style="background:white;border-radius:20px 20px 0 0;padding:28px 20px;width:100%;max-width:480px;">
+      <div style="font-weight:800;font-size:18px;margin-bottom:6px;">💬 VeraPro Support</div>
+      <div style="font-size:13px;color:#555;margin-bottom:20px;line-height:1.6;">Our team is available to help you. Choose how you'd like to reach us.</div>
+      <a href="mailto:support@verapro.ng?subject=VeraPro Support Request" style="display:flex;align-items:center;gap:12px;background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:10px;text-decoration:none;color:#111;">
+        <span style="font-size:24px;">📧</span>
+        <div><div style="font-weight:700;font-size:14px;">Email Support</div><div style="font-size:12px;color:#666;">support@verapro.ng</div></div>
+      </a>
+      <a href="https://wa.me/2347074080275?text=Hello VeraPro Support, I need help with:" style="display:flex;align-items:center;gap:12px;background:#e8f5ee;border-radius:12px;padding:14px;margin-bottom:16px;text-decoration:none;color:#111;" target="_blank">
+        <span style="font-size:24px;">💬</span>
+        <div><div style="font-weight:700;font-size:14px;">WhatsApp Support</div><div style="font-size:12px;color:#666;">Quick response during business hours</div></div>
+      </a>
+      <div style="background:#fffbeb;border-radius:10px;padding:12px;font-size:12px;color:#b45309;margin-bottom:16px;">⚠️ Never share your password or OTP with anyone claiming to be VeraPro support.</div>
+      <button onclick="this.closest('div').parentNode.remove()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;padding:14px;font-size:14px;cursor:pointer;">Close</button>
+    </div>`;
+  document.body.appendChild(d);
 }
 
 async function saveBankAccount() {
