@@ -128,6 +128,12 @@ body{font-family:'DM Sans',sans-serif;background:#f0f0f0;color:#111;max-width:42
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
+/* iOS number input fix */
+input[inputmode="numeric"],input[type="number"]{
+  -webkit-user-select:text!important;
+  touch-action:manipulation;
+  font-size:16px!important; /* Prevents iOS zoom on focus */
+}
 .empty-icon{font-size:44px;margin-bottom:12px}
 .empty-title{font-size:16px;font-weight:700;color:var(--text-2);margin-bottom:6px}
 .empty-sub{font-size:13px;color:var(--text-3);margin-bottom:20px;line-height:1.5}
@@ -357,7 +363,7 @@ input[type=number]{-moz-appearance:textfield}
   <div style="flex:1;overflow-y:auto;padding-bottom:80px;">
     <div style="padding:14px 16px;">
       <div class="guarantee-bar">🛡️ <strong>VeraPro Guarantee</strong> — Full refund if provider is a no-show</div>
-      <div class="launch-bar">🎉 <strong>Launch Offer:</strong> First 3 jobs = 0% commission for providers!</div>
+
       <div class="section-title">What do you need?</div>
       <div id="h-cats"></div>
     </div>
@@ -885,13 +891,15 @@ input[type=number]{-moz-appearance:textfield}
   <div style="flex:1;overflow-y:auto;padding-bottom:80px;">
     <div style="background:var(--green);padding:24px 16px 20px;">
       <div style="display:flex;align-items:center;gap:14px;">
-        <div style="width:60px;height:60px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.3);">
+        <div onclick="document.getElementById('cust-photo-input').click()" style="width:60px;height:60px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.3);cursor:pointer;overflow:hidden;flex-shrink:0;" id="cust-avatar">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         </div>
+        <input type="file" id="cust-photo-input" accept="image/*" style="display:none;" onchange="uploadCustomerPhoto(this)">
         <div>
           <div style="font-size:18px;font-weight:800;color:white;" id="pr-name">—</div>
           <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px;" id="pr-phone"></div>
           <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:1px;" id="pr-city">Gwagwalada, Abuja</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;">Tap photo to update (optional)</div>
         </div>
       </div>
     </div>
@@ -1254,6 +1262,39 @@ function doLogout(){
 }
 
 function save(){try{localStorage.setItem('vp_u',JSON.stringify(user));localStorage.setItem('vp_t',token);}catch(e){}}
+async function uploadCustomerPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const img = new Image();
+    img.onload = async () => {
+      const canvas = document.createElement('canvas');
+      const SIZE = 300;
+      canvas.width = SIZE; canvas.height = SIZE;
+      const ctx = canvas.getContext('2d');
+      const min = Math.min(img.width, img.height);
+      const sx = (img.width - min) / 2, sy = (img.height - min) / 2;
+      ctx.drawImage(img, sx, sy, min, min, 0, 0, SIZE, SIZE);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+      // Update avatar preview
+      const avatar = document.getElementById('cust-avatar');
+      if (avatar) avatar.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+
+      // Save to backend
+      const r = await api('POST', '/auth/update-photo', { photo_url: dataUrl });
+      if (r.success) {
+        showToast('Profile photo updated! ✅');
+        if (user) { user.photo_url = dataUrl; save(); }
+      } else {
+        showToast('Could not save photo — try a smaller image', 'warning');
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
 function loadSess(){
   try{const u=localStorage.getItem('vp_u'),t=localStorage.getItem('vp_t');if(u&&t){user=JSON.parse(u);token=t;return true;}}catch(e){}return false;
 }
@@ -1978,7 +2019,12 @@ fetch('https://verapro-backend-production.up.railway.app/health').catch(()=>{});
   const jobId = localStorage.getItem('pending_payment_job');
   const payType = localStorage.getItem('pending_payment_type') || 'full';
 
-  if(paymentStatus && ref && jobId){
+  // Also check Paystack's native return params (?trxref= or ?reference=)
+  const paystackRef = urlParams.get('trxref') || urlParams.get('reference');
+  const effectiveRef = ref || paystackRef;
+  const effectivePayment = paymentStatus || (paystackRef ? 'success' : null);
+
+  if(effectivePayment && effectiveRef && (jobId || paystackRef)){
     // Returning from Paystack — clean URL first
     window.history.replaceState({}, '', window.location.pathname);
     if(!loadSess()){ go('s-splash'); return; }
@@ -1997,10 +2043,10 @@ fetch('https://verapro-backend-production.up.railway.app/health').catch(()=>{});
       success:    ['GET',  '/payments/verify/' + ref]
     };
     const [vMethod, vPath] = verifyMap[payType] || verifyMap['full'];
-    const vBody = vMethod === 'POST' ? { reference: ref, job_id: jobId } : null;
+    const vBody = vMethod === 'POST' ? { reference: effectiveRef, job_id: jobId } : null;
     const r = vMethod === 'POST'
       ? await api('POST', vPath, vBody)
-      : await api('GET', vPath);
+      : await api('GET', '/payments/verify/' + effectiveRef);
 
     overlay.remove();
 
@@ -2261,7 +2307,7 @@ async function loadProviderActiveJobs() {
           ${j.status==='quoted_final' ? `<div style="font-size:12px;color:#e67e22;font-weight:700;width:100%;padding:4px 0;">⏳ Waiting for customer to pay materials & labor...</div>` : ''}
           ${j.adjustment_amount&&(j.status==='in_progress'||j.status==='provider_done')?`<div style="background:#e8f5ee;border-radius:8px;padding:8px 10px;font-size:12px;color:#1a7a4a;margin-bottom:6px;">💰 Extra cost of ₦${kobo(j.adjustment_amount)} added · Total: ₦${price||laborPrice||'—'}</div>`:'' }
           ${j.status==='provider_done' ? `<div style="background:#f3e8ff;border-radius:8px;padding:10px;font-size:13px;color:#6b21a8;font-weight:700;width:100%;">🎉 Job marked done! Waiting for customer to confirm and release payment.<br><span style="font-size:11px;font-weight:500;color:#555;">Money is held safely in escrow.</span></div>` : ''}
-          ${j.adjustment_amount && j.adjustment_approved && ['in_progress','provider_done'].includes(j.status) ? `<div style="background:#fff8ec;border-radius:8px;padding:8px 10px;margin-bottom:6px;border:1px solid #fde68a;font-size:12px;color:#b45309;">📋 Includes extra cost of ₦${adjAmt} approved by customer</div>` : ''}
+          ${j.adjustment_amount && j.adjustment_approved && ['in_progress','provider_done'].includes(j.status) ? `<div style="background:#fff8ec;border-radius:8px;padding:8px 10px;margin-bottom:6px;border:1px solid #fde68a;font-size:12px;color:#b45309;">📋 Includes extra cost of ₦${(n(j.adjustment_amount)/100).toLocaleString()} approved by customer</div>` : ''}
           ${j.status==='assigned' ? `
             <button class="btn btn-o btn-sm" style="flex:1;" onclick="openChat('${j.id}','Customer')">💬 Chat</button>
             <button class="btn btn-o btn-sm" style="flex:1;color:#e53e3e;border-color:#e53e3e;" onclick="providerCancelJob('${j.id}')">✕ Cancel</button>` : ''}
@@ -2603,7 +2649,11 @@ function negotiateInspection(jobId, providerFeeKobo) {
   };
 }
 
+let _paymentInProgress = false; // Global lock to prevent double payments
+
 async function payInspection(jobId) {
+  if (_paymentInProgress) { showToast('Payment already in progress...', 'warning'); return; }
+  _paymentInProgress = true;
   const loading = showLoading('Initializing payment...');
   const r = await api('POST', '/payments/pay-inspection', { job_id: jobId });
   loading.remove();
@@ -2611,15 +2661,16 @@ async function payInspection(jobId) {
     localStorage.setItem('pending_payment_ref', r.reference);
     localStorage.setItem('pending_payment_job', jobId);
     localStorage.setItem('pending_payment_type', 'inspection');
-    // Show brief message then redirect
     showToast('Redirecting to payment...', 'success');
-    setTimeout(() => { window.location.href = r.payment_url; }, 600);
+    setTimeout(() => { window.location.href = r.payment_url; }, 400);
   } else {
+    _paymentInProgress = false;
     showAlert(r.error || 'Could not initialize payment. Please try again.', 'error');
   }
 }
 
 async function payMaterials(jobId) {
+  if (_paymentInProgress) { showToast('Payment already in progress...', 'warning'); return; }
   showConfirm(
     'Pay material cost now?\n\nThis is released immediately to the provider so they can purchase materials for your job.',
     async () => {
@@ -2640,6 +2691,7 @@ async function payMaterials(jobId) {
 }
 
 async function payLabor(jobId) {
+  if (_paymentInProgress) { showToast('Payment already in progress...', 'warning'); return; }
   showConfirm(
     'Pay labor cost?\n\nThis is held securely in escrow and only released to the provider once you confirm the job is done.',
     async () => {
@@ -2909,27 +2961,45 @@ async function sendInspectionRequest(matchId, jobId) {
 }
 
 async function sendFinalQuote(jobId) {
-  // Multi-step input
-  showInputSheet('Labor Cost (₦)', 'Enter your labor cost (your fee)', 'Next →', '#1a7a4a', async (labor) => {
-    if (isNaN(labor) || parseInt(labor) < 100) { showToast('Enter a valid labor cost', 'warning'); return; }
-    showInputSheet('Materials Cost (₦)', 'Enter materials cost (0 if no materials needed)', 'Next →', '#1a7a4a', async (materials) => {
-      showInputSheet('Note to Customer (optional)', 'Any additional info for the customer...', 'Send Final Quote', '#1a7a4a', async (note) => {
+  showInputSheet('Labor Cost (₦)', 'Your service fee — minimum ₦500', 'Next →', '#1a7a4a', async (labor) => {
+    const laborVal = parseInt(labor);
+    if (isNaN(laborVal) || laborVal < 500) { showToast('Labor cost must be at least ₦500', 'warning'); return; }
+    showInputSheet('Materials Cost (₦)', 'Cost of materials (enter 0 if none needed)', 'Next →', '#1a7a4a', async (materials) => {
+      const matVal = parseInt(materials || 0);
+      const ratio = laborVal > 0 ? matVal / laborVal : 0;
+
+      const doSend = async (note) => {
         const r = await api('POST', '/inspection/final-quote', {
-          job_id: jobId,
-          labor_cost: parseInt(labor),
-          material_cost: parseInt(materials || 0),
-          note: note || ''
+          job_id: jobId, labor_cost: laborVal, material_cost: matVal, note: note || ''
         });
         if (r.success) {
-          showToast(`Final quote sent! Total: ₦${(parseInt(labor)+parseInt(materials||0)).toLocaleString()} ✅`);
+          showToast('Final quote sent! ✅ Total: ₦' + (laborVal + matVal).toLocaleString());
           loadProviderHome();
         } else {
           showAlert(r.error || 'Could not send final quote', 'error');
         }
-      });
+      };
+
+      const proceed = () => {
+        showInputSheet('Note to Customer (optional)', 'Any extra info for the customer...', 'Send Final Quote', '#1a7a4a', async (note) => {
+          await doSend(note);
+        });
+      };
+
+      // Pricing integrity — warn if materials > 5x labor
+      if (ratio > 5 && matVal > 5000) {
+        showConfirm(
+          '⚠️ Materials (₦' + matVal.toLocaleString() + ') is ' + ratio.toFixed(1) + 'x your labor. VeraPro charges 10% on labor only. Confirm breakdown is accurate.',
+          proceed,
+          'Yes, Continue'
+        );
+      } else {
+        proceed();
+      }
     });
   });
 }
+
 
 async function sendAdjustmentRequest(jobId) {
   showInputSheet('Extra Cost Needed (₦)', 'How much extra is needed?', 'Next →', '#f39c12', async (amount) => {
